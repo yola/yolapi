@@ -1,7 +1,15 @@
 # Django settings for yolapi project.
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+# Yola configuration parser:
+from yola_configuration import load_configuration
+yconf = load_configuration('configuration.json')
+# application config
+aconf = yconf.yolapi.application
+# shared configurations
+sconf = yconf.common
+
+DEBUG = aconf.debug
+TEMPLATE_DEBUG = aconf.template_debug
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -11,12 +19,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'test.db',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'ENGINE': aconf.database.engine,
+        'NAME': aconf.database.name,
+        'USER': aconf.database.user,
+        'PASSWORD': aconf.database.password,
+        'HOST': aconf.database.host,
+        'PORT': aconf.database.port,
     }
 }
 
@@ -50,7 +58,8 @@ MEDIA_ROOT = ''
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/media/'
+BASE_URL = sconf.sites.yolapi.url
+MEDIA_URL = '%s/static' % BASE_URL
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -103,7 +112,8 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'yolapi.urls'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Put strings here, like "/home/html/django_templates" or
+    # "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
@@ -131,29 +141,26 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-        'console': {
+        'logfile': {
             'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
+            'class': 'logging.FileHandler',
+            'filename': aconf.logfile_path,
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['console', 'mail_admins'],
-            'level': 'ERROR',
+        'djangopypi': {
+            'handlers': ['logfile'],
+            'level': 'DEBUG',
             'propagate': True,
         },
     },
 }
 
+# App settings:
 DJANGOPYPI_ALLOW_VERSION_OVERWRITE = False
 
 # The upload_to argument for the file field in releases.
 # This can either be a string for a path relative to your media folder or a
 # callable.
-
 DJANGOPYPI_RELEASE_UPLOAD_TO = 'dists'
 DJANGOPYPI_RELEASE_URL = '/packages/'

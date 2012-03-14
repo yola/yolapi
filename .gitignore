@@ -1,1 +1,4 @@
 *.pyc
+configuration.json
+yolapi.log
+yolapi.sqlite

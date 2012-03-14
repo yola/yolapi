@@ -1,0 +1,30 @@
+<VirtualHost *:80>
+
+     ServerName {{gconf.sites.yolapi.domain}}
+     {{if conf.deploy.apache2.aliases }}
+     ServerAlias {{for a in conf.deploy.apache2.aliases}} {{a}} {{endfor}}
+     {{endif}}
+
+     WSGIScriptAlias {{conf.deploy.apache2.wsgi_webpath}} /srv/www/yolapi.wsgi
+
+     Alias {{conf.deploy.apache2.static_webpath}} {{conf.deploy.install_path}}/yolapi/static
+
+     <Location {{conf.deploy.apache2.wsgi_webpath}}>
+        Order deny,allow
+        Allow from all
+        AuthType Basic
+        AuthName "Support Tools"
+        AuthUserFile {{conf.deploy.apache2.auth.htpasswd_path}}
+        Require valid-user
+     </Location>
+
+     <Location {{conf.deploy.apache2.static_webpath}}>
+        Order deny,allow
+        Allow from all
+        AuthType Basic
+        AuthName "Support Tools"
+        AuthUserFile {{conf.deploy.apache2.auth.htpasswd_path}}
+        Require valid-user
+     </Location>
+
+</VirtualHost>
