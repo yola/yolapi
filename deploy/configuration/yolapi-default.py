@@ -45,9 +45,6 @@ def update_configuration(config):
                     'host': '',
                     'port': '',
                 },
-                'djangopypi': {
-                    'a': 'b',
-                },
             },
         },
     }
