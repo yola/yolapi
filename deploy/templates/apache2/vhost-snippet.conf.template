@@ -9,22 +9,4 @@
 
      Alias {{conf.deploy.apache2.static_webpath}} {{conf.deploy.install_path}}/yolapi/static
 
-     <Location {{conf.deploy.apache2.wsgi_webpath}}>
-        Order deny,allow
-        Allow from all
-        AuthType Basic
-        AuthName "Support Tools"
-        AuthUserFile {{conf.deploy.apache2.auth.htpasswd_path}}
-        Require valid-user
-     </Location>
-
-     <Location {{conf.deploy.apache2.static_webpath}}>
-        Order deny,allow
-        Allow from all
-        AuthType Basic
-        AuthName "Support Tools"
-        AuthUserFile {{conf.deploy.apache2.auth.htpasswd_path}}
-        Require valid-user
-     </Location>
-
 </VirtualHost>
