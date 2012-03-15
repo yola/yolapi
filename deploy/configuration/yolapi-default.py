@@ -15,7 +15,7 @@ except ImportError:
 def update_configuration(config):
     configuration = {
         'common': {
-            'sites': {
+            'services': {
                 'yolapi': {
                     'url': 'http://yolapi.localhost:8000',
                 },

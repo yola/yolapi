@@ -58,7 +58,7 @@ MEDIA_ROOT = ''
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-BASE_URL = sconf.sites.yolapi.url
+BASE_URL = sconf.services.yolapi.url
 MEDIA_URL = '%s/static' % BASE_URL
 
 # Absolute path to the directory static files should be collected to.
