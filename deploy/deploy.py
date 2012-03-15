@@ -94,7 +94,7 @@ def prepare(config):
     # copy the package into the fake fs
     target = './fs' + conf.deploy.install_path + '/yolapi'
     log.info('Copying application to the workspace temporary file structure: '
-             '%s', + target)
+             '%s', target)
     if os.path.exists(target):
         log.warn('Target install directory exists, if this is not a recycled '
                  'workspace, verify your script. Removing.')
