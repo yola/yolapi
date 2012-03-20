@@ -25,7 +25,7 @@ def update_configuration(config):
                 },
             },
             'application': {
-                'debug': False,
+                'debug': True,  # This isn't public facing
                 'template_debug': False,
                 'logfile_path': 'yolapi.log',
                 'database':  {
