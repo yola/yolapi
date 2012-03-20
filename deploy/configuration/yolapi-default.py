@@ -30,7 +30,7 @@ def update_configuration(config):
                 'logfile_path': 'yolapi.log',
                 'database':  {
                     'name': 'yolapi.sqlite',
-                    'engine': 'sqlite3',
+                    'engine': 'django.db.backends.sqlite3',
                     'user': '',
                     'password': '',
                     'host': '',
