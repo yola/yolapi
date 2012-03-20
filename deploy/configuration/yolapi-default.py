@@ -17,6 +17,7 @@ def update_configuration(config):
         'common': {
             'services': {
                 'yolapi': {
+                    'domain': 'yolapi.localhost',
                     'url': 'http://yolapi.localhost:8000',
                 },
             },
@@ -27,13 +28,11 @@ def update_configuration(config):
                 'install_path': '/srv/www/yolapi',
                 'apache2': {
                     'build_config': True,
-                    'vhost': 'yolapi.localhost',
                     'wsgi_webpath': '/',
                     'static_webpath': '/static',
                 },
             },
             'application': {
-                'url': 'http://yolapi.localhost:8000',
                 'debug': False,
                 'template_debug': False,
                 'logfile_path': 'yolapi.log',
