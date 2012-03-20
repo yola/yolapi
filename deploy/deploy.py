@@ -81,9 +81,9 @@ def prepare(config):
     # if we're building apache config
     if conf.deploy.apache2.build_config:
         parse_template('apache2/vhost-snippet.conf.template',
-                       './fs/etc/apache2/sites-enabled/yolapi.conf',
+                       './fs/etc/apache2/sites-enabled/yolapi',
                        conf=conf, gconf=gconf)
-        ensure_file('./fs/etc/apache2/sites-enabled/yolapi.conf',
+        ensure_file('./fs/etc/apache2/sites-enabled/yolapi',
                     0644, 'www-data', 'www-data')
 
     # configure the wsgi handler
