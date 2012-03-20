@@ -14,14 +14,6 @@ except ImportError:
 
 def update_configuration(config):
     configuration = {
-        'common': {
-            'services': {
-                'yolapi': {
-                    'domain': 'yolapi.localhost',
-                    'url': 'http://yolapi.localhost:8000',
-                },
-            },
-        },
         'yolapi': {
             'deploy': {
                 'enable_migrations': False,
@@ -50,7 +42,16 @@ def update_configuration(config):
     config = merge_dicts(config, configuration)
 
 if __name__ == '__main__':
-    config = dotdict()
+    config = dotdict({
+        'common': {
+            'services': {
+                'yolapi': {
+                    'domain': 'yolapi.localhost',
+                    'url': 'http://yolapi.localhost:8000',
+                },
+            },
+        },
+    })
     update_configuration(config)
     with open('configuration.json', 'w') as f:
         f.write(json.dumps(config, indent=4))
