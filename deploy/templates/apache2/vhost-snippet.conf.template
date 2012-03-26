@@ -1,7 +1,7 @@
 <VirtualHost *:80>
 
      ServerName {{gconf.services.yolapi.domain}}
-     {{if conf.deploy.apache2.aliases }}
+     {{if 'aliases' in conf.deploy.apache2 }}
      ServerAlias {{for a in conf.deploy.apache2.aliases}} {{a}} {{endfor}}
      {{endif}}
 
