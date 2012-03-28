@@ -116,9 +116,9 @@ def migrate(config):
     '''
     if config.yolapi.deploy.enable_migrations:
         management_command('./fs' + config.yolapi.deploy.install_path,
-                           'yolapi', 'syncdb')
+                           'yolapi', 'syncdb', '--noinput')
         management_command('./fs' + config.yolapi.deploy.install_path,
-                           'yolapi', 'migrate')
+                           'yolapi', 'migrate', '--noinput')
     else:
         log.info('Skipping migrations, they are disabled')
 
