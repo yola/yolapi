@@ -146,9 +146,6 @@ def migrate(config):
     if create:
         chown_tree(conf.deploy.data_path, 'www-data', 'www-data')
 
-    # TODO: This belongs elesewhere, but happens outside the fs, so...
-    management_command(install_path, 'yolapi', 'collectstatic', '--noinput')
-
 
 def deploy(config):
     # set up files outside of the ./fs, copy ./fs into place, restart services
@@ -164,6 +161,10 @@ def deploy(config):
         log.info('Deleting old application from %s', conf.deploy.install_path)
         shutil.rmtree(conf.deploy.install_path)
     merge_tree('./fs', '/')
+
+    # TODO: This belongs elesewhere, but happens outside the fs, so...
+    management_command(conf.deploy.install_path,
+                       'yolapi', 'collectstatic', '--noinput')
 
     # graceful apache2
     log.info('Restarting apache (graceful)')
