@@ -18,6 +18,7 @@ def update_configuration(config):
             'deploy': {
                 'enable_migrations': False,
                 'install_path': '/srv/www/yolapi',
+                'data_path': '/srv/data/yolapi',
                 'apache2': {
                     'build_config': True,
                     'wsgi_webpath': '/',
@@ -27,6 +28,7 @@ def update_configuration(config):
             'application': {
                 'debug': True,  # This isn't public facing
                 'template_debug': False,
+                'dists_path': 'dists',
                 'logfile_path': 'yolapi.log',
                 'database':  {
                     'name': 'yolapi.sqlite',

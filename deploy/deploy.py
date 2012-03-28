@@ -33,7 +33,8 @@ def backup(config):
     tgz = os.path.join(config.deploy_settings.paths.backup,
                        'yolapi.%s.tar.gz'
                        % datetime.datetime.now().strftime('%Y-%m-%d.%H%M%S'))
-    targets = [config.yolapi.deploy.install_path]
+    targets = [config.yolapi.deploy.install_path,
+               config.yolapi.deploy.data_path]
     hbackup(targets, tgz)
 
 
@@ -48,6 +49,7 @@ def restore(config):
     options.sort()  # sorting string works for this date format
     tgz = options[-1]
     shutil.rmtree(config.yolapi.deploy.install_path)
+    shutil.rmtree(config.yolapi.deploy.data_path)
     restore_backup(tgz)
 
 
@@ -66,8 +68,10 @@ def preflight(config):
     '''
     conf = config.yolapi
 
-    if conf.deploy.install_path == None:
+    if conf.deploy.install_path is None:
         raise Exception('Preflight failed, install_path has not been set')
+    if conf.deploy.data_path is None:
+        raise Exception('Preflight failed, data_path has not been set')
 
 
 def prepare(config):
@@ -109,12 +113,20 @@ def prepare(config):
     # install our virtual environment
     install_virtual_env('./fs/' + conf.deploy.install_path, './libs/')
 
+    # Data area
+    os.makedirs('./fs/' + conf.deploy.data_path)
+    os.makedirs('./fs/' + conf.application.dists_path)
+
 
 def migrate(config):
     '''
     run any database migrations needed
     '''
-    if config.yolapi.deploy.enable_migrations:
+    conf = config.yolapi
+
+    if (conf.application.database.engine.endswith('sqlite3')
+            and not os.path.isfile(conf.application.database.name)
+            ) or conf.deploy.enable_migrations:
         management_command('./fs' + config.yolapi.deploy.install_path,
                            'yolapi', 'syncdb', '--noinput')
         management_command('./fs' + config.yolapi.deploy.install_path,

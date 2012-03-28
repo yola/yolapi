@@ -163,5 +163,5 @@ DJANGOPYPI_ALLOW_VERSION_OVERWRITE = False
 # The upload_to argument for the file field in releases.
 # This can either be a string for a path relative to your media folder or a
 # callable.
-DJANGOPYPI_RELEASE_UPLOAD_TO = 'dists'
+DJANGOPYPI_RELEASE_UPLOAD_TO = aconf.dists_path
 DJANGOPYPI_RELEASE_URL = '/packages/'
