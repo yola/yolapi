@@ -146,6 +146,9 @@ def migrate(config):
     if create:
         chown_tree(conf.deploy.data_path, 'www-data', 'www-data')
 
+    # TODO: This belongs elesewhere, but happens outside the fs, so...
+    management_command(install_path, 'yolapi', 'collectstatic', '--noinput')
+
 
 def deploy(config):
     # set up files outside of the ./fs, copy ./fs into place, restart services
