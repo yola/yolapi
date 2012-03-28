@@ -116,6 +116,7 @@ def prepare(config):
     # Data area
     os.makedirs('./fs/' + conf.deploy.data_path)
     os.makedirs('./fs/' + conf.application.dists_path)
+    chown_tree('./fs/' + conf.deploy.data_path, 'www-data', 'www-data')
 
 
 def migrate(config):
@@ -124,18 +125,26 @@ def migrate(config):
     '''
     conf = config.yolapi
 
-    # The database path is absolute, so this happens outside ./fs/
-    os.makedirs(conf.deploy.data_path)
-
+    create = False
     if (conf.application.database.engine.endswith('sqlite3')
-            and not os.path.isfile(conf.application.database.name)
-            ) or conf.deploy.enable_migrations:
-        management_command('./fs' + config.yolapi.deploy.install_path,
-                           'yolapi', 'syncdb', '--noinput')
-        management_command('./fs' + config.yolapi.deploy.install_path,
-                           'yolapi', 'migrate', '--noinput')
+            and not os.path.isfile(conf.application.database.name)):
+        create = True
+
+    if create:
+        # The database path is absolute, so this happens outside ./fs/
+        os.makedirs(conf.deploy.data_path)
+
+    if conf.deploy.enable_migrations or create:
+        install_path = './fs' + config.yolapi.deploy.install_path
+        management_command(install_path, 'yolapi', 'syncdb', '--noinput')
+        management_command(install_path, 'yolapi', 'migrate', '--noinput')
+        management_command(install_path, 'yolapi', 'loaddata',
+                os.path.join(install_path, 'yolapi', 'initial_data.json'))
     else:
         log.info('Skipping migrations, they are disabled')
+
+    if create:
+        chown_tree(conf.deploy.data_path, 'www-data', 'www-data')
 
 
 def deploy(config):
