@@ -124,6 +124,9 @@ def migrate(config):
     '''
     conf = config.yolapi
 
+    # The database path is absolute, so this happens outside ./fs/
+    os.makedirs(conf.deploy.data_path)
+
     if (conf.application.database.engine.endswith('sqlite3')
             and not os.path.isfile(conf.application.database.name)
             ) or conf.deploy.enable_migrations:
