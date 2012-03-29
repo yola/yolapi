@@ -7,6 +7,9 @@
 
      WSGIScriptAlias {{conf.deploy.apache2.wsgi_webpath}} /srv/www/yolapi.wsgi
 
+     # The app uses HTTP Basic authentication itself
+     WSGIPassAuthorization On
+
      Alias {{conf.deploy.apache2.static_webpath}} {{conf.deploy.install_path}}/yolapi/static
 
 </VirtualHost>
