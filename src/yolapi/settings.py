@@ -144,7 +144,7 @@ LOGGING = {
     'disable_existing_loggers': True,
     'handlers': {
         'logfile': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': aconf.logfile_path,
         },
@@ -152,7 +152,7 @@ LOGGING = {
     'loggers': {
         'djangopypi': {
             'handlers': ['logfile'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         },
     },
