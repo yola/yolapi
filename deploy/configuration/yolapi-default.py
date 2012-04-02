@@ -20,7 +20,7 @@ def update_configuration(config):
                 'install_path': '/srv/www/yolapi',
                 'data_path': '/srv/data/yolapi',
                 'apache2': {
-                    'build_config': True,
+                    'build_config': False,
                     'wsgi_webpath': '/',
                     'static_webpath': '/static',
                 },

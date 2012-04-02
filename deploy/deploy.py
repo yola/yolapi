@@ -82,9 +82,14 @@ def prepare(config):
     conf = config.yolapi
     gconf = config.common
 
+    # For the SSL Vhost
+    parse_template('apache2/ssl-vhost-snippet.conf.template',
+                   './fs/etc/apache2/yola.d/yolapi',
+                   conf=conf, gconf=gconf)
+
     # if we're building apache config
     if conf.deploy.apache2.build_config:
-        parse_template('apache2/vhost-snippet.conf.template',
+        parse_template('apache2/vhost.conf.template',
                        './fs/etc/apache2/sites-enabled/yolapi',
                        conf=conf, gconf=gconf)
         ensure_file('./fs/etc/apache2/sites-enabled/yolapi',
