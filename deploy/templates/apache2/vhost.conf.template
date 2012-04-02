@@ -11,7 +11,7 @@
      WSGIPassAuthorization On
 
      Alias {{conf.deploy.apache2.static_webpath}} {{conf.deploy.install_path}}/yolapi/static
-     Alias {{conf.application.dists_path}} {{conf.deploy.data_path}}/{{conf.application.dists_path}}
+     Alias /{{conf.application.dists_path}} {{conf.deploy.data_path}}/{{conf.application.dists_path}}
 
      CustomLog /var/log/apache2/yolapi-access.log combined
      ErrorLog /var/log/apache2/yolapi-error.log
