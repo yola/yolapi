@@ -120,7 +120,8 @@ def prepare(config):
 
     # Data area
     os.makedirs('./fs/' + conf.deploy.data_path)
-    os.makedirs('./fs/' + conf.application.dists_path)
+    os.makedirs('./fs/' + os.path.join(conf.deploy.data_path,
+                                       conf.application.dists_path))
     chown_tree('./fs/' + conf.deploy.data_path, 'www-data', 'www-data')
 
 

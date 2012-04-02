@@ -28,7 +28,7 @@ def update_configuration(config):
             'application': {
                 'debug': True,  # This isn't public facing
                 'template_debug': False,
-                'dists_path': './dists',
+                'dists_path': 'dists',
                 'logfile_path': './yolapi.log',
                 'database':  {
                     'name': './yolapi.sqlite',
