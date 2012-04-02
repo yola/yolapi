@@ -4,4 +4,4 @@
      WSGIPassAuthorization On
 
      Alias {{conf.deploy.apache2.static_webpath}} {{conf.deploy.install_path}}/yolapi/static
-     Alias {{conf.yolapi.application.dists_path}} {{conf.deploy.data_path}}/{{conf.yolapi.application.dists_path}}
+     Alias {{conf.application.dists_path}} {{conf.deploy.data_path}}/{{conf.application.dists_path}}
