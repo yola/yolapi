@@ -93,12 +93,12 @@ def prepare(config):
                        './fs/etc/apache2/sites-enabled/yolapi',
                        conf=conf, gconf=gconf)
         ensure_file('./fs/etc/apache2/sites-enabled/yolapi',
-                    0644, 'www-data', 'www-data')
+                    0644, 'root', 'root')
 
     # configure the wsgi handler
     parse_template('apache2/wsgi-handler.wsgi.template',
                    './fs/srv/www/yolapi.wsgi', conf=conf, gconf=gconf)
-    ensure_file('./fs/srv/www/yolapi.wsgi', 0644, 'www-data', 'www-data')
+    ensure_file('./fs/srv/www/yolapi.wsgi', 0644, 'root', 'root')
 
     # copy the package into the fake fs
     target = './fs' + conf.deploy.install_path + '/yolapi'
@@ -109,7 +109,7 @@ def prepare(config):
                  'workspace, verify your script. Removing.')
         shutil.rmtree(target)
     shutil.copytree('./src/yolapi', target)
-    chown_tree(target, 'www-data', 'www-data')
+    chown_tree(target, 'root', 'root')
 
     # copy the configuration json dump to the project home
     shutil.copy2('./configuration/configuration.json',
