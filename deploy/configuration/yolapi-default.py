@@ -44,7 +44,15 @@ def update_configuration(config):
     config = merge_dicts(config, configuration)
 
 if __name__ == '__main__':
-    config = dotdict({
+    config = dotdict({})
+    update_configuration(config)
+    config = merge_dicts(config, dotdict({
+        'yolapi': {
+            'deploy': {
+                'install_path': './',
+                'data_path': './',
+            },
+        },
         'common': {
             'services': {
                 'yolapi': {
@@ -53,7 +61,6 @@ if __name__ == '__main__':
                 },
             },
         },
-    })
-    update_configuration(config)
+    }))
     with open('configuration.json', 'w') as f:
         f.write(json.dumps(config, indent=4))
