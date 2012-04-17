@@ -117,7 +117,7 @@ TEMPLATE_DIRS = (
     # "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    dconf.install_path + '/templates',
+    dconf.install_path + '/yolapi/templates',
 )
 
 INSTALLED_APPS = (

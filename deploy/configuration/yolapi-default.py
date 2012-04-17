@@ -49,8 +49,8 @@ if __name__ == '__main__':
     config = merge_dicts(config, dotdict({
         'yolapi': {
             'deploy': {
-                'install_path': './',
-                'data_path': './',
+                'install_path': '../',
+                'data_path': '../data/',
             },
         },
         'common': {
