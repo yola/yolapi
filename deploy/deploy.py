@@ -10,6 +10,7 @@ etc...
 """
 
 import datetime
+import errno
 import glob
 import os
 import shutil
@@ -138,7 +139,11 @@ def migrate(config):
 
     if create:
         # The database path is absolute, so this happens outside ./fs/
-        os.makedirs(conf.deploy.data_path)
+        try:
+            os.makedirs(conf.deploy.data_path)
+        except OSError, e:
+            if e.errno != errno.EEXIST:
+                raise
 
     if conf.deploy.enable_migrations or create:
         install_path = './fs' + config.yolapi.deploy.install_path
