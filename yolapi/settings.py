@@ -1,31 +1,29 @@
-# Django settings for yolapi project.
+import os
 
-# Yola configuration parser:
-from yola_configuration import load_configuration
-yconf = load_configuration('configuration.json')
-# application config
-aconf = yconf.yolapi.application
-dconf = yconf.yolapi.deploy
-# shared configurations
-sconf = yconf.common
+from yola.configurator.base import read_config
+
+
+app_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+conf = read_config(app_dir)
+aconf = conf.yolapi
 
 DEBUG = aconf.debug
 TEMPLATE_DEBUG = aconf.template_debug
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Yola Ops', 'ops@yola.com'),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': aconf.database.engine,
-        'NAME': aconf.database.name,
-        'USER': aconf.database.user,
-        'PASSWORD': aconf.database.password,
-        'HOST': aconf.database.host,
-        'PORT': aconf.database.port,
+        'ENGINE': aconf.db.engine,
+        'NAME': aconf.db.name,
+        'USER': aconf.db.user,
+        'PASSWORD': aconf.db.password,
+        'HOST': aconf.db.host,
+        'PORT': aconf.db.port,
     }
 }
 
@@ -54,27 +52,22 @@ USE_L10N = False
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = dconf.data_path
+MEDIA_ROOT = aconf.path.data + '/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/static'
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = dconf.install_path + '/yolapi/static'
+STATIC_ROOT = os.path.join(app_dir, 'static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
-
-# URL prefix for admin static files -- CSS, JavaScript and images.
-# Make sure to use a trailing slash.
-# Examples: "http://foo.com/static/admin/", "/static/admin/".
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -111,12 +104,15 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'yolapi.urls'
 
+# Python dotted path to the WSGI application used by Django's runserver.
+WSGI_APPLICATION = 'yolapi.wsgi.application'
+
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or
     # "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    dconf.install_path + '/yolapi/templates',
+    os.path.join(app_dir, 'yolapi', 'templates'),
 )
 
 INSTALLED_APPS = (
@@ -149,7 +145,7 @@ LOGGING = {
         'logfile': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': aconf.logfile_path,
+            'filename': aconf.path.log,
             'formatter': 'std',
         },
     },
@@ -173,5 +169,5 @@ DJANGOPYPI_ALLOW_VERSION_OVERWRITE = False
 # The upload_to argument for the file field in releases.
 # This can either be a string for a path relative to your media folder or a
 # callable.
-DJANGOPYPI_RELEASE_UPLOAD_TO = aconf.dists_path
+DJANGOPYPI_RELEASE_UPLOAD_TO = './dists/'
 DJANGOPYPI_RELEASE_URL = '/packages/'

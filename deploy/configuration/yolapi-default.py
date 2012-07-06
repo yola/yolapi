@@ -1,66 +1,26 @@
-#!/usr/bin/env python
-
-import json
 import os
-import sys
 
-try:
-    from lib.helpers.dicts import merge_dicts, dotdict
-except ImportError:
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__),
-                                    '..', '..', 'src'))
-    from yolapi.yola_configuration import merge_dicts, dotdict
+from yola.configurator.dicts import merge_dicts
 
 
-def update_configuration(config):
-    configuration = {
+def update(config):
+    data_path = os.path.join(config.deploy.root, 'yolapi', 'data')
+    new = {
         'yolapi': {
-            'deploy': {
-                'enable_migrations': False,
-                'install_path': '/srv/www/yolapi',
-                'data_path': '/srv/data/yolapi',
-                'apache2': {
-                    'build_config': False,
-                    'wsgi_webpath': '/',
-                    'static_webpath': '/static',
-                },
+            'debug': False,
+            'template_debug': False,
+            'path': {
+                'data': data_path,
+                'log': '/var/log/yolapi.log',
             },
-            'application': {
-                'debug': True,  # This isn't public facing
-                'template_debug': False,
-                'dists_path': 'dists',
-                'logfile_path': './yolapi.log',
-                'database':  {
-                    'name': './yolapi.sqlite',
-                    'engine': 'django.db.backends.sqlite3',
-                    'user': '',
-                    'password': '',
-                    'host': '',
-                    'port': '',
-                },
+            'db':  {
+                'name': os.path.join(data_path, 'yolapi.sqlite'),
+                'engine': 'django.db.backends.sqlite3',
+                'user': '',
+                'password': '',
+                'host': '',
+                'port': '',
             },
         },
     }
-    config = merge_dicts(config, configuration)
-
-if __name__ == '__main__':
-    config = dotdict({})
-    update_configuration(config)
-    config = merge_dicts(config, dotdict({
-        'yolapi': {
-            'deploy': {
-                'install_path': '../',
-                'data_path': '../data/',
-            },
-        },
-        'common': {
-            'services': {
-                'yolapi': {
-                    'domain': 'yolapi.localhost',
-                    'url': 'http://yolapi.localhost:8000',
-                },
-            },
-        },
-    }))
-    with open('configuration.json', 'w') as f:
-        f.write(json.dumps(config, indent=4))
+    return merge_dicts(config, new)
