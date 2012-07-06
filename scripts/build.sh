@@ -7,5 +7,5 @@ set -efxu
 mkdir build
 
 # copy source to dist
-cp manage.py initial_data.json requirements.txt build
+cp manage.py seed_data.json requirements.txt build
 cp -R yolapi build
