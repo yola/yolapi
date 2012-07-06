@@ -7,5 +7,6 @@
 /data
 /dist
 /meta.json
+/static
 /virtualenv
 /virtualenv.tar.gz
