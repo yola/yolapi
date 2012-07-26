@@ -4,6 +4,8 @@ set -efxu
 
 [ -z "$APPNAME" ] && { echo "APPNAME variable not set" ; false ; }
 
+cd "$(dirname "$0")/.."
+
 # remove dist directory if exists
 [ -d ./dist ] && rm -Rf dist
 mkdir dist
