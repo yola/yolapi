@@ -9,5 +9,5 @@ cd "$(dirname "$0")/.."
 mkdir build
 
 # copy source to dist
-cp manage.py seed_data.json requirements.txt build
+cp requirements.txt build
 cp -R yolapi build

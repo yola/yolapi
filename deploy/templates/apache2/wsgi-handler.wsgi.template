@@ -6,11 +6,11 @@ import sys
 app = 'yolapi'
 install_root = os.path.join("{{conf.deploy.root}}", app, 'live')
 
-sys.path.append(install_root)
+sys.path.append(os.path.join(install_root, app))
 for dir_ in glob.glob(os.path.join(install_root, 'virtualenv', 'lib',
                                    'python2.*', 'site-packages')):
     site.addsitedir(dir_)
-os.environ['DJANGO_SETTINGS_MODULE'] = '%s.settings' % app
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()
