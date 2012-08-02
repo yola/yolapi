@@ -11,7 +11,7 @@
      WSGIPassAuthorization On
 
      Alias /static {{conf.deploy.root}}/yolapi/live/static
-     Alias /media/dists {{conf.deploy.root}}/yolapi/data/dists
+     Alias /media {{conf.deploy.root}}/yolapi/data/media
 
      CustomLog /var/log/apache2/yolapi-access.log combined
      ErrorLog /var/log/apache2/yolapi-error.log
