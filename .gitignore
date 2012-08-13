@@ -1,4 +1,12 @@
+*.log
 *.pyc
-configuration.json
-yolapi.log
-yolapi.sqlite
+*.sqlite
+.*.swp
+/build
+/configuration.json
+/data
+/dist
+/meta.json
+/static
+/virtualenv
+/virtualenv.tar.gz

@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# exit on error
-set -e
-cd "`dirname $0`/.."
+set -efxu
 
 [ -z "$APPNAME" ] && { echo "APPNAME variable not set" ; false ; }
+
+cd "$(dirname "$0")/.."
 
 # remove dist directory if exists
 [ -d ./dist ] && rm -Rf dist
@@ -17,4 +17,3 @@ cp -Rf deploy build/
 cp -Rf build dist/$APPNAME
 
 cd dist && tar -czf $APPNAME.tar.gz $APPNAME
-

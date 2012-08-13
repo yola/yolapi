@@ -1,7 +1,7 @@
-     WSGIScriptAlias {{conf.deploy.apache2.wsgi_webpath}} /srv/www/yolapi.wsgi
+     WSGIScriptAlias / {{conf.deploy.root}}/yolapi/live/yolapi.wsgi
 
      # The app uses HTTP Basic authentication itself
      WSGIPassAuthorization On
 
-     Alias {{conf.deploy.apache2.static_webpath}} {{conf.deploy.install_path}}/yolapi/static
-     Alias /{{conf.application.dists_path}} {{conf.deploy.data_path}}/{{conf.application.dists_path}}
+     Alias /static {{conf.deploy.root}}/yolapi/live/static
+     Alias /media/dists {{conf.deploy.root}}/yolapi/data/dists

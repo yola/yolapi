@@ -1,0 +1,20 @@
+[
+  {
+    "pk": 1,
+    "model": "auth.user",
+    "fields": {
+      "username": "yola",
+      "first_name": "Yola",
+      "last_name": "Administrator",
+      "is_active": true,
+      "is_superuser": true,
+      "is_staff": true,
+      "last_login": "2012-03-28 15:15:13",
+      "groups": [],
+      "user_permissions": [],
+      "password": "sha1$81e08$4fcebea24763757a7d27fc7f344d4cf195dd5d25",
+      "email": "sysadmin@yola.com",
+      "date_joined": "2012-03-28 15:15:13"
+    }
+  }
+]
