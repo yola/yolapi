@@ -95,6 +95,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'raven.contrib.django.middleware.SentryResponseErrorIdMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -126,7 +127,14 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     'south',
+    'raven.contrib.django',
 )
+
+RAVEN_CONFIG = {
+    'dsn': 'http://bf82d9069fbe4e129063ea32b4a3e1b3'
+           ':bf8c1c2d933e45be90862e77a94bcdac@sentry.yola.net/7',
+    'register_signals': True,
+}
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -148,6 +156,10 @@ LOGGING = {
             'filename': aconf.path.log,
             'formatter': 'std',
         },
+        'sentry': {
+            'level': 'ERROR',
+            'class': 'raven.contrib.django.handlers.SentryHandler',
+        },
     },
     'loggers': {
         'django.request': {
@@ -160,7 +172,21 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+        'raven': {
+            'handlers': ['logfile'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'sentry.errors': {
+            'handlers': ['logfile'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
     },
+    'root': {
+        'level': 'WARNING',
+        'handlers': ['sentry'],
+    }
 }
 
 # App settings:
