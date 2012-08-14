@@ -1,19 +1,43 @@
+{{if 'ssl' in aconf}}
+<VirtualHost *:443>
+{{else}}
 <VirtualHost *:80>
+{{endif}}
 
-     ServerName {{aconf.domain}}
-     {{if 'aliases_domains' in aconf}}
-     ServerAlias {{for a in aconf.alias_domains}} {{a}} {{endfor}}
-     {{endif}}
+    ServerName {{aconf.domain}}
+    {{if 'aliases_domains' in aconf}}
+    ServerAlias {{for a in aconf.alias_domains}} {{a}} {{endfor}}
+    {{endif}}
 
-     WSGIScriptAlias / {{conf.deploy.root}}/yolapi/live/yolapi.wsgi
+    {{if 'ssl' in aconf}}
+    SSLEngine on
+    SSLCertificateFile {{ aconf.ssl.cert }}
+    SSLCertificateKeyFile {{ aconf.ssl.key }}
+    {{endif}}
 
-     # The app uses HTTP Basic authentication itself
-     WSGIPassAuthorization On
+    WSGIScriptAlias / {{conf.deploy.root}}/yolapi/live/yolapi.wsgi
 
-     Alias /static {{conf.deploy.root}}/yolapi/live/static
-     Alias /media {{conf.deploy.root}}/yolapi/data/media
+    # The app uses HTTP Basic authentication itself
+    WSGIPassAuthorization On
 
-     CustomLog /var/log/apache2/yolapi-access.log combined
-     ErrorLog /var/log/apache2/yolapi-error.log
+    Alias /static {{conf.deploy.root}}/yolapi/live/static
+    Alias /media {{conf.deploy.root}}/yolapi/data/media
+
+    CustomLog /var/log/apache2/yolapi-access.log combined
+    ErrorLog /var/log/apache2/yolapi-error.log
 
 </VirtualHost>
+{{if 'ssl' in aconf}}
+<VirtualHost *:80>
+    ServerName {{ aconf.domain }}
+    {{if 'aliases_domains' in aconf}}
+    ServerAlias {{for a in aconf.alias_domains}} {{a}} {{endfor}}
+    {{endif}}
+
+    RewriteEngine on
+    RewriteRule (.*) https://{{ aconf.domain }}%{REQUEST_URI}
+
+    CustomLog /var/log/apache2/yolapi-access.log combined
+    ErrorLog /var/log/apache2/yolapi-error.log
+</VirtualHost>
+{{endif}}
