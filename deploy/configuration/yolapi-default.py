@@ -22,6 +22,7 @@ def update(config):
                 'host': '',
                 'port': '',
             },
+            'sentry_dsn': '',
         },
     }
     return merge_dicts(config, new)

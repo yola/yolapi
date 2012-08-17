@@ -131,8 +131,7 @@ INSTALLED_APPS = (
 )
 
 RAVEN_CONFIG = {
-    'dsn': 'http://bf82d9069fbe4e129063ea32b4a3e1b3'
-           ':bf8c1c2d933e45be90862e77a94bcdac@sentry.yola.net/7',
+    'dsn': aconf.sentry_dsn,
     'register_signals': True,
 }
 
