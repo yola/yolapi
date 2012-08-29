@@ -162,14 +162,10 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['logfile'],
             'level': 'ERROR',
-            'propagate': True,
         },
         'djangopypi': {
-            'handlers': ['logfile'],
             'level': 'INFO',
-            'propagate': True,
         },
         'raven': {
             'handlers': ['logfile'],
@@ -184,7 +180,7 @@ LOGGING = {
     },
     'root': {
         'level': 'WARNING',
-        'handlers': ['sentry'],
+        'handlers': ['sentry', 'logfile'],
     }
 }
 
