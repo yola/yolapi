@@ -151,7 +151,7 @@ LOGGING = {
     'handlers': {
         'logfile': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.WatchedFileHandler',
             'filename': aconf.path.log,
             'formatter': 'std',
         },
