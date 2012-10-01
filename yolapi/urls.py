@@ -7,7 +7,6 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'', include("djangopypi.urls")),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login',
         {'template_name': 'login.html'}),
     url(r'^robots.txt$', direct_to_template,

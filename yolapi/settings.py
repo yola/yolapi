@@ -121,7 +121,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
-    'djangopypi',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -164,9 +163,6 @@ LOGGING = {
         'django.request': {
             'level': 'ERROR',
         },
-        'djangopypi': {
-            'level': 'INFO',
-        },
         'raven': {
             'handlers': ['logfile'],
             'level': 'DEBUG',
@@ -183,12 +179,3 @@ LOGGING = {
         'handlers': ['sentry', 'logfile'],
     }
 }
-
-# App settings:
-DJANGOPYPI_ALLOW_VERSION_OVERWRITE = False
-
-# The upload_to argument for the file field in releases.
-# This can either be a string for a path relative to your media folder or a
-# callable.
-DJANGOPYPI_RELEASE_UPLOAD_TO = './dists/'
-DJANGOPYPI_RELEASE_URL = '/packages/'
