@@ -2,11 +2,12 @@
 *.pyc
 *.sqlite
 .*.swp
-/build
+/build/
 /configuration.json
-/data
-/dist
+/deploy/configuration/local/
+/data/
+/dist/
 /meta.json
-/static
-/virtualenv
+/static/
+/virtualenv/
 /virtualenv.tar.gz
