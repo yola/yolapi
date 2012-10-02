@@ -12,8 +12,6 @@ urlpatterns = patterns('',
     url(r'^simple/', include('pypi.simple.urls')),
     url(r'^robots.txt$', direct_to_template,
         {'template': 'robots.txt', 'mimetype': 'text/plain'}),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 )
 
 if settings.DEBUG:
