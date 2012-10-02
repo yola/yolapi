@@ -117,6 +117,7 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'pypi',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -179,3 +180,7 @@ LOGGING = {
         'handlers': ['sentry', 'logfile'],
     }
 }
+
+# Always load future template tags
+from django.template.loader import add_to_builtins
+add_to_builtins('django.templatetags.future')

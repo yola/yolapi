@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block nav %}
+<li><a href="{% url 'pypi.views.index' %}">Packages</a></li>
+<li><a href="{% url 'pypi.views.package' package=release.package %}">{{ release.package.name }}</a></li>
+<li><a href="#" class="active">{{ release.version }}</a></li>
+{% endblock %}
+
+{% block content %}
+<div class=row">
+	<div class="span4">
+		<h2>Files</h2>
+		<ul>
+		{% for distribution in release.distributions.iterator %}
+			<li>
+				<a href="{{ distribution.content.url }}">
+					{{ distribution.filename }}
+				</a>
+			</li>
+		{% endfor %}
+		</ul>
+	</div>
+	<div class="span8">
+		<h2>Metadata</h2>
+		<table class="table table-striped">
+		{% for k, v in release.distribution.metadata_dict.iteritems %}
+			<tr>
+				<th>{{ k }}</th>
+				<td>{{ v|urlize }}</td>
+			</tr>
+		{% endfor %}
+		</table>
+	</div>
+</div>
+{% endblock %}
