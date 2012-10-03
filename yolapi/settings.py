@@ -174,6 +174,13 @@ LOGGING = {
     }
 }
 
+# Location of artifacts, within MEDIA_ROOT
+PYPI_DISTS = 'dists'
+
+# Archive old artifacts on deletion/replacement?
+# Set False disable
+PYPI_ARCHIVE = 'archive'
+
 # Always load future template tags
 from django.template.loader import add_to_builtins
 add_to_builtins('django.templatetags.future')

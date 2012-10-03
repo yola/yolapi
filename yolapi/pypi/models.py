@@ -1,6 +1,8 @@
 import json
 import os
 
+from django.conf import settings
+from django.core.files.storage import DefaultStorage
 from django.db import models
 from django.dispatch import receiver
 from pkg_resources import parse_version
@@ -26,7 +28,9 @@ class Package(models.Model):
 class Release(models.Model):
     package = models.ForeignKey(Package, related_name='releases')
     version = models.CharField(max_length=128, db_index=True, editable=False)
+    # TODO: Drop
     created = models.DateTimeField(auto_now_add=True, editable=False)
+    # TODO: Move metadata here
 
     @property
     def distribution(self):
@@ -44,7 +48,8 @@ class Release(models.Model):
 
 class Distribution(models.Model):
     release = models.ForeignKey(Release, related_name='distributions')
-    content = models.FileField(upload_to='dists', blank=False)
+    content = models.FileField(
+            upload_to=getattr(settings, 'PYPI_DISTS', 'dists'), blank=False)
     md5_digest = models.CharField(max_length=32, blank=False, editable=False)
     filetype = models.CharField(max_length=32, blank=False, editable=False)
     pyversion = models.CharField(max_length=16, blank=True, editable=False)
@@ -76,4 +81,12 @@ def distribution_delete(sender, **kwargs):
     if sender == Distribution:
         distribution = kwargs['instance']
         if distribution.path:
+            archive_replaced = getattr(settings, 'PYPI_ARCHIVE', 'archive')
+            if archive_replaced:
+                fs = DefaultStorage()
+                created = fs.created_time(distribution.content.name)
+                fs.save('%s/%s-%s' % (archive_replaced,
+                                      created.strftime('%Y%m%dT%H%M%SZ'),
+                                      distribution.filename),
+                        distribution.content)
             distribution.content.delete()
