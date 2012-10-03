@@ -15,10 +15,14 @@
     SSLCertificateKeyFile {{ aconf.ssl.key }}
     {{endif}}
 
-    WSGIScriptAlias / {{conf.deploy.root}}/yolapi/live/yolapi.wsgi
+    <Location />
+         AuthType Basic
+         AuthName "YolaPI"
+         AuthUserFile /etc/yola/htpasswd/yolapi
+         Require valid-user
+    </Location>
 
-    # The app uses HTTP Basic authentication itself
-    WSGIPassAuthorization On
+    WSGIScriptAlias / {{conf.deploy.root}}/yolapi/live/yolapi.wsgi
 
     Alias /static {{conf.deploy.root}}/yolapi/live/static
     Alias /media {{conf.deploy.root}}/yolapi/data/media
