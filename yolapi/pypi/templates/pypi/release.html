@@ -13,7 +13,7 @@
 		<ul>
 		{% for distribution in release.distributions.iterator %}
 			<li>
-				<a href="{{ distribution.content.url }}">
+				<a href="{{ distribution.content.url }}#md5={{ distribution.md5_digest }}">
 					{{ distribution.filename }}
 				</a>
 			</li>
