@@ -8,6 +8,7 @@ from django.core.files.storage import DefaultStorage
 from django.http.multipartparser import MultiPartParser
 
 from pypi.models import Package
+import pypi.metadata
 
 
 log = logging.getLogger(__name__)
@@ -134,87 +135,29 @@ def parse_metadata(post_data):
     """Parse the uploaded metadata, and return a cleaned up dictionary"""
     metadata_version = str(post_data['metadata_version'])
 
-    if metadata_version not in ('1.0', '1.1', '1.2'):
-        raise InvalidUpload("Unknown Metadata-Version: %s" % metadata_version)
-
-    required = set((
-        'Metadata-Version',
-        'Name',
-        'Summary',
-        'Version',
-    ))
-    fields = set((
-        'Author',
-        'Author-email',
-        'Description',
-        'Home-page',
-        'Keywords',
-        'License',
-    ))
-    multivalued = set((
-        'Platform',
-        'Supported-Platform',
-    ))
-    csv = set((
-        'Platform',
-        'Keywords',
-    ))
-    deprecated = set()
-
-    if metadata_version in ('1.0', '1.1'):
-        required.update((
-            'Author-email',
-            'License',
-        ))
-    if metadata_version in ('1.1', '1.2'):
-        required.update((
-            'Download-URL',
-        ))
-        multivalued.update((
-            'Classifier',
-            'Requires',
-            'Provides',
-            'Obsoletes',
-        ))
-    if metadata_version in ('1.2',):
-        required.update((
-            'Requires-Python',
-        ))
-        deprecated.update((
-            'Requires',
-            'Provides',
-            'Obsoletes',
-        ))
-        fields.update((
-            'Maintainer',
-            'Maintainer-email',
-        ))
-        multivalued.update((
-            'Obsoletes-Dist',
-            'Project-URL',
-            'Provides-Dist',
-            'Requires-Dist',
-            'Requires-External',
-        ))
-    fields.update(required, deprecated, multivalued)
+    try:
+        fields = pypi.metadata.fields(metadata_version)
+    except ValueError, e:
+        raise InvalidUpload(e)
 
     metadata = {}
-    for key in sorted(fields):
+    for key in sorted(fields['fields']):
         post_key = key.lower().replace('-', '_')
-        if key in required and post_key not in post_data:
+        if key in fields['required'] and post_key not in post_data:
             raise InvalidUpload("Missing %s, required for Metadata-Version %s"
                                 % (key, metadata_version))
 
         if post_data.getlist(post_key, []) in ([u'UNKNOWN'], []):
             continue
 
-        if key in multivalued:
+        if key in fields['multivalued']:
             metadata[key] = post_data.getlist(post_key)
         else:
             metadata[key] = post_data.get(post_key)
 
-        if key in csv:
-            if key in multivalued:
+        # Normalise CSV fields to multi-valued
+        if key in fields['csv']:
+            if key in fields['multivalued']:
                 metadata[key] = ','.join(metadata[key])
             metadata[key] = metadata[key].replace(';', ',')
             metadata[key] = [value.strip()
