@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 def index(request):
     if request.method == 'POST':
         return upload(request)
-    return render_to_response('index.html', {
+    return render_to_response('pypi/index.html', {
         'title': 'Package list',
         'packages': Package.objects.iterator(),
     }, context_instance=RequestContext(request))
@@ -43,7 +43,7 @@ def package(request, package):
         package = Package.objects.get(name=package)
     except Package.DoesNotExist:
         raise Http404
-    return render_to_response('package.html', {
+    return render_to_response('pypi/package.html', {
         'title': unicode(package),
         'package': package,
     }, context_instance=RequestContext(request))
@@ -55,7 +55,7 @@ def release(request, package, version):
         release = Release.objects.get(package__name=package, version=version)
     except Release.DoesNotExist:
         raise Http404
-    return render_to_response('release.html', {
+    return render_to_response('pypi/release.html', {
         'title': unicode(release),
         'release': release,
     }, context_instance=RequestContext(request))

@@ -8,7 +8,7 @@ from pypi.models import Package, Release
 
 @require_safe
 def index(request):
-    return render_to_response('pypi/simple/index.html', {
+    return render_to_response('pypi.simple/index.html', {
         'title': 'Packages',
         'packages': Package.objects.iterator(),
     }, context_instance=RequestContext(request))
@@ -20,7 +20,7 @@ def package(request, package):
         package = Package.objects.get(name=package)
     except Package.DoesNotExist:
         raise Http404
-    return render_to_response('pypi/simple/package.html', {
+    return render_to_response('pypi.simple/package.html', {
         'title': unicode(package),
         'package': package,
     }, context_instance=RequestContext(request))
@@ -32,7 +32,7 @@ def release(request, package, version):
         release = Release.objects.get(package__name=package, version=version)
     except Release.DoesNotExist:
         raise Http404
-    return render_to_response('pypi/simple/release.html', {
+    return render_to_response('pypi.simple/release.html', {
         'title': unicode(release),
         'release': release,
     }, context_instance=RequestContext(request))
