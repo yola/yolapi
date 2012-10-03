@@ -19,7 +19,7 @@ class Package(models.Model):
 
     @property
     def latest(self):
-        return self.sorted_releases[0]
+        return self.sorted_releases[-1]
 
     def __unicode__(self):
         return self.name
