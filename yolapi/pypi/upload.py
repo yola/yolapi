@@ -1,10 +1,16 @@
 import hashlib
 import json
+import logging
+import os
 
 from django.conf import settings
+from django.core.files.storage import DefaultStorage
 from django.http.multipartparser import MultiPartParser
 
 from pypi.models import Package
+
+
+log = logging.getLogger(__name__)
 
 
 class CRLFParts(object):
@@ -78,7 +84,17 @@ def process(request):
     parser = MultiPartParser(request.META, CRLFParts(request, boundary),
                              request.upload_handlers, request.encoding)
     post, files = parser.parse()
-    # TODO: Validate with a form
+
+    if post.get('protcol_version', None) != '1':
+        raise InvalidUpload("Missing/Invalid protcol_version")
+
+    if post[':action'] != 'file_upload':
+        raise InvalidUpload("The only supported actions are uploads")
+
+    if '/' in files['content'].name:
+        raise InvalidUpload("Invalid filename")
+
+    metadata = parse_metadata(post)
 
     if md5sum(files['content']) != post['md5_digest']:
         raise InvalidUpload("MD5 digest doesn't match content")
@@ -96,12 +112,113 @@ def process(request):
         distribution = distribution[0]
         distribution.delete()
 
+    fs = DefaultStorage()
+    fn = os.path.join(getattr(settings, 'PYPI_DISTS', 'dists'),
+                      files['content'].name)
+    if fs.exists(fn):
+        log.warn("Removing existing file %s - this shouldn't happen", fn)
+        fs.delete(fn)
+
     distribution = release.distributions.create(filetype=post['filetype'],
                                                 pyversion=post['pyversion'],
                                                 md5_digest=post['md5_digest'],
-                                                metadata=json.dumps(post),
+                                                metadata=json.dumps(metadata),
                                                 content=files['content'])
     distribution.save()
+
+
+def parse_metadata(post_data):
+    """Parse the uploaded metadata, and return a cleaned up dictionary"""
+    metadata_version = str(post_data['metadata_version'])
+
+    if metadata_version not in ('1.0', '1.1', '1.2'):
+        raise InvalidUpload("Unknown Metadata-Version: %s" % metadata_version)
+
+    required = set((
+        'Metadata-Version',
+        'Name',
+        'Summary',
+        'Version',
+    ))
+    fields = set((
+        'Author',
+        'Author-email',
+        'Description',
+        'Home-page',
+        'Keywords',
+        'License',
+    ))
+    multivalued = set((
+        'Platform',
+        'Supported-Platform',
+    ))
+    csv = set((
+        'Platform',
+        'Keywords',
+    ))
+    deprecated = set()
+
+    if metadata_version in ('1.0', '1.1'):
+        required.update((
+            'Author-email',
+            'License',
+        ))
+    if metadata_version in ('1.1', '1.2'):
+        required.update((
+            'Download-URL',
+        ))
+        multivalued.update((
+            'Classifier',
+            'Requires',
+            'Provides',
+            'Obsoletes',
+        ))
+    if metadata_version in ('1.2',):
+        required.update((
+            'Requires-Python',
+        ))
+        deprecated.update((
+            'Requires',
+            'Provides',
+            'Obsoletes',
+        ))
+        fields.update((
+            'Maintainer',
+            'Maintainer-email',
+        ))
+        multivalued.update((
+            'Obsoletes-Dist',
+            'Project-URL',
+            'Provides-Dist',
+            'Requires-Dist',
+            'Requires-External',
+        ))
+    fields.update(required, deprecated, multivalued)
+
+    metadata = {}
+    for key in sorted(fields):
+        post_key = key.lower().replace('-', '_')
+        if key in required and post_key not in post_data:
+            raise InvalidUpload("Missing %s, required for Metadata-Version %s"
+                                % (key, metadata_version))
+
+        if post_data.getlist(post_key, []) in ([u'UNKNOWN'], []):
+            continue
+
+        if key in multivalued:
+            metadata[key] = post_data.getlist(post_key)
+        else:
+            metadata[key] = post_data.get(post_key)
+
+        if key in csv:
+            if key in multivalued:
+                metadata[key] = ','.join(metadata[key])
+            metadata[key] = metadata[key].replace(';', ',')
+            metadata[key] = [value.strip()
+                             for value in metadata[key].split(',')
+                             if value.strip()]
+
+    return metadata
 
 
 def md5sum(file_):

@@ -1,7 +1,10 @@
-# -*- coding: utf-8 -*-
+import json
 
+from django.utils.datastructures import MultiValueDict
 from south.db import db
 from south.v2 import DataMigration
+
+import pypi.upload
 
 
 class Migration(DataMigration):
@@ -18,12 +21,20 @@ class Migration(DataMigration):
             if created:
                 release.created = old_release.created
                 release.save()
+
+            metadata = MultiValueDict(json.loads(old_release.package_info))
+            metadata['metadata_version'] = old_release.metadata_version
+            metadata['name'] = old_package.name
+            metadata['version'] = old_release.version
+            metadata = pypi.upload.parse_metadata(metadata)
+            metadata = json.dumps(metadata)
+
             distribution = release.distributions.create(
                     content=old_distribution.content,
                     filetype=old_distribution.filetype,
                     md5_digest=old_distribution.md5_digest,
                     pyversion=old_distribution.pyversion,
-                    metadata=old_release.package_info,
+                    metadata=metadata,
             )
             distribution.created = old_distribution.created
             distribution.save()
