@@ -1,6 +1,7 @@
 import logging
 
-from django.http import HttpResponse, Http404
+from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
+                         HttpResponseForbidden)
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
@@ -27,10 +28,13 @@ def index(request):
 @require_POST
 @csrf_exempt
 def upload(request):
-    status = 500
-    if pypi.upload.process(request):
-        status = 200
-    return HttpResponse(status=status)
+    try:
+        pypi.upload.process(request)
+    except pypi.upload.InvalidUpload, e:
+        return HttpResponseBadRequest(unicode(e), content_type='text/plain')
+    except pypi.upload.ReplacementDenied, e:
+        return HttpResponseForbidden(unicode(e), content_type='text/plain')
+    return HttpResponse('Accepted, thank you', content_type='text/plain')
 
 
 @require_safe

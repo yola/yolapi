@@ -1,6 +1,7 @@
 import hashlib
 import json
 
+from django.conf import settings
 from django.http.multipartparser import MultiPartParser
 
 from pypi.models import Package
@@ -62,6 +63,14 @@ class CRLFParts(object):
             yield line
 
 
+class InvalidUpload(Exception):
+    pass
+
+
+class ReplacementDenied(Exception):
+    pass
+
+
 def process(request):
     # Django doesn't like the LF line endings on the MIME headers that
     # distutils will give us.
@@ -72,7 +81,7 @@ def process(request):
     # TODO: Validate with a form
 
     if md5sum(files['content']) != post['md5_digest']:
-        raise Exception("MD5 digest doesn't match content")
+        raise InvalidUpload("MD5 digest doesn't match content")
 
     package = Package.objects.get_or_create(name=post['name'])[0]
     release = package.releases.get_or_create(version=post['version'])[0]
@@ -80,8 +89,11 @@ def process(request):
     distribution = release.distributions.filter(filetype=post['filetype'],
                                                 pyversion=post['pyversion'])
     if distribution.exists():
+        if not getattr(settings, 'PYPI_ALLOW_REPLACEMENT', True):
+            raise ReplacementDenied(
+                    "A distribution with the same name and version is already "
+                    "present in the repository")
         distribution = distribution[0]
-        # TODO: Make optional
         distribution.delete()
 
     distribution = release.distributions.create(filetype=post['filetype'],
@@ -90,7 +102,6 @@ def process(request):
                                                 metadata=json.dumps(post),
                                                 content=files['content'])
     distribution.save()
-    return True
 
 
 def md5sum(file_):

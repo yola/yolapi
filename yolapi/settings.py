@@ -181,6 +181,9 @@ PYPI_DISTS = 'dists'
 # Set False disable
 PYPI_ARCHIVE = 'archive'
 
+# Allow overriding over existing packages
+PYPI_ALLOW_REPLACEMENT = True
+
 # Always load future template tags
 from django.template.loader import add_to_builtins
 add_to_builtins('django.templatetags.future')
