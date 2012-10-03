@@ -23,10 +23,10 @@
 	<div class="span8">
 		<h2>Metadata</h2>
 		<table class="table table-striped">
-		{% for k, v in release.metadata_dict.iteritems %}
+		{% for k, v in metadata %}
 			<tr>
 				<th>{{ k }}</th>
-				<td>{{ v|urlize }}</td>
+				<td>{{ v|urlize|linebreaks }}</td>
 			</tr>
 		{% endfor %}
 		</table>

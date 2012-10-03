@@ -48,6 +48,10 @@ class Release(models.Model):
         return json.loads(self.metadata)
 
     @property
+    def metadata_version(self):
+        return self.metadata_dict.get('Metadata-Version')
+
+    @property
     def summary(self):
         return self.metadata_dict.get('Summary')
 

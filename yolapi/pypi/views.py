@@ -9,6 +9,7 @@ from django.views.decorators.http import (require_http_methods, require_POST,
                                           require_safe)
 
 import pypi.upload
+import pypi.metadata
 from pypi.models import Package, Release
 
 log = logging.getLogger(__name__)
@@ -55,7 +56,9 @@ def release(request, package, version):
         release = Release.objects.get(package__name=package, version=version)
     except Release.DoesNotExist:
         raise Http404
+    metadata = pypi.metadata.display_sort(release.metadata_dict)
     return render_to_response('pypi/release.html', {
         'title': unicode(release),
         'release': release,
+        'metadata': metadata,
     }, context_instance=RequestContext(request))

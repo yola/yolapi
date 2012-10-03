@@ -72,3 +72,40 @@ def fields(metadata_version):
         'csv': csv,
         'deprecated': deprecated,
     }
+
+
+def display_sort(metadata):
+    """Return an ordered list of key-value pairs, of a given metadata dict"""
+    key_order = (
+        'Name',
+        'Version',
+        'Summary',
+        'License',
+        'Home-page',
+        'Project-URL',
+        'Download-URL',
+        'Description',
+        'Author',
+        'Author-email',
+        'Maintainer',
+        'Maintainer-email',
+        'Keywords',
+        'Classifier',
+        'Requires-Python',
+        'Requires-External',
+        'Requires-Dist',
+        'Requires',
+        'Provides-Dist',
+        'Provides',
+        'Obsoletes-Dist',
+        'Obsoletes',
+        'Platform',
+        'Supported-Platform',
+        'Metadata-Version',
+    )
+    indices = dict((key, i) for i, key in enumerate(key_order))
+
+    if isinstance(metadata, dict):
+        metadata = metadata.items()
+
+    return sorted(metadata, key=lambda row: (indices.get(row[0], 100), row))
