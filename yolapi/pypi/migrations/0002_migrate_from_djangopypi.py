@@ -1,6 +1,6 @@
 import json
 
-from django.db import IntegrityError
+from django.db import IntegrityError, DatabaseError
 from django.utils.datastructures import MultiValueDict
 from south.db import db
 from south.v2 import DataMigration
@@ -11,6 +11,11 @@ import pypi.upload
 class Migration(DataMigration):
 
     def forwards(self, orm):
+        try:
+            next(orm['djangopypi.distribution'].objects.iterator())
+        except DatabaseError:
+            return
+
         for old_distribution in \
                 orm['djangopypi.distribution'].objects.iterator():
             old_release = old_distribution.release
