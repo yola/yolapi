@@ -184,6 +184,10 @@ PYPI_ARCHIVE = 'archive'
 # Allow overriding over existing packages
 PYPI_ALLOW_REPLACEMENT = True
 
+# An available formatting that can be used for displaying date fields on
+# templates.
+SHORT_DATE_FORMAT = 'Y-m-d'
+
 # Always load future template tags
 from django.template.loader import add_to_builtins
 add_to_builtins('django.templatetags.future')

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<table id="packages" class="table table-striped">
+<table id="packages" class="table table-striped sortable">
 	<thead>
 		<tr>
 			<th>Package</th>
@@ -22,9 +22,10 @@
 		<td><a href="{% url 'pypi.views.release' package=package.name version=package.latest.version %}">
 			{{ package.latest.version }}
 		</a></td>
-		<td>{{ package.latest.distribution.created }}</td>
+		<td>{{ package.latest.distribution.created|date:"SHORT_DATE_FORMAT" }}</td>
 		<td>{{ package.latest.summary }}</td>
 	</tr>
 {% endfor %}
 </table>
+<script src="{{ STATIC_URL }}js/sorttable.js"></script>
 {% endblock %}
