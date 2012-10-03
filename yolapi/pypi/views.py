@@ -56,7 +56,14 @@ def release(request, package, version):
         release = Release.objects.get(package__name=package, version=version)
     except Release.DoesNotExist:
         raise Http404
+
     metadata = pypi.metadata.display_sort(release.metadata_dict)
+
+    # Flatten lists
+    for i, (key, values) in enumerate(metadata):
+        if isinstance(values, list):
+            metadata[i] = (key, '\n'.join(values))
+
     return render_to_response('pypi/release.html', {
         'title': unicode(release),
         'release': release,
