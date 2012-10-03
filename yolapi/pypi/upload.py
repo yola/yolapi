@@ -99,8 +99,12 @@ def process(request):
     if md5sum(files['content']) != post['md5_digest']:
         raise InvalidUpload("MD5 digest doesn't match content")
 
-    package = Package.objects.get_or_create(name=post['name'])[0]
-    release = package.releases.get_or_create(version=post['version'])[0]
+    package, created = Package.objects.get_or_create(name=post['name'])
+    release, created = package.releases.get_or_create(version=post['version'])
+
+    # Update metadata
+    release.metadata = json.dumps(metadata)
+    release.save()
 
     distribution = release.distributions.filter(filetype=post['filetype'],
                                                 pyversion=post['pyversion'])
@@ -122,7 +126,6 @@ def process(request):
     distribution = release.distributions.create(filetype=post['filetype'],
                                                 pyversion=post['pyversion'],
                                                 md5_digest=post['md5_digest'],
-                                                metadata=json.dumps(metadata),
                                                 content=files['content'])
     distribution.save()
 

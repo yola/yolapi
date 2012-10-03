@@ -1,5 +1,6 @@
 import json
 
+from django.db import IntegrityError
 from django.utils.datastructures import MultiValueDict
 from south.db import db
 from south.v2 import DataMigration
@@ -14,13 +15,9 @@ class Migration(DataMigration):
                 orm['djangopypi.distribution'].objects.iterator():
             old_release = old_distribution.release
             old_package = old_release.package
+
             package, created = orm['pypi.package'].objects.get_or_create(
                     name=old_package.name)
-            release, created = package.releases.get_or_create(
-                    version=old_release.version)
-            if created:
-                release.created = old_release.created
-                release.save()
 
             metadata = MultiValueDict(json.loads(old_release.package_info))
             metadata['metadata_version'] = old_release.metadata_version
@@ -29,15 +26,31 @@ class Migration(DataMigration):
             metadata = pypi.upload.parse_metadata(metadata)
             metadata = json.dumps(metadata)
 
-            distribution = release.distributions.create(
-                    content=old_distribution.content,
-                    filetype=old_distribution.filetype,
-                    md5_digest=old_distribution.md5_digest,
-                    pyversion=old_distribution.pyversion,
-                    metadata=metadata,
-            )
-            distribution.created = old_distribution.created
-            distribution.save()
+            release = package.releases.filter(version=old_release.version)
+            if release.exists():
+                release = release[0]
+                release.metadata = metadata
+            else:
+                release = package.releases.create(version=old_release.version,
+                                                  metadata=metadata)
+            release.save()
+
+            print "Importing: %s" % (
+                ', '.join((old_package.name, old_release.version,
+                           old_distribution.filetype,
+                           old_distribution.pyversion)))
+
+            try:
+                distribution = release.distributions.create(
+                        content=old_distribution.content,
+                        filetype=old_distribution.filetype,
+                        md5_digest=old_distribution.md5_digest,
+                        pyversion=old_distribution.pyversion,
+                )
+                distribution.created = old_distribution.created
+                distribution.save()
+            except IntegrityError:
+                print "IntegrityError: Skipping"
 
         for table in ('auth_group',
                       'auth_group_permissions',
@@ -65,13 +78,12 @@ class Migration(DataMigration):
 
     models = {
         'pypi.distribution': {
-            'Meta': {'object_name': 'Distribution'},
+            'Meta': {'unique_together': "(('release', 'filetype', 'pyversion'),)", 'object_name': 'Distribution'},
             'content': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'filetype': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'md5_digest': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'metadata': ('django.db.models.fields.TextField', [], {}),
             'pyversion': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'release': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'distributions'", 'to': "orm['pypi.Release']"})
         },
@@ -80,9 +92,9 @@ class Migration(DataMigration):
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255', 'primary_key': 'True'})
         },
         'pypi.release': {
-            'Meta': {'object_name': 'Release'},
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'Meta': {'unique_together': "(('package', 'version'),)", 'object_name': 'Release'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'metadata': ('django.db.models.fields.TextField', [], {}),
             'package': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'releases'", 'to': "orm['pypi.Package']"}),
             'version': ('django.db.models.fields.CharField', [], {'max_length': '128', 'db_index': 'True'})
         },

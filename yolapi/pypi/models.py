@@ -28,9 +28,10 @@ class Package(models.Model):
 class Release(models.Model):
     package = models.ForeignKey(Package, related_name='releases')
     version = models.CharField(max_length=128, db_index=True, editable=False)
-    # TODO: Drop
-    created = models.DateTimeField(auto_now_add=True, editable=False)
-    # TODO: Move metadata here
+    metadata = models.TextField()
+
+    class Meta(object):
+        unique_together = (('package', 'version'),)
 
     @property
     def distribution(self):
@@ -41,6 +42,14 @@ class Release(models.Model):
         dists = self.distributions
         if dists.exists():
             return dists[0]
+
+    @property
+    def metadata_dict(self):
+        return json.loads(self.metadata)
+
+    @property
+    def summary(self):
+        return self.metadata_dict.get('Summary')
 
     def __unicode__(self):
         return u'%s %s' % (self.package.name, self.version)
@@ -54,7 +63,9 @@ class Distribution(models.Model):
     filetype = models.CharField(max_length=32, blank=False, editable=False)
     pyversion = models.CharField(max_length=16, blank=True, editable=False)
     created = models.DateTimeField(auto_now_add=True, editable=False)
-    metadata = models.TextField()
+
+    class Meta(object):
+        unique_together = (('release', 'filetype', 'pyversion'),)
 
     @property
     def path(self):
@@ -63,14 +74,6 @@ class Distribution(models.Model):
     @property
     def filename(self):
         return os.path.basename(self.path)
-
-    @property
-    def metadata_dict(self):
-        return json.loads(self.metadata)
-
-    @property
-    def summary(self):
-        return self.metadata_dict.get('summary')
 
     def __unicode__(self):
         return self.filename
