@@ -99,6 +99,7 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'raven.contrib.django.middleware.SentryResponseErrorIdMiddleware',
+    'dogslow.WatchdogMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
 )
@@ -176,6 +177,11 @@ LOGGING = {
         'handlers': ['sentry', 'logfile'],
     }
 }
+
+# Log requests taking longer than 25 seconds:
+DOGSLOW_TIMER = 25
+DOGSLOW_LOGGER = 'dogslow'
+DOGSLOW_LOG_LEVEL = 'ERROR'
 
 # Location of artifacts, within MEDIA_ROOT
 PYPI_DISTS = 'dists'
