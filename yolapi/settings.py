@@ -118,9 +118,12 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'pypi',
+    'importer',
+
+    'crispy_forms',
     'django.contrib.staticfiles',
-    'south',
     'raven.contrib.django',
+    'south',
 )
 
 RAVEN_CONFIG = {
