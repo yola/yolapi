@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
                          HttpResponseForbidden)
 from django.shortcuts import render_to_response
@@ -29,6 +30,11 @@ def index(request):
 @require_POST
 @csrf_exempt
 def upload(request):
+    if not settings.DEBUG or 'REMOTE_USER' in request.META:
+        allowed_uploaders = getattr(settings, 'PYPI_ALLOWED_UPLOADERS', [])
+        if request.META.get('REMOTE_USER') not in allowed_uploaders:
+            return HttpResponseForbidden('You are not an authorized uploader',
+                                         content_type='text/plain')
     try:
         yolapi.pypi.upload.process(request)
     except yolapi.pypi.upload.InvalidUpload, e:

@@ -19,6 +19,13 @@
          AuthType Basic
          AuthName "YolaPI"
          AuthUserFile /etc/yola/htpasswd/yolapi
+         Require user=yola
+    </Location>
+
+    <Location /simple/>
+         AuthType Basic
+         AuthName "YolaPI"
+         AuthUserFile /etc/yola/htpasswd/yolapi
          Require valid-user
     </Location>
 

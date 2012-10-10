@@ -187,6 +187,9 @@ LOGGING = {
 # Location of artifacts, within MEDIA_ROOT
 PYPI_DISTS = 'dists'
 
+# REMOTE_USERs who we will accept uploads from
+PYPI_ALLOWED_UPLOADERS = ['yola']
+
 # Archive old artifacts on deletion/replacement?
 # Set False disable
 PYPI_ARCHIVE = 'archive'
