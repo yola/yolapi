@@ -1,11 +1,16 @@
 import os
+import urllib
 
+from django.template.loader import add_to_builtins
+from kombu import Exchange, Queue
+import djcelery
 from yola.configurator.base import read_config
 
 
 app_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 conf = read_config(app_dir)
 aconf = conf.yolapi
+cconf = conf.common
 
 DEBUG = aconf.debug
 TEMPLATE_DEBUG = aconf.template_debug
@@ -119,9 +124,11 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
     'pypi',
     'importer',
+    'archive',
 
     'crispy_forms',
     'django.contrib.staticfiles',
+    'djcelery',
     'raven.contrib.django',
     'south',
 )
@@ -192,5 +199,22 @@ PYPI_ALLOW_REPLACEMENT = True
 SHORT_DATE_FORMAT = 'Y-m-d'
 
 # Always load future template tags
-from django.template.loader import add_to_builtins
 add_to_builtins('django.templatetags.future')
+
+YOLAPI_ARCHIVE_BUCKET = aconf.aws.archive_bucket
+AWS_ACCESS_KEY = aconf.aws.accesskey
+AWS_SECRET_KEY = aconf.aws.secretkey
+
+djcelery.setup_loader()
+BROKER_URL = 'sqs://%s:%s@' % (
+    urllib.quote(aconf.aws.accesskey, ''),
+    urllib.quote(aconf.aws.secretkey, ''),
+)
+BROKER_TRANSPORT_OPTIONS = {
+    'polling_interval': 5.0,
+    'queue_name_prefix': cconf.async_queue_prefix,
+}
+CELERY_DEFAULT_QUEUE = 'yolapi'
+CELERY_QUEUES = (
+    Queue('yolapi', Exchange('yolapi'), routing_key='yolapi.#'),
+)

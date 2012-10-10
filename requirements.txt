@@ -1,5 +1,7 @@
 Django==1.4.1
 South==0.7.6
+boto==2.2.2
+django-celery==3.0.10
 django-crispy-forms==1.1.4
 raven==2.0.3
 yola.configurator==0.1
