@@ -9,6 +9,7 @@ from django.http.multipartparser import MultiPartParser
 
 from yolapi.pypi.models import Package
 import yolapi.pypi.metadata
+import yolapi.archive.tasks
 
 
 log = logging.getLogger(__name__)
@@ -129,6 +130,9 @@ def process(request):
                                                 md5_digest=post['md5_digest'],
                                                 content=files['content'])
     distribution.save()
+
+    if getattr(settings, 'PYPI_ARCHIVE'):
+        yolapi.archive.tasks.update_archive.delay()
 
 
 def parse_metadata(post_data):
