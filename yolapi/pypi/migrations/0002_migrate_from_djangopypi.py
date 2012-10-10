@@ -1,6 +1,7 @@
 import os
 import json
 
+from django.conf import settings
 from django.db import IntegrityError, DatabaseError
 from django.utils.datastructures import MultiValueDict
 from south.db import db
@@ -17,6 +18,7 @@ class Migration(DataMigration):
         except DatabaseError:
             return
 
+        owned = set()
         for old_distribution in \
                 orm['djangopypi.distribution'].objects.iterator():
             old_release = old_distribution.release
@@ -62,8 +64,18 @@ class Migration(DataMigration):
                 )
                 distribution.created = old_distribution.created
                 distribution.save()
+                owned.add(os.path.basename(distribution.content.path))
             except IntegrityError:
                 print "IntegrityError: Skipping"
+
+        dists_dir = os.path.join(settings.MEDIA_ROOT,
+                                 getattr(settings, 'PYPI_DISTS', 'dists'))
+        present = set(os.listdir(dists_dir))
+        orphans = present.difference(owned)
+        if orphans:
+            print "Orphaned dists:"
+            for filename in sorted(orphans):
+                print filename
 
         for table in ('auth_group',
                       'auth_group_permissions',
