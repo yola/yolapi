@@ -1,3 +1,4 @@
+import os
 import json
 
 from django.db import IntegrityError, DatabaseError
@@ -20,6 +21,13 @@ class Migration(DataMigration):
                 orm['djangopypi.distribution'].objects.iterator():
             old_release = old_distribution.release
             old_package = old_release.package
+
+            if not os.path.exists(old_distribution.content.path):
+                print "Skipping %s. Not present on disk" % ', '.join(
+                        (old_package.name, old_release.version,
+                         old_distribution.filetype,
+                         old_distribution.pyversion))
+                continue
 
             package, created = orm['pypi.package'].objects.get_or_create(
                     name=old_package.name)
