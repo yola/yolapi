@@ -180,8 +180,7 @@ LOGGING = {
 
 # Log requests taking longer than 25 seconds:
 DOGSLOW_TIMER = 25
-DOGSLOW_LOGGER = 'dogslow'
-DOGSLOW_LOG_LEVEL = 'ERROR'
+DOGSLOW_WRITE_LOG = False
 
 # Location of artifacts, within MEDIA_ROOT
 PYPI_DISTS = 'dists'
