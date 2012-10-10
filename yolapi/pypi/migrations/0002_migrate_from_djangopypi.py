@@ -5,7 +5,7 @@ from django.utils.datastructures import MultiValueDict
 from south.db import db
 from south.v2 import DataMigration
 
-import pypi.upload
+import yolapi.pypi.upload
 
 
 class Migration(DataMigration):
@@ -28,7 +28,7 @@ class Migration(DataMigration):
             metadata['metadata_version'] = old_release.metadata_version
             metadata['name'] = old_package.name
             metadata['version'] = old_release.version
-            metadata = pypi.upload.parse_metadata(metadata)
+            metadata = yolapi.pypi.upload.parse_metadata(metadata)
             metadata = json.dumps(metadata)
 
             release = package.releases.filter(version=old_release.version)

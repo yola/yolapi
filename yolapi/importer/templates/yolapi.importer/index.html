@@ -7,11 +7,11 @@
 {% endblock %}
 
 {% block nav %}
-<li><a href="{% url 'importer.views.index' %}" class="active">Importer</a></li>
+<li><a href="{% url 'yolapi.importer.views.index' %}" class="active">Importer</a></li>
 {% endblock %}
 
 {% block content %}
-<form action="{% url 'importer.views.index' %}" method="post" class="form-horizontal">
+<form action="{% url 'yolapi.importer.views.index' %}" method="post" class="form-horizontal">
 	{% csrf_token %}
 	{{ form|crispy }}
 	<div class="control-group">

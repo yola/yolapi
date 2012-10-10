@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
 
+
 class RequiresForm(forms.Form):
     requirements = forms.CharField(widget=forms.Textarea,
             help_text='Paste your requirements.txt')
@@ -21,7 +22,7 @@ def index(request):
     else:
         form = RequiresForm()
 
-    return render_to_response('importer/index.html', {
+    return render_to_response('yolapi.importer/index.html', {
         'title': 'Import packages from PyPI',
         'form': form,
     }, context_instance=RequestContext(request))

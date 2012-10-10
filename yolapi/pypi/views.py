@@ -8,9 +8,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import (require_http_methods, require_POST,
                                           require_safe)
 
-import pypi.upload
-import pypi.metadata
-from pypi.models import Package, Release
+import yolapi.pypi.upload
+import yolapi.pypi.metadata
+from yolapi.pypi.models import Package, Release
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 def index(request):
     if request.method == 'POST':
         return upload(request)
-    return render_to_response('pypi/index.html', {
+    return render_to_response('yolapi.pypi/index.html', {
         'title': 'Package list',
         'packages': Package.objects.iterator(),
     }, context_instance=RequestContext(request))
@@ -30,10 +30,10 @@ def index(request):
 @csrf_exempt
 def upload(request):
     try:
-        pypi.upload.process(request)
-    except pypi.upload.InvalidUpload, e:
+        yolapi.pypi.upload.process(request)
+    except yolapi.pypi.upload.InvalidUpload, e:
         return HttpResponseBadRequest(unicode(e), content_type='text/plain')
-    except pypi.upload.ReplacementDenied, e:
+    except yolapi.pypi.upload.ReplacementDenied, e:
         return HttpResponseForbidden(unicode(e), content_type='text/plain')
     return HttpResponse('Accepted, thank you', content_type='text/plain')
 
@@ -44,7 +44,7 @@ def package(request, package):
         package = Package.objects.get(name=package)
     except Package.DoesNotExist:
         raise Http404
-    return render_to_response('pypi/package.html', {
+    return render_to_response('yolapi.pypi/package.html', {
         'title': unicode(package),
         'package': package,
     }, context_instance=RequestContext(request))
@@ -57,14 +57,14 @@ def release(request, package, version):
     except Release.DoesNotExist:
         raise Http404
 
-    metadata = pypi.metadata.display_sort(release.metadata_dict)
+    metadata = yolapi.pypi.metadata.display_sort(release.metadata_dict)
 
     # Flatten lists
     for i, (key, values) in enumerate(metadata):
         if isinstance(values, list):
             metadata[i] = (key, '\n'.join(values))
 
-    return render_to_response('pypi/release.html', {
+    return render_to_response('yolapi.pypi/release.html', {
         'title': unicode(release),
         'release': release,
         'metadata': metadata,

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block nav %}
-<li><a href="{% url 'pypi.views.index' %}">Packages</a></li>
+<li><a href="{% url 'yolapi.pypi.views.index' %}">Packages</a></li>
 <li><a href="#" class="active">{{ package.name }}</a></li>
 {% endblock %}
 
@@ -16,7 +16,7 @@
 {% for release in package.sorted_releases %}
 	<tr>
 		<td>
-			<a href="{% url 'pypi.views.release' package=package.name version=release.version %}">
+			<a href="{% url 'yolapi.pypi.views.release' package=package.name version=release.version %}">
 				{{ release.version }}
 			</a>
 		</td>

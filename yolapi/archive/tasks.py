@@ -5,7 +5,7 @@ from boto.s3.connection import S3Connection
 from celery import task
 from django.conf import settings
 
-from pypi.models import Distribution
+from yolapi.pypi.models import Distribution
 
 log = logging.getLogger(__name__)
 

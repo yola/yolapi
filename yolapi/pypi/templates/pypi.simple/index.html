@@ -1,6 +1,0 @@
-{% extends "pypi.simple/base.html" %}
-{% block content %}
-{% for package in packages %}
-<a href="{% url 'pypi.simple.views.package' package=package.name %}">{{ package.name }}</a><br>
-{% endfor %}
-{% endblock %}

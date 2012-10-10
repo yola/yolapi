@@ -1,4 +1,4 @@
-{% extends "pypi.simple/base.html" %}
+{% extends "yolapi.pypi.simple/base.html" %}
 {% block content %}
 {% for distribution in release.distributions.iterator %}
 <a href="{{ distribution.content.url }}#{{ distribution.md5_digest }}">{{ distribution.filename }}</a><br>
