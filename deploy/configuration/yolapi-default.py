@@ -17,6 +17,7 @@ def update(config):
             'path': {
                 'data': data_path,
                 'log': '/var/log/yolapi.log',
+                'celery_log': '/var/log/yolapi-worker.log',
             },
             'domain': 'yolapi.%s' % config.common.domain.services,
             'db':  {
