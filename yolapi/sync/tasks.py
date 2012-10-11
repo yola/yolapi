@@ -35,28 +35,22 @@ def sync():
 
     for distribution in Distribution.objects.all():
         by_filename[distribution.filename] = distribution.id
-        print "1: %s" % distribution.filename
 
         if distribution.filename not in s3_distributions:
-            print "Push Missing %s" % distribution.filename
-            #push.delay(distribution.id)
+            push.delay(distribution.id)
             continue
 
         if allow_replacement and _compare_db_with_s3(distribution, key) > 0:
-            print "Push Newer %s" % distribution.filename
-            #push.delay(distribution.id)
+            push.delay(distribution.id)
 
     for filename, key in s3_distributions.iteritems():
-        print "2: %s" % filename
         if filename not in by_filename:
-            print "Pull Missing %s" % filename
-            #pull.delay(filename)
+            pull.delay(filename)
             continue
 
         distribution = Distribution.objects.get(id=by_filename[filename])
         if allow_replacement and _compare_db_with_s3(distribution, key) < 0:
-            print "Pull Newer %s" % filename
-            #pull.delay(filename)
+            pull.delay(filename)
 
 
 @task(ignore_result=True)
