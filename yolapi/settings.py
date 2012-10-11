@@ -124,7 +124,7 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
     'yolapi.pypi',
     'yolapi.importer',
-    'yolapi.archive',
+    'yolapi.sync',
 
     'crispy_forms',
     'django.contrib.staticfiles',
@@ -204,7 +204,7 @@ SHORT_DATE_FORMAT = 'Y-m-d'
 # Always load future template tags
 add_to_builtins('django.templatetags.future')
 
-YOLAPI_ARCHIVE_BUCKET = aconf.aws.archive_bucket
+PYPI_SYNC_BUCKET = aconf.aws.archive_bucket
 AWS_ACCESS_KEY = aconf.aws.accesskey
 AWS_SECRET_KEY = aconf.aws.secretkey
 

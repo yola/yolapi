@@ -122,7 +122,7 @@ def process(request):
     fn = os.path.join(getattr(settings, 'PYPI_DISTS', 'dists'),
                       files['content'].name)
     if fs.exists(fn):
-        log.warn("Removing existing file %s - this shouldn't happen", fn)
+        log.warn(u"Removing existing file %s - this shouldn't happen", fn)
         fs.delete(fn)
 
     distribution = release.distributions.create(filetype=post['filetype'],
@@ -131,8 +131,8 @@ def process(request):
                                                 content=files['content'])
     distribution.save()
 
-    if getattr(settings, 'PYPI_ARCHIVE'):
-        yolapi.archive.tasks.update_archive.delay()
+    if getattr(settings, 'PYPI_SYNC_BUCKET'):
+        yolapi.sync.tasks.sync.delay()
 
 
 def parse_metadata(post_data):
