@@ -9,7 +9,7 @@ from django.http.multipartparser import MultiPartParser
 
 from yolapi.pypi.models import Package
 import yolapi.pypi.metadata
-import yolapi.archive.tasks
+import yolapi.sync.tasks
 
 
 log = logging.getLogger(__name__)
