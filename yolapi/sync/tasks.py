@@ -6,6 +6,7 @@ import os
 import boto.s3.connection
 from celery import task
 from django.conf import settings
+from django.core.files import File
 from django.core.files.storage import DefaultStorage
 
 from yolapi.pypi.models import Distribution, Package
@@ -131,7 +132,7 @@ def pull(filename):
     distribution = release.distributions.create(filetype=filetype,
                                                 pyversion=pyversion,
                                                 md5_digest=md5_digest,
-                                                content=key)
+                                                content=File(key))
     distribution.save()
 
     key = bucket.get_key(u'releases/%s/%s' %
