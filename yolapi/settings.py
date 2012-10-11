@@ -217,7 +217,8 @@ BROKER_TRANSPORT_OPTIONS = {
     'polling_interval': 5.0,
     'queue_name_prefix': cconf.async_queue_prefix,
 }
-CELERY_DEFAULT_QUEUE = 'yolapi'
+# We don't communicate with anybody else
+CELERY_DEFAULT_QUEUE = 'yolapi-%s' % cconf.domain.hostname
 CELERY_QUEUES = (
-    Queue('yolapi', Exchange('yolapi'), routing_key='yolapi.#'),
+    Queue(CELERY_DEFAULT_QUEUE, Exchange('yolapi'), routing_key='yolapi.#'),
 )
