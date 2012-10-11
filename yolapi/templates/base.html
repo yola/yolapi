@@ -16,11 +16,15 @@
 				{% endblock %}
 			</ul>
 			<ul class="nav pull-right">
+				<li><a class="post" data-url="{% url 'yolapi.sync.views.sync' %}" href="#">Sync</a></li>
 				<li><a href="{% url 'yolapi.importer.views.index' %}">Import</a></li>
 			</ul>
 		</div>
 	</div>
 {% block content %}
 {% endblock %}
+	<script src="{{ STATIC_URL }}js/jquery.min.js"></script>
+	<script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+	<script src="{{ STATIC_URL }}js/yolapi.js"></script>
 </body>
 </html>
