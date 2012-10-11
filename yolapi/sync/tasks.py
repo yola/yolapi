@@ -39,6 +39,7 @@ def sync():
             push.delay(distribution.id)
             continue
 
+        key = s3_distributions[distribution.filename]
         if allow_replacement and _compare_db_with_s3(distribution, key) > 0:
             log.info(u"Queueing push: %s [mismatch]", distribution.filename)
             push.delay(distribution.id)
