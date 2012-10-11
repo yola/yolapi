@@ -106,7 +106,7 @@ def pull(filename):
     package = key.get_metadata('package')
     version = key.get_metadata('version')
     filetype = key.get_metadata('filetype')
-    pyversion = key.get_metadata('pyversion')
+    pyversion = key.get_metadata('pyversion') or u''
     md5_digest = key.get_metadata('md5_digest')
 
     package, created = Package.objects.get_or_create(name=package)
