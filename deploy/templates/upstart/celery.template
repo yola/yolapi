@@ -9,7 +9,8 @@ exec su -s /bin/sh -c 'exec "$0" "$@"' www-data -- \
     {{conf.deploy.root}}/yolapi/live/yolapi/manage.py \
     celery worker --quiet \
                   --time-limit=1800 \
-                  --logfile {{aconf.path.celery_log}}
+                  --logfile {{aconf.path.celery_log}} \
+                  --loglevel INFO
 
 respawn
 respawn limit 10 5
