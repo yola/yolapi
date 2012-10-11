@@ -21,6 +21,19 @@ function csrfSafeMethod(method) {
 	return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
+function bootstrapAlert(message, type) {
+	if (typeof(type) === 'undefined') {
+		type = '';
+	} else {
+		type = 'alert-' + type;
+	}
+	$('.navbar').after(
+		'<div class="alert ' + type + '">'
+		+ '<button type="button" class="close" data-dismiss="alert">×</button>'
+		+ message
+		+ '</div>');
+}
+
 $(document).ready(function() {
 	var csrftoken = getCookie('csrftoken');
 
@@ -34,11 +47,9 @@ $(document).ready(function() {
 	});
 
 	$('a.post').click(function() {
+		bootstrapAlert($(this).attr('data-started'), 'info');
 		$.post($(this).attr('data-url'), null, function(data) {
-			$('.navbar').after(
-				'<div class="alert alert-success">'
-				+ '<button type="button" class="close" data-dismiss="alert">×</button>'
-				+ data + '</div>');
+			bootstrapAlert(data, 'success');
 		});
 	});
 });
