@@ -25,9 +25,6 @@ def sync():
     s3_distributions = {}
     for key in bucket.list(delimiter='/', prefix='dists/'):
         if isinstance(key, boto.s3.key.Key):
-            if allow_replacement:
-                # Request key, to get metadata
-                key = bucket.get_key(key.name)
             s3_distributions[key.name.split(u'/', 1)[1]] = key
 
     # Our Distribution table doesn't store the bare filename, but we're about
@@ -159,7 +156,7 @@ def _compare_db_with_s3(distribution, key):
         0:   equal
         > 0: Distribution newer
     """
-    s3_md5 = key.get_metadata('md5_digest')
+    s3_md5 = key.etag.strip('"')
     if (s3_md5 == distribution.md5_digest):
         return 0
     created = dateutil.parser.parse(key.last_modified)
