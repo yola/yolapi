@@ -48,8 +48,15 @@ $(document).ready(function() {
 
 	$('a.post').click(function() {
 		bootstrapAlert($(this).attr('data-started'), 'info');
-		$.post($(this).attr('data-url'), null, function(data) {
-			bootstrapAlert(data, 'success');
+		$.ajax({
+			type: 'POST',
+			url: $(this).attr('data-url'),
+			success: function(data) {
+				bootstrapAlert(data, 'success');
+			},
+			error: function(jqXHR, data, errorThrown) {
+				bootstrapAlert(errorThrown, 'error');
+			}
 		});
 	});
 });
