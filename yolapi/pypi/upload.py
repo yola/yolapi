@@ -140,7 +140,7 @@ def parse_metadata(post_data):
     metadata_version = str(post_data['metadata_version'])
 
     try:
-        fields = yolapi.pypi.metadata.fields(metadata_version)
+        fields = yolapi.pypi.metadata.metadata_fields(metadata_version)
     except ValueError, e:
         raise InvalidUpload(e)
 

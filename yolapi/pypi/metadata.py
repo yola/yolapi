@@ -1,4 +1,4 @@
-def fields(metadata_version):
+def metadata_fields(metadata_version):
     """Return meta-data about the meta-data :)"""
 
     if metadata_version not in ('1.0', '1.1', '1.2'):
