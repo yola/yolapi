@@ -5,7 +5,7 @@ from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
                          HttpResponseForbidden)
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import (require_http_methods, require_POST,
                                           require_safe)
 
@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 
 @require_http_methods(['HEAD', 'GET', 'POST'])
 @csrf_exempt
+@ensure_csrf_cookie
 def index(request):
     if request.method == 'POST':
         return upload(request)
@@ -29,6 +30,7 @@ def index(request):
 
 @require_POST
 @csrf_exempt
+@ensure_csrf_cookie
 def upload(request):
     if not settings.DEBUG or 'REMOTE_USER' in request.META:
         allowed_uploaders = getattr(settings, 'PYPI_ALLOWED_UPLOADERS', [])
@@ -45,6 +47,7 @@ def upload(request):
 
 
 @require_safe
+@ensure_csrf_cookie
 def package(request, package):
     try:
         package = Package.objects.get(name=package)
@@ -57,6 +60,7 @@ def package(request, package):
 
 
 @require_safe
+@ensure_csrf_cookie
 def release(request, package, version):
     try:
         release = Release.objects.get(package__name=package, version=version)
