@@ -43,7 +43,8 @@ def import_requirement(requirement, recurse=True):
         dist = pypi.fetch_distribution(requirement, tmpdir=tmpdir,
                                        force_scan=True, source=True,
                                        develop_ok=False)
-        _import_source(dist.location, tmpdir)
+        if dist is not None:
+            _import_source(dist.location, tmpdir, recurse)
     except Exception, e:
         log.exception(e)
     finally:
@@ -66,7 +67,7 @@ def _meet_requirement(requirement):
     return False
 
 
-def _import_source(location, tmpdir):
+def _import_source(location, tmpdir, recurse):
     """Import a source distribution"""
     log.info("Importing %s", location)
     extracted = os.path.join(tmpdir, 'extracted')
