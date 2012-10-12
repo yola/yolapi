@@ -24,6 +24,14 @@ log = logging.getLogger(__name__)
 def ensure_requirements(requirements, recurse=True):
     """Spawn jobs to import all the specified requirements.
     """
+    # We don't care about any requirement sections
+    cleaned_reqs = []
+    for line in requirements.splitlines():
+        if line.strip().startswith('['):
+            break
+        cleaned_reqs.append(line)
+    requirements = '\n'.join(cleaned_reqs)
+
     for requirement in pkg_resources.parse_requirements(requirements):
         if not _meet_requirement(requirement):
             import_requirement.delay(str(requirement), recurse)
