@@ -131,3 +131,11 @@ def _import_source(location, tmpdir, recurse):
                                                     md5_digest=md5sum,
                                                     content=File(f))
         distribution.save()
+
+    requires = os.path.join(
+            root,
+            '%s.egg-info' % pkg_resources.safe_name(metadata['Name']),
+            'requires.txt')
+    if recurse and os.path.exists(requires):
+        with open(requires) as f:
+            ensure_requirements.delay(f.read(), recurse)
