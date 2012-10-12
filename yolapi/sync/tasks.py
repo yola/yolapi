@@ -171,6 +171,8 @@ def _bucket():
         credentials = (getattr(settings, 'AWS_ACCESS_KEY'),
                        getattr(settings, 'AWS_SECRET_KEY'))
         bucket_name = getattr(settings, 'PYPI_SYNC_BUCKET')
+        if not bucket_name:
+            raise Exception("Syncing is disabled")
 
         conn = boto.s3.connection.S3Connection(*credentials)
         try:
