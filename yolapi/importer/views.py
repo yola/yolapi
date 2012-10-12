@@ -4,6 +4,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.http import require_http_methods
 
+import yolapi.importer.tasks
+
 
 class RequiresForm(forms.Form):
     requirements = forms.CharField(widget=forms.Textarea,
@@ -17,7 +19,9 @@ def index(request):
     if request.method == 'POST':
         form = RequiresForm(request.POST)
         if form.is_valid():
-            # DO STUFF
+            yolapi.importer.tasks.ensure_requirements.delay(
+                    form.cleaned_data['requirements'],
+                    form.cleaned_data['recursive'])
             return HttpResponseRedirect('/')
     else:
         form = RequiresForm()
