@@ -4,7 +4,6 @@ import os
 from django.conf import settings
 from django.core.files.storage import DefaultStorage
 from django.db import models
-from django.dispatch import receiver
 from pkg_resources import parse_version
 
 
@@ -82,18 +81,14 @@ class Distribution(models.Model):
     def __unicode__(self):
         return self.filename
 
-
-@receiver(models.signals.pre_delete)
-def distribution_delete(sender, **kwargs):
-    if sender == Distribution:
-        distribution = kwargs['instance']
-        if distribution.path:
-            archive_replaced = getattr(settings, 'PYPI_ARCHIVE', 'archive')
-            if archive_replaced:
-                fs = DefaultStorage()
-                created = fs.created_time(distribution.content.name)
-                fs.save('%s/%s-%s' % (archive_replaced,
-                                      created.strftime('%Y%m%dT%H%M%SZ'),
-                                      distribution.filename),
-                        distribution.content)
-            distribution.content.delete()
+    def delete(self, *args, **kwargs):
+        """Archive old distributions before deleting them"""
+        archive_replaced = getattr(settings, 'PYPI_ARCHIVE', 'archive')
+        if archive_replaced:
+            fs = DefaultStorage()
+            created = fs.created_time(self.content.name)
+            fs.save('%s/%s-%s' % (archive_replaced,
+                                  created.strftime('%Y%m%dT%H%M%SZ'),
+                                  self.filename),
+                    self.content)
+        super(Distribution, self).delete(*args, **kwargs)
