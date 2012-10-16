@@ -58,11 +58,15 @@ def build_egg(package, version, pyversion):
         assert len(roots) == 1
         root = os.path.join(tmpdir, roots[0])
 
-        subprocess.check_call((
-            'python%s' % pyversion,
-            '-c', 'import sys, setuptools; sys.argv[0] = "setup.py"; '
-                  '__file__ = "setup.py"; execfile(__file__)',
-            'bdist_egg'), cwd=root)
+        try:
+            subprocess.check_call((
+                'python%s' % pyversion,
+                '-c', 'import sys, setuptools; sys.argv[0] = "setup.py"; '
+                      '__file__ = "setup.py"; execfile(__file__)',
+                'bdist_egg'), cwd=root)
+        except subprocess.CalledProcessError:
+            log.error('Unable to build %s==%s', package, version)
+            return
 
         egg = '%s-%s-py%s.egg' % (
                 pkg_resources.to_filename(pkg_resources.safe_name(package)),
