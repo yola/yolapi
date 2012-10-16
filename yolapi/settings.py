@@ -125,6 +125,7 @@ INSTALLED_APPS = (
     'yolapi.pypi',
     'yolapi.importer',
     'yolapi.sync',
+    'yolapi.eggbuilder',
 
     'crispy_forms',
     'django.contrib.staticfiles',
@@ -222,3 +223,6 @@ CELERY_DEFAULT_QUEUE = 'yolapi-%s' % cconf.domain.hostname
 CELERY_QUEUES = (
     Queue(CELERY_DEFAULT_QUEUE, Exchange('yolapi'), routing_key='yolapi.#'),
 )
+
+# Build eggs for
+PYPI_EGG_PYVERSIONS = ['2.6']
