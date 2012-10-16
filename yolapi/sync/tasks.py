@@ -1,13 +1,11 @@
 import base64
 import dateutil.parser
 import logging
-import os
 
 import boto.s3.connection
 from celery import task
 from django.conf import settings
 from django.core.files import File
-from django.core.files.storage import DefaultStorage
 
 from yolapi.pypi.models import Distribution, Package
 
@@ -124,12 +122,6 @@ def pull(filename):
             log.warn("Aborting pull on top of a newer object")
             return
         distribution.delete()
-
-    fs = DefaultStorage()
-    fn = os.path.join(getattr(settings, 'PYPI_DISTS', 'dists'), filename)
-    if fs.exists(fn):
-        log.warn(u"Removing existing file %s - this shouldn't happen", fn)
-        fs.delete(fn)
 
     distribution = release.distributions.create(filetype=filetype,
                                                 pyversion=pyversion,

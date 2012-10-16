@@ -1,10 +1,8 @@
 import hashlib
 import json
 import logging
-import os
 
 from django.conf import settings
-from django.core.files.storage import DefaultStorage
 from django.http.multipartparser import MultiPartParser
 
 from yolapi.pypi.models import Package
@@ -116,13 +114,6 @@ def process(request):
                     "present in the repository")
         distribution = distribution[0]
         distribution.delete()
-
-    fs = DefaultStorage()
-    fn = os.path.join(getattr(settings, 'PYPI_DISTS', 'dists'),
-                      files['content'].name)
-    if fs.exists(fn):
-        log.warn(u"Removing existing file %s - this shouldn't happen", fn)
-        fs.delete(fn)
 
     distribution = release.distributions.create(filetype=post['filetype'],
                                                 pyversion=post['pyversion'],

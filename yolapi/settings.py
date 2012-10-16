@@ -179,6 +179,9 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'yolapi': {
+            'level': 'INFO',
+        },
     },
     'root': {
         'level': 'WARNING',

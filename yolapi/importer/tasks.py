@@ -7,9 +7,7 @@ import shutil
 import tempfile
 
 import celery
-from django.conf import settings
 from django.core.files import File
-from django.core.files.storage import DefaultStorage
 import pkg_resources
 import setuptools.package_index
 import setuptools.archive_util
@@ -116,13 +114,6 @@ def _import_source(location, tmpdir, recurse):
     distribution = release.distributions.filter(filetype='sdist', pyversion='')
     if distribution.exists():
         raise Exception("Attempting to replace an existing sdist.")
-
-    fs = DefaultStorage()
-    fn = os.path.join(getattr(settings, 'PYPI_DISTS', 'dists'),
-                      os.path.basename(location))
-    if fs.exists(fn):
-        log.warn(u"Removing existing file %s - this shouldn't happen", fn)
-        fs.delete(fn)
 
     md5sum = hashlib.md5()
     with open(location) as f:
