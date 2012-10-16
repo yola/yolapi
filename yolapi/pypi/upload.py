@@ -9,6 +9,7 @@ from django.http.multipartparser import MultiPartParser
 
 from yolapi.pypi.models import Package
 import yolapi.pypi.metadata
+import yolapi.eggbuilder.tasks
 import yolapi.sync.tasks
 
 
@@ -131,6 +132,8 @@ def process(request):
                                                 content=files['content'])
     distribution.save()
 
+    if getattr(settings, 'PYPI_EGG_PYVERSIONS'):
+        yolapi.eggbuilder.tasks.build_missing_eggs()
     if getattr(settings, 'PYPI_SYNC_BUCKET'):
         yolapi.sync.tasks.sync.delay()
 
