@@ -4,7 +4,7 @@ import yolapi.eggbuilder.tasks
 
 
 class Command(BaseCommand):
-    help = 'Build eggs'
+    help = 'Build all missing eggs'
 
     def handle(self, *args, **options):
         yolapi.eggbuilder.tasks.build_missing_eggs.delay()
