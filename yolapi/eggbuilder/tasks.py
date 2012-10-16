@@ -1,4 +1,5 @@
 import hashlib
+import glob
 import logging
 import os
 import shutil
@@ -72,6 +73,14 @@ def build_egg(package, version, pyversion):
         if not os.path.exists(egg):
             egg = (egg.rsplit('.', 1)[0]
                    + '-%s.egg' % pkg_resources.get_build_platform())
+
+        if not os.path.exists(egg):
+            log.warn("We couldn't guess the egg name for %s==%s",
+                     package, version)
+
+            egg = glob.glob(os.path.join(root, 'dist', '*.egg'))
+            assert len(egg) == 1
+            egg = egg[0]
 
         md5sum = hashlib.md5()
         with open(egg) as f:
