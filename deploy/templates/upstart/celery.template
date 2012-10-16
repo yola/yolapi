@@ -10,7 +10,9 @@ exec su -s /bin/sh -c 'exec "$0" "$@"' www-data -- \
     celery worker --quiet \
                   --time-limit=1800 \
                   --logfile {{aconf.path.celery_log}} \
-                  --loglevel INFO
+                  --loglevel INFO \
+                  --beat \
+                  --scheduler=djcelery.schedulers.DatabaseScheduler
 
 respawn
 respawn limit 10 5

@@ -1,9 +1,10 @@
 import os
 import urllib
+from datetime import timedelta
 
+import djcelery
 from django.template.loader import add_to_builtins
 from kombu import Exchange, Queue
-import djcelery
 from yola.configurator.base import read_config
 
 
@@ -209,6 +210,9 @@ PYPI_SYNC_BUCKET = aconf.aws.archive_bucket
 AWS_ACCESS_KEY = aconf.aws.accesskey
 AWS_SECRET_KEY = aconf.aws.secretkey
 
+# Build eggs for
+PYPI_EGG_PYVERSIONS = ['2.6']
+
 djcelery.setup_loader()
 BROKER_URL = 'sqs://%s:%s@' % (
     urllib.quote(aconf.aws.accesskey, ''),
@@ -224,5 +228,9 @@ CELERY_QUEUES = (
     Queue(CELERY_DEFAULT_QUEUE, Exchange('yolapi'), routing_key='yolapi.#'),
 )
 
-# Build eggs for
-PYPI_EGG_PYVERSIONS = ['2.6']
+CELERYBEAT_SCHEDULE = {
+    'sync': {
+        'task': 'yolapi.sync.tasks.sync',
+        'schedule': timedelta(minutes=5),
+    },
+}
