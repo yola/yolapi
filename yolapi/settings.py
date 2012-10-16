@@ -231,9 +231,10 @@ CELERY_QUEUES = (
     Queue(CELERY_DEFAULT_QUEUE, Exchange('yolapi'), routing_key='yolapi.#'),
 )
 
-CELERYBEAT_SCHEDULE = {
-    'sync': {
-        'task': 'yolapi.sync.tasks.sync',
-        'schedule': timedelta(minutes=5),
-    },
-}
+if PYPI_SYNC_BUCKET:
+    CELERYBEAT_SCHEDULE = {
+        'sync': {
+            'task': 'yolapi.sync.tasks.sync',
+            'schedule': timedelta(minutes=5),
+        },
+    }
