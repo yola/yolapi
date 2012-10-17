@@ -6,6 +6,8 @@ import os
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from pkg_resources import parse_version
 
 log = logging.getLogger(__name__)
@@ -62,6 +64,10 @@ class Package(models.Model):
     def latest(self):
         return self.sorted_releases[-1]
 
+    def gc(self):
+        if not self.releases.exists():
+            self.delete()
+
     def __unicode__(self):
         return self.name
 
@@ -96,6 +102,10 @@ class Release(models.Model):
     def summary(self):
         return self.metadata_dict.get('Summary')
 
+    def gc(self):
+        if not self.distributions.exists():
+            self.delete()
+
     def __unicode__(self):
         return u'%s %s' % (self.package.name, self.version)
 
@@ -128,3 +138,13 @@ class Distribution(models.Model):
         self.content.delete()
         super(Distribution, self).delete(*args, **kwargs)
     delete.alters_data = True
+
+
+@receiver(post_delete, sender=Distribution)
+def gc_releases(sender, **kwargs):
+    kwargs['instance'].release.gc()
+
+
+@receiver(post_delete, sender=Release)
+def gc_packages(sender, **kwargs):
+    kwargs['instance'].package.gc()

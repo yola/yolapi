@@ -96,8 +96,4 @@ def delete(request, package, version, filetype, pyversion=''):
 
     distribution.delete()
 
-    release = distribution.release
-    if not release.distributions.exists():
-        release.delete()
-
     return HttpResponse('Distribution deleted.', content_type='text/plain')
