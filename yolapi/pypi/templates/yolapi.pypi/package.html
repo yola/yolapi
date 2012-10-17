@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block nav %}
+<li><a href="{% url 'yolapi.pypi.views.index' %}">Packages</a></li>
+<li><a href="#" class="active">{{ package.name }}</a></li>
+{% endblock %}
+
+{% block content %}
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Version</th>
+			<th>Uploaded</th>
+		</tr>
+	</thead>
+{% for release in package.sorted_releases %}
+	<tr>
+		<td>
+			<a href="{% url 'yolapi.pypi.views.release' package=package.name version=release.version %}">
+				{{ release.version }}
+			</a>
+		</td>
+		<td>{{ release.distribution.created }}</td>
+	</tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block extra_head %}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block nav %}
+<li><a href="{% url 'yolapi.importer.views.index' %}" class="active">Importer</a></li>
+{% endblock %}
+
+{% block content %}
+<form action="{% url 'yolapi.importer.views.index' %}" method="post" class="form-horizontal">
+	{% csrf_token %}
+	{{ form|crispy }}
+	<div class="control-group">
+		<div class="controls">
+			<input type="submit" value="Import" class="btn btn-primary">
+		</div>
+	</div>
+</form>
+{% endblock %}
