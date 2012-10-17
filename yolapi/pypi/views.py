@@ -11,7 +11,7 @@ from django.views.decorators.http import (require_http_methods, require_POST,
 
 import yolapi.pypi.upload
 import yolapi.pypi.metadata
-from yolapi.pypi.models import Package, Release
+from yolapi.pypi.models import Package, Release, Distribution
 
 log = logging.getLogger(__name__)
 
@@ -79,3 +79,25 @@ def release(request, package, version):
         'release': release,
         'metadata': metadata,
     }, context_instance=RequestContext(request))
+
+
+@require_http_methods(['DELETE'])
+def delete(request, package, version, filetype, pyversion=''):
+    if not getattr(settings, 'PYPI_ALLOW_DELETION'):
+        return HttpResponseForbidden('Deletion is not allowed')
+
+    try:
+        distribution = Distribution.objects.get(release__package__name=package,
+                                                release__version=version,
+                                                filetype=filetype,
+                                                pyversion=pyversion)
+    except Distribution.DoesNotExist:
+        raise Http404
+
+    distribution.delete()
+
+    release = distribution.release
+    if not release.distributions.exists():
+        release.delete()
+
+    return HttpResponse('Distribution deleted.', content_type='text/plain')
