@@ -77,7 +77,7 @@ $(document).ready(function() {
 		modal.find('.filetype').html(delete_.attr('data-filetype'));
 		modal.find('.pyversion').html(delete_.attr('data-pyversion'));
 
-		var button = modal.find('.btn-primary');
+		var button = modal.find('.btn-danger');
 		button.unbind('click');
 		button.click(function() {
 			queryAndAlert(delete_.attr('data-url'), 'DELETE');
