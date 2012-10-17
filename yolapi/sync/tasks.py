@@ -122,6 +122,9 @@ def pull(filename):
             log.warn("Aborting pull on top of a newer object")
             return
         distribution.delete()
+        # The deletion could have garbage collected the Package and Release
+        package, created = Package.objects.get_or_create(name=package)
+        release, created = package.releases.get_or_create(version=version)
 
     distribution = release.distributions.create(filetype=filetype,
                                                 pyversion=pyversion,
