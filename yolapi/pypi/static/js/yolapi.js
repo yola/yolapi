@@ -70,16 +70,19 @@ $(document).ready(function() {
 
 	$('a.delete').click(function() {
 		var delete_ = $(this);
+		var modal = $('#confirm-deletion');
 
-		$('#confirm-deletion .package').html(delete_.attr('data-package'));
-		$('#confirm-deletion .version').html(delete_.attr('data-version'));
-		$('#confirm-deletion .filetype').html(delete_.attr('data-filetype'));
-		$('#confirm-deletion .pyversion').html(delete_.attr('data-pyversion'));
+		modal.find('.package').html(delete_.attr('data-package'));
+		modal.find('.version').html(delete_.attr('data-version'));
+		modal.find('.filetype').html(delete_.attr('data-filetype'));
+		modal.find('.pyversion').html(delete_.attr('data-pyversion'));
 
-		$('#confirm-deletion .btn-primary').one('click', function() {
+		var button = modal.find('.btn-primary');
+		button.unbind('click');
+		button.click(function() {
 			queryAndAlert(delete_.attr('data-url'), 'DELETE');
-			$('#confirm-deletion').modal('hide');
+			modal.modal('hide');
 		});
-		$('#confirm-deletion').modal('show');
+		modal.modal('show');
 	});
 });
