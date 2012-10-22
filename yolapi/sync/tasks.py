@@ -172,7 +172,7 @@ def _bucket():
         conn = boto.s3.connection.S3Connection(*credentials)
         try:
             _cached_bucket = conn.get_bucket(bucket_name)
-        except boto.execption.S3ResponseError:
+        except boto.exception.S3ResponseError:
             _cached_bucket = conn.create_bucket(bucket_name)
     return _cached_bucket
 
