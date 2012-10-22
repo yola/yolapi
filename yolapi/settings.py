@@ -193,7 +193,7 @@ LOGGING = {
 PYPI_DISTS = 'dists'
 
 # REMOTE_USERs who we will accept uploads from
-PYPI_ALLOWED_UPLOADERS = ['yola']
+PYPI_ALLOWED_UPLOADERS = aconf.allowed_uploaders
 
 # Archive old artifacts on deletion/replacement?
 # Set False disable
@@ -217,7 +217,7 @@ AWS_ACCESS_KEY = aconf.aws.accesskey
 AWS_SECRET_KEY = aconf.aws.secretkey
 
 # Build eggs for
-PYPI_EGG_PYVERSIONS = ['2.6']
+PYPI_EGG_PYVERSIONS = aconf.build_eggs_for
 
 djcelery.setup_loader()
 BROKER_URL = 'sqs://%s:%s@' % (
