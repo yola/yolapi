@@ -44,13 +44,13 @@ def sync():
 
     for filename, key in s3_distributions.iteritems():
         if filename not in by_filename:
-            log.info(u"Queueing pull: %s [missing]", distribution.filename)
+            log.info(u"Queueing pull: %s [missing]", filename)
             pull.delay(filename)
             continue
 
         distribution = Distribution.objects.get(id=by_filename[filename])
         if allow_replacement and _compare_db_with_s3(distribution, key) < 0:
-            log.info(u"Queueing pull %s [mismatch]", distribution.filename)
+            log.info(u"Queueing pull %s [mismatch]", filename)
             pull.delay(filename)
 
 
