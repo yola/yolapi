@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block nav %}
+<li><a href="{% url 'yolapi.pypi.views.index' %}" class="active">Packages</a></li>
+{% endblock %}
+
+{% block content %}
+<table id="packages" class="table table-striped sortable">
+	<thead>
+		<tr>
+			<th>Package</th>
+			<th>Latest Version</th>
+			<th>Uploaded</th>
+			<th>Description</th>
+		</tr>
+	</thead>
+{% for package in packages %}
+	<tr>
+		<td><a href="{% url 'yolapi.pypi.views.package' package=package.name %}">
+			{{ package.name }}
+		</a></td>
+		<td><a href="{% url 'yolapi.pypi.views.release' package=package.name version=package.latest.version %}">
+			{{ package.latest.version }}
+		</a></td>
+		<td>{{ package.latest.distribution.created|date:"SHORT_DATE_FORMAT" }}</td>
+		<td>{{ package.latest.summary }}</td>
+	</tr>
+{% endfor %}
+</table>
+<script src="{{ STATIC_URL }}js/sorttable.js"></script>
+{% endblock %}

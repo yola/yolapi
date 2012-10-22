@@ -1,11 +1,17 @@
 import os
+import urllib
+from datetime import timedelta
 
+import djcelery
+from django.template.loader import add_to_builtins
+from kombu import Exchange, Queue
 from yola.configurator.base import read_config
 
 
 app_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 conf = read_config(app_dir)
 aconf = conf.yolapi
+cconf = conf.common
 
 DEBUG = aconf.debug
 TEMPLATE_DEBUG = aconf.template_debug
@@ -49,6 +55,9 @@ USE_I18N = False
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale
 USE_L10N = False
+
+# If you set this to False, Django will not use timezone-aware datetimes.
+USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -97,16 +106,13 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'raven.contrib.django.middleware.SentryResponseErrorIdMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'yolapi.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'yolapi.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or
@@ -117,17 +123,16 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'yolapi.pypi',
+    'yolapi.importer',
+    'yolapi.sync',
+    'yolapi.eggbuilder',
+
+    'crispy_forms',
     'django.contrib.staticfiles',
-    'djangopypi',
-    # Uncomment the next line to enable the admin:
-    'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    'django.contrib.admindocs',
-    'south',
+    'djcelery',
     'raven.contrib.django',
+    'south',
 )
 
 RAVEN_CONFIG = {
@@ -164,9 +169,6 @@ LOGGING = {
         'django.request': {
             'level': 'ERROR',
         },
-        'djangopypi': {
-            'level': 'INFO',
-        },
         'raven': {
             'handlers': ['logfile'],
             'level': 'DEBUG',
@@ -177,6 +179,9 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'yolapi': {
+            'level': 'INFO',
+        },
     },
     'root': {
         'level': 'WARNING',
@@ -184,11 +189,55 @@ LOGGING = {
     }
 }
 
-# App settings:
-DJANGOPYPI_ALLOW_VERSION_OVERWRITE = False
+# Location of artifacts, within MEDIA_ROOT
+PYPI_DISTS = 'dists'
 
-# The upload_to argument for the file field in releases.
-# This can either be a string for a path relative to your media folder or a
-# callable.
-DJANGOPYPI_RELEASE_UPLOAD_TO = './dists/'
-DJANGOPYPI_RELEASE_URL = '/packages/'
+# REMOTE_USERs who we will accept uploads from
+PYPI_ALLOWED_UPLOADERS = ['yola']
+
+# Archive old artifacts on deletion/replacement?
+# Set False disable
+PYPI_ARCHIVE = 'archive'
+
+# Allow overriding over existing packages
+PYPI_ALLOW_REPLACEMENT = True
+
+# Allow deleting packages
+PYPI_ALLOW_DELETION = True
+
+# An available formatting that can be used for displaying date fields on
+# templates.
+SHORT_DATE_FORMAT = 'Y-m-d'
+
+# Always load future template tags
+add_to_builtins('django.templatetags.future')
+
+PYPI_SYNC_BUCKET = aconf.aws.archive_bucket
+AWS_ACCESS_KEY = aconf.aws.accesskey
+AWS_SECRET_KEY = aconf.aws.secretkey
+
+# Build eggs for
+PYPI_EGG_PYVERSIONS = ['2.6']
+
+djcelery.setup_loader()
+BROKER_URL = 'sqs://%s:%s@' % (
+    urllib.quote(aconf.aws.accesskey, ''),
+    urllib.quote(aconf.aws.secretkey, ''),
+)
+BROKER_TRANSPORT_OPTIONS = {
+    'polling_interval': 5.0,
+    'queue_name_prefix': cconf.async_queue_prefix,
+}
+# We don't communicate with anybody else
+CELERY_DEFAULT_QUEUE = 'yolapi-%s' % cconf.domain.hostname
+CELERY_QUEUES = (
+    Queue(CELERY_DEFAULT_QUEUE, Exchange('yolapi'), routing_key='yolapi.#'),
+)
+
+if PYPI_SYNC_BUCKET:
+    CELERYBEAT_SCHEDULE = {
+        'sync': {
+            'task': 'yolapi.sync.tasks.sync',
+            'schedule': timedelta(minutes=5),
+        },
+    }
