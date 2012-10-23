@@ -92,7 +92,10 @@ class Release(models.Model):
 
     @property
     def metadata_dict(self):
-        return json.loads(self.metadata)
+        try:
+            return json.loads(self.metadata)
+        except ValueError:
+            return {}
 
     @property
     def metadata_version(self):
