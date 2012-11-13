@@ -24,7 +24,7 @@ def index(request):
         return upload(request)
     return render_to_response('yolapi.pypi/index.html', {
         'title': 'Package list',
-        'packages': Package.objects.iterator(),
+        'packages': Package.objects.order_by('name').iterator(),
     }, context_instance=RequestContext(request))
 
 
