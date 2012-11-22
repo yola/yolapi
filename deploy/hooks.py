@@ -15,8 +15,14 @@ class Hooks(DjangoApp, AuthenticatedApp, UpstartApp):
     has_static = True
 
     def deployed(self):
-        super(Hooks, self).deployed()
+        # Hack to get us configuration before UpstartJob runs, so we can
+        # pre-create the log file
+        # This is why subclassing for hooks was a silly design.
+        self.configurator_deployed()
+
         logfile = self.config.get(self.app).path.celery_log
         touch(logfile, 'www-data', 'adm', 0640)
+
+        super(Hooks, self).deployed()
 
 hooks = Hooks
