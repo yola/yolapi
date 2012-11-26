@@ -8,6 +8,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from django.utils import timezone
 from pkg_resources import parse_version
 
 log = logging.getLogger(__name__)
@@ -120,7 +121,7 @@ class Distribution(models.Model):
     md5_digest = models.CharField(max_length=32, blank=False, editable=False)
     filetype = models.CharField(max_length=32, blank=False, editable=False)
     pyversion = models.CharField(max_length=16, blank=True, editable=False)
-    created = models.DateTimeField(auto_now_add=True, editable=False)
+    created = models.DateTimeField(default=timezone.now, editable=False)
 
     class Meta(object):
         unique_together = (('release', 'filetype', 'pyversion'),)
