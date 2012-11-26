@@ -77,6 +77,7 @@ def push(id):
     key.set_metadata('package', release.package.name)
     key.set_metadata('version', release.version)
     key.set_metadata('filetype', distribution.filetype)
+    key.set_metadata('uploaded', distribution.created.isoformat())
     if distribution.pyversion:
         key.set_metadata('pyversion', distribution.pyversion)
 
@@ -108,6 +109,7 @@ def pull(filename):
     filetype = key.get_metadata('filetype')
     pyversion = key.get_metadata('pyversion') or u''
     md5_digest = key.get_metadata('md5_digest')
+    uploaded = dateutil.parser.parse(key.get_metadata('uploaded'))
 
     package, created = Package.objects.get_or_create(name=package)
     release, created = package.releases.get_or_create(version=version)
@@ -129,7 +131,8 @@ def pull(filename):
     distribution = release.distributions.create(filetype=filetype,
                                                 pyversion=pyversion,
                                                 md5_digest=md5_digest,
-                                                content=File(key))
+                                                content=File(key),
+                                                created=uploaded)
     distribution.save()
 
     key = bucket.get_key(u'releases/%s/%s' %
@@ -155,7 +158,12 @@ def _compare_db_with_s3(distribution, key):
     s3_md5 = key.etag.strip('"')
     if (s3_md5 == distribution.md5_digest):
         return 0
-    created = dateutil.parser.parse(key.last_modified)
+
+    if not key.metadata:
+        bucket = _bucket()
+        key = bucket.get_key(key.name)
+
+    created = dateutil.parser.parse(key.get_metadata('uploaded'))
     return cmp(distribution.created, created)
 
 
