@@ -10,5 +10,5 @@ if getattr(settings, 'PYPI_SYNC_BUCKET'):
     @receiver(models.signals.post_save, sender=Distribution)
     def _distribution_save(**kwargs):
         if kwargs['created'] and not kwargs['raw']:
-            if not getattr(kwargs['instance'], 'sync_imported', False):
+            if not kwargs['instance'].sync_imported:
                 yolapi.sync.tasks.push.delay(kwargs['instance'].id)

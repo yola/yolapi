@@ -126,6 +126,10 @@ class Distribution(models.Model):
     class Meta(object):
         unique_together = (('release', 'filetype', 'pyversion'),)
 
+    def __init__(self, *args, **kwargs):
+        self.sync_imported = kwargs.pop('sync_imported', False)
+        super(Distribution, self).__init__(*args, **kwargs)
+
     @property
     def path(self):
         return self.content.name
