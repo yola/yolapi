@@ -1,6 +1,7 @@
 import base64
 import dateutil.parser
 import logging
+import urllib
 
 import boto.s3.connection
 from celery import task
@@ -77,7 +78,8 @@ def push(id):
     key.set_metadata('package', release.package.name)
     key.set_metadata('version', release.version)
     key.set_metadata('filetype', distribution.filetype)
-    key.set_metadata('uploaded', distribution.created.isoformat())
+    uploaded = urllib.quote(distribution.created.isoformat())
+    key.set_metadata('uploaded', uploaded)
     if distribution.pyversion:
         key.set_metadata('pyversion', distribution.pyversion)
 
