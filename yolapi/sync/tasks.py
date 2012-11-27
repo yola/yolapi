@@ -135,6 +135,8 @@ def pull(filename):
                                                 md5_digest=md5_digest,
                                                 content=File(key),
                                                 created=uploaded)
+    # Don't push it back again
+    distribution.sync_imported = True
     distribution.save()
 
     key = bucket.get_key(u'releases/%s/%s' %
