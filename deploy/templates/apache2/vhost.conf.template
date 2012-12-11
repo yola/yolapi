@@ -1,18 +1,14 @@
-{{if 'ssl' in aconf}}
 <VirtualHost *:443>
-{{else}}
-<VirtualHost *:80>
-{{endif}}
-
     ServerName {{aconf.domain}}
     {{if 'aliases_domains' in aconf}}
     ServerAlias {{for a in aconf.alias_domains}} {{a}} {{endfor}}
     {{endif}}
 
-    {{if 'ssl' in aconf}}
     SSLEngine on
     SSLCertificateFile {{ aconf.ssl.cert }}
     SSLCertificateKeyFile {{ aconf.ssl.key }}
+    {{if 'chain' in aconf.ssl}}
+    SSLCertificateChainFile {{ aconf.ssl.chain }}
     {{endif}}
 
     <Location />
@@ -39,7 +35,6 @@
     ErrorLog /var/log/apache2/yolapi-error.log
 
 </VirtualHost>
-{{if 'ssl' in aconf}}
 <VirtualHost *:80>
     ServerName {{ aconf.domain }}
     {{if 'aliases_domains' in aconf}}
@@ -52,4 +47,3 @@
     CustomLog /var/log/apache2/yolapi-access.log combined
     ErrorLog /var/log/apache2/yolapi-error.log
 </VirtualHost>
-{{endif}}

@@ -21,6 +21,10 @@ def update(config):
                 'log': '/var/log/yolapi.log',
                 'celery_log': '/var/log/yolapi-worker.log',
             },
+            'ssl': {
+                'cert': MissingValue('yolapi.ssl.cert'),
+                'key': MissingValue('yolapi.ssl.key'),
+            },
             'domain': 'yolapi.%s' % config.common.domain.services,
             'db':  {
                 'name': os.path.join(data_path, 'yolapi.sqlite'),
