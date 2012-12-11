@@ -2,12 +2,12 @@ from yola.configurator.dicts import merge_dicts
 
 
 def update(config):
-    hostname = config.common.domain.hostname
+    fqdn = config.common.domain.fqdn
     new = {
         'yolapi': {
             'ssl': {
-                'cert': '/etc/ssl/certs/%s.pem' % hostname,
-                'key': '/etc/ssl/private/%s.key' % hostname,
+                'cert': '/etc/ssl/certs/%s.pem' % fqdn,
+                'key': '/etc/ssl/private/%s.key' % fqdn,
             },
         },
     }
