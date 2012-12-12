@@ -1,3 +1,4 @@
+import pkg_resources
 from django import forms
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -12,6 +13,19 @@ class RequiresForm(forms.Form):
             help_text='Paste your requirements.txt')
     recursive = forms.BooleanField(required=False, initial=True,
             help_text="Recurse through requirements' requirements, etc.")
+
+    def clean_requirements(self):
+        requirements = self.cleaned_data['requirements']
+        for line in requirements.splitlines():
+            if line.strip().startswith('['):
+                raise forms.ValidationError("Sections aren't supported")
+
+        try:
+            list(pkg_resources.parse_requirements(requirements))
+        except ValueError, e:
+            raise forms.ValidationError(u' '.join(e))
+
+        return requirements
 
 
 @require_http_methods(['HEAD', 'GET', 'POST'])
