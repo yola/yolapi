@@ -93,6 +93,10 @@ def process(request):
     if '/' in files['content'].name:
         raise InvalidUpload("Invalid filename")
 
+    if post['filetype'] not in getattr(settings, 'PYPI_ALLOWED_UPLOAD_TYPES',
+                                       ('sdist',)):
+        raise InvalidUpload("File type disallowed by policy")
+
     metadata = parse_metadata(post)
 
     if md5sum(files['content']) != post['md5_digest']:

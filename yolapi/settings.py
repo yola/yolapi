@@ -205,6 +205,8 @@ PYPI_ALLOW_REPLACEMENT = True
 # Allow deleting packages
 PYPI_ALLOW_DELETION = True
 
+PYPI_ALLOWED_UPLOAD_TYPES = ('sdist',)
+
 # An available formatting that can be used for displaying date fields on
 # templates.
 SHORT_DATE_FORMAT = 'Y-m-d'
