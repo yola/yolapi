@@ -10,8 +10,8 @@ def update(config):
             'allowed_uploaders': ['yola'],
             'build_eggs_for': ['2.6'],
             'aws': {
-                'accesskey': MissingValue('yolapi.aws.accesskey'),
-                'secretkey': MissingValue('yolapi.aws.secretkey'),
+                'access_key': MissingValue('yolapi.aws.access_key'),
+                'secret_key': MissingValue('yolapi.aws.secret_key'),
                 'archive_bucket': 'yolapi.%s' % config.common.domain.services,
             },
             'debug': False,

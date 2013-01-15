@@ -215,16 +215,16 @@ SHORT_DATE_FORMAT = 'Y-m-d'
 add_to_builtins('django.templatetags.future')
 
 PYPI_SYNC_BUCKET = aconf.aws.archive_bucket
-AWS_ACCESS_KEY = aconf.aws.accesskey
-AWS_SECRET_KEY = aconf.aws.secretkey
+AWS_ACCESS_KEY = aconf.aws.access_key
+AWS_SECRET_KEY = aconf.aws.secret_key
 
 # Build eggs for
 PYPI_EGG_PYVERSIONS = aconf.build_eggs_for
 
 djcelery.setup_loader()
 BROKER_URL = 'sqs://%s:%s@' % (
-    urllib.quote(aconf.aws.accesskey, ''),
-    urllib.quote(aconf.aws.secretkey, ''),
+    urllib.quote(aconf.aws.access_key, ''),
+    urllib.quote(aconf.aws.secret_key, ''),
 )
 BROKER_TRANSPORT_OPTIONS = {
     'polling_interval': 5.0,
