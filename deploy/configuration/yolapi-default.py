@@ -10,8 +10,8 @@ def update(config):
             'allowed_uploaders': ['yola'],
             'build_eggs_for': ['2.6'],
             'aws': {
-                'access_key': MissingValue('yolapi.aws.access_key'),
-                'secret_key': MissingValue('yolapi.aws.secret_key'),
+                'access_key': MissingValue(),
+                'secret_key': MissingValue(),
                 'archive_bucket': 'yolapi.%s' % config.common.domain.services,
             },
             'debug': False,
@@ -22,8 +22,8 @@ def update(config):
                 'celery_log': '/var/log/yolapi-worker.log',
             },
             'ssl': {
-                'cert': MissingValue('yolapi.ssl.cert'),
-                'key': MissingValue('yolapi.ssl.key'),
+                'cert': MissingValue(),
+                'key': MissingValue(),
             },
             'domain': 'yolapi.%s' % config.common.domain.services,
             'db':  {
