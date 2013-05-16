@@ -1,4 +1,4 @@
-from yola.configurator.dicts import merge_dicts
+from yoconfigurator.dicts import merge_dicts
 
 
 def update(config):

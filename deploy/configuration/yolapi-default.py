@@ -1,6 +1,6 @@
 import os
 
-from yola.configurator.dicts import MissingValue, merge_dicts
+from yoconfigurator.dicts import MissingValue, merge_dicts
 
 
 def update(config):
