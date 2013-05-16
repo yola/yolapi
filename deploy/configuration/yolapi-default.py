@@ -1,6 +1,6 @@
 import os
 
-from yola.configurator.dicts import MissingValue, merge_dicts
+from yoconfigurator.dicts import MissingValue, merge_dicts
 
 
 def update(config):
@@ -10,8 +10,8 @@ def update(config):
             'allowed_uploaders': ['yola'],
             'build_eggs_for': ['2.6'],
             'aws': {
-                'access_key': MissingValue('yolapi.aws.access_key'),
-                'secret_key': MissingValue('yolapi.aws.secret_key'),
+                'access_key': MissingValue(),
+                'secret_key': MissingValue(),
                 'archive_bucket': 'yolapi.%s' % config.common.domain.services,
             },
             'debug': False,
@@ -21,10 +21,7 @@ def update(config):
                 'log': '/var/log/yolapi.log',
                 'celery_log': '/var/log/yolapi-worker.log',
             },
-            'ssl': {
-                'cert': MissingValue('yolapi.ssl.cert'),
-                'key': MissingValue('yolapi.ssl.key'),
-            },
+            'ssl': config.common.wild_ssl_certs.services,
             'domain': 'yolapi.%s' % config.common.domain.services,
             'db':  {
                 'name': os.path.join(data_path, 'yolapi.sqlite'),

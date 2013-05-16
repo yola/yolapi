@@ -5,7 +5,7 @@ from datetime import timedelta
 import djcelery
 from django.template.loader import add_to_builtins
 from kombu import Exchange, Queue
-from yola.configurator.base import read_config
+from yoconfigurator.base import read_config
 
 
 app_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))

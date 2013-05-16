@@ -5,4 +5,4 @@ django-celery==3.0.10
 django-crispy-forms==1.1.4
 python-dateutil==2.1
 raven==2.0.3
-yola.configurator==0.1
+yoconfigurator==0.3.0
