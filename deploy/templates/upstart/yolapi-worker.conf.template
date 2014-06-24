@@ -12,6 +12,7 @@ exec su -s /bin/sh -c 'exec "$0" "$@"' www-data -- \
                   --logfile {{aconf.path.celery_log}} \
                   --loglevel INFO \
                   --beat \
+                  --concurrency 1 \
                   --scheduler=djcelery.schedulers.DatabaseScheduler
 
 respawn
