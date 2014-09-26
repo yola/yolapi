@@ -1,4 +1,4 @@
-Django==1.4.1
+Django==1.4.15
 South==0.7.6
 boto==2.8.0.yola1
 django-celery==3.0.10
