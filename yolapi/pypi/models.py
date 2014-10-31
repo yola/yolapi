@@ -145,10 +145,11 @@ class Distribution(models.Model):
     md5_digest = models.CharField(max_length=32, blank=False, editable=False)
     filetype = models.CharField(max_length=32, blank=False, editable=False)
     pyversion = models.CharField(max_length=16, blank=True, editable=False)
+    tag = models.CharField(max_length=64, blank=True, editable=False)
     created = models.DateTimeField(default=timezone.now, editable=False)
 
     class Meta(object):
-        unique_together = (('release', 'filetype', 'pyversion'),)
+        unique_together = (('release', 'filetype', 'pyversion', 'tag'),)
 
     def __init__(self, *args, **kwargs):
         self.sync_imported = kwargs.pop('sync_imported', False)

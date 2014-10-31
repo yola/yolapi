@@ -8,4 +8,6 @@ urlpatterns = patterns('pypi.views',
         r'/(?P<filetype>[\w_]+)/$', 'delete'),
     url(r'^(?P<package>[\w\d_\.\-]+)/(?P<version>[\w\d_\.\-+]+)'
         r'/(?P<filetype>[\w_]+)/(?P<pyversion>[\d.]+|any)/$', 'delete'),
+    url(r'^(?P<package>[\w\d_\.\-]+)/(?P<version>[\w\d_\.\-]+)'
+        r'/(?P<filetype>[\w_]+)/(?P<tag>[\d.]+|any)/$', 'delete'),
 )

@@ -76,6 +76,7 @@ $(document).ready(function() {
 		modal.find('.version').html(delete_.attr('data-version'));
 		modal.find('.filetype').html(delete_.attr('data-filetype'));
 		modal.find('.pyversion').html(delete_.attr('data-pyversion'));
+		modal.find('.tag').html(delete_.attr('data-tag'));
 
 		var button = modal.find('.btn-danger');
 		button.unbind('click');

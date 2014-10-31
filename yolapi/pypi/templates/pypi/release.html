@@ -17,7 +17,9 @@
                     {{ distribution.filename }}
                 </a>
                 <a class="delete"
-                {% if distribution.pyversion %}
+                {% if distribution.tag %}
+                   data-url="{% url 'pypi.views.delete' package=release.package.name version=release.version filetype=distribution.filetype tag=distribution.tag %}"
+                {% elif distribution.pyversion %}
                    data-url="{% url 'pypi.views.delete' package=release.package.name version=release.version filetype=distribution.filetype pyversion=distribution.pyversion %}"
                 {% else %}
                    data-url="{% url 'pypi.views.delete' package=release.package.name version=release.version filetype=distribution.filetype %}"
@@ -26,6 +28,7 @@
                    data-version="{{ release.version }}"
                    data-filetype="{{ distribution.filetype }}"
                    data-pyversion="{{ distribution.pyversion }}"
+                   data-tag="{{ distribution.tag }}"
                    href="#">
                    <i class="icon-remove"></i>
                 </a>
@@ -66,6 +69,8 @@
                 <dd class="filetype"></dd>
                 <dt>Python Version:</dt>
                 <dd class="pyversion"></dd>
+                <dt>Tag:</dt>
+                <dd class="tag"></dd>
             </dl>
         </div>
         <div class="modal-footer">

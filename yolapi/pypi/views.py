@@ -92,15 +92,19 @@ def release(request, package, version):
 
 
 @require_http_methods(['DELETE'])
-def delete(request, package, version, filetype, pyversion=''):
+def delete(request, package, version, filetype, pyversion=None, tag=None):
     if not getattr(settings, 'PYPI_ALLOW_DELETION'):
         return HttpResponseForbidden('Deletion is not allowed')
 
+    terms = {}
+    if tag:
+        terms['tag'] = tag
+    elif pyversion:
+        terms['pyversion'] = pyversion
     try:
         distribution = Distribution.objects.get(release__package__name=package,
                                                 release__version=version,
-                                                filetype=filetype,
-                                                pyversion=pyversion)
+                                                filetype=filetype, **terms)
     except Distribution.DoesNotExist:
         raise Http404
 
