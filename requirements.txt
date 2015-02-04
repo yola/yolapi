@@ -3,6 +3,7 @@ South==0.7.6
 boto==2.8.0.yola1
 django-celery==3.0.10
 django-crispy-forms==1.1.4
+kombu==2.5.12
 python-dateutil==2.1
 raven==2.0.3
 yoconfigurator==0.3.0
