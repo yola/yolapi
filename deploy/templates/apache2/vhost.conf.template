@@ -11,6 +11,8 @@
     SSLCertificateChainFile {{ aconf.ssl.chain }}
     {{endif}}
 
+    Header always set Strict-Transport-Security "max-age=63072000; preload"
+
     <Location />
          AuthType Basic
          AuthName "YolaPI"
