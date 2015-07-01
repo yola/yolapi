@@ -23,7 +23,7 @@ def update(config):
             },
             'ssl': config.common.wild_ssl_certs.services,
             'domain': 'yolapi.%s' % config.common.domain.services,
-            'db':  {
+            'db': {
                 'name': os.path.join(data_path, 'yolapi.sqlite'),
                 'engine': 'django.db.backends.sqlite3',
                 'user': '',
