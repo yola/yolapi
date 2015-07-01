@@ -7,8 +7,8 @@ def update(config):
     data_path = os.path.join(config.deploy.root, 'yolapi', 'data')
     new = {
         'yolapi': {
-            'allowed_uploaders': ['yola'],
-            'build_eggs_for': ['2.6'],
+            'allowed_uploaders': [],
+            'build_eggs_for': [],
             'aws': {
                 'access_key': MissingValue(),
                 'secret_key': MissingValue(),
