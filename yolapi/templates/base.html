@@ -1,30 +1,32 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>
-			{% block title %}{{ title }}{% endblock %}
-		</title>
-		<link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
-	{% block extra_head %}{% endblock %}
-	</head>
-<body>
-	<div class="navbar navbar-static-top">
-		<div class="navbar-inner">
-			<a class="brand" href="/">YolaPI</a>
-			<ul class="nav">
-				{% block nav %}
-				{% endblock %}
-			</ul>
-			<ul class="nav pull-right">
-				<li><a class="post" data-url="{% url 'yolapi.sync.views.sync' %}" data-started="Requesting Sync..." href="#">Sync</a></li>
-				<li><a href="{% url 'yolapi.importer.views.index' %}">Import</a></li>
-			</ul>
-		</div>
-	</div>
-{% block content %}
-{% endblock %}
-	<script src="{{ STATIC_URL }}js/jquery.min.js"></script>
-	<script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-	<script src="{{ STATIC_URL }}js/yolapi.js"></script>
-</body>
+    <head>
+        <title>
+            {% block title %}{{ title }}{% endblock %}
+        </title>
+        <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/syntax-highlights.css" rel="stylesheet">
+        {% block extra_head %}{% endblock %}
+    </head>
+    <body>
+        <div class="navbar navbar-static-top">
+            <div class="navbar-inner">
+                <a class="brand" href="/">YolaPI</a>
+                <ul class="nav">
+                    {% block nav %}
+                    {% endblock %}
+                </ul>
+                <ul class="nav pull-right">
+                    <li><a class="post" data-url="{% url 'yolapi.sync.views.sync' %}"
+                           data-started="Requesting Sync..." href="#">Sync</a></li>
+                    <li><a href="{% url 'yolapi.importer.views.index' %}">Import</a></li>
+                </ul>
+            </div>
+        </div>
+        {% block content %}
+        {% endblock %}
+        <script src="{{ STATIC_URL }}js/jquery.min.js"></script>
+        <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+        <script src="{{ STATIC_URL }}js/yolapi.js"></script>
+    </body>
 </html>
