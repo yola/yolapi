@@ -79,7 +79,9 @@ def release(request, package, version):
         if key == 'Description':
             if re.match(r'^.+\n+( {8}.*\n*)+', values):
                 values = re.sub(r'^ {8}', '', values, flags=re.MULTILINE)
-            values = publish_parts(values, writer_name='html')['html_body']
+            values = publish_parts(
+                values, writer_name='html',
+                settings_overrides={'syntax_highlight': 'short'})['html_body']
             metadata[i] = (key, mark_safe(values))
 
     return render_to_response('yolapi.pypi/release.html', {
