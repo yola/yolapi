@@ -77,7 +77,7 @@ def release(request, package, version):
         if isinstance(values, list):
             metadata[i] = (key, '\n'.join(values))
         if key == 'Description':
-            if re.match(r'^.+\n+( {8}.*\n*)+', values):
+            if re.match(r'^.+\n( {8}.*\n*)+$', values):
                 values = re.sub(r'^ {8}', '', values, flags=re.MULTILINE)
             values = publish_parts(
                 values, writer_name='html',
