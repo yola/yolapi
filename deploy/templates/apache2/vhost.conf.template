@@ -39,7 +39,7 @@
 </VirtualHost>
 <VirtualHost *:80>
     ServerName {{ aconf.domain }}
-    {{if 'aliases_domains' in aconf}}
+    {{if 'alias_domains' in aconf}}
     ServerAlias {{for a in aconf.alias_domains}} {{a}} {{endfor}}
     {{endif}}
 
