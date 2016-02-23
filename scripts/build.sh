@@ -10,5 +10,4 @@ mkdir build
 
 # copy source to dist
 cp requirements.txt build
-cp docutils.conf build
 cp -R yolapi build

@@ -1,4 +1,5 @@
 import logging
+import re
 
 from django.conf import settings
 from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
@@ -8,6 +9,8 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import (require_http_methods, require_POST,
                                           require_safe)
+from django.utils.safestring import mark_safe
+from docutils.core import publish_parts
 
 import yolapi.pypi.upload
 import yolapi.pypi.metadata
@@ -73,6 +76,13 @@ def release(request, package, version):
     for i, (key, values) in enumerate(metadata):
         if isinstance(values, list):
             metadata[i] = (key, '\n'.join(values))
+        if key == 'Description':
+            if re.match(r'^.+(\n {8}.*)+\n?$', values):
+                values = re.sub(r'^ {8}', '', values, flags=re.MULTILINE)
+            values = publish_parts(
+                values, writer_name='html',
+                settings_overrides={'syntax_highlight': 'short'})['html_body']
+            metadata[i] = (key, mark_safe(values))
 
     return render_to_response('yolapi.pypi/release.html', {
         'title': unicode(release),

@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load markup_tags %}
 
 {% block nav %}
 <li><a href="{% url 'yolapi.pypi.views.index' %}">Packages</a></li>
@@ -42,7 +41,7 @@
                 <th>{{ k }}</th>
                 <td>
                     {% if k == 'Description' %}
-                        {{ v|apply_markup:'restructuredtext' }}
+                        {{ v }}
                     {% else %}
                         {{ v|urlize|linebreaks }}
                     {% endif %}
