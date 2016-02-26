@@ -130,7 +130,6 @@ INSTALLED_APPS = (
 
     'crispy_forms',
     'django.contrib.staticfiles',
-    'django_markup',
     'djcelery',
     'raven.contrib.django',
     'south',
