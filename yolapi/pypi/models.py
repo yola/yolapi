@@ -56,6 +56,11 @@ class Package(models.Model):
     name = models.CharField(max_length=255, unique=True, primary_key=True,
                             editable=False)
 
+    @classmethod
+    def get(self, name):
+        """Return matching package using a case-inensitive match on name."""
+        return self.objects.get(name__iexact=name)
+
     @property
     def sorted_releases(self):
         return sorted(self.releases.iterator(),
