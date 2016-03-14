@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'djcelery',
     'raven.contrib.django',
     'south',
+    'django_nose',
 )
 
 RAVEN_CONFIG = {
@@ -243,3 +244,6 @@ if PYPI_SYNC_BUCKET:
             'schedule': timedelta(minutes=5),
         },
     }
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = ['--where=%s' % app_dir]
