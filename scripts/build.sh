@@ -4,10 +4,12 @@ set -efxu
 
 cd "$(dirname "$0")/.."
 
-# remove dist directory if exists
-[ -d ./build ] && rm -Rf build
-mkdir build
+dirname=${1:-build}
 
-# copy source to dist
-cp requirements.txt build
-cp -R yolapi build
+# remove build directory if exists
+[ -d "$dirname" ] && rm -Rf "$dirname"
+mkdir "$dirname"
+
+# copy source to build
+cp requirements.txt "$dirname"/
+cp -R yolapi "$dirname"/
