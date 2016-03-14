@@ -183,6 +183,9 @@ LOGGING = {
         'yolapi': {
             'level': 'INFO',
         },
+        'south': {
+            'level': 'INFO',
+        },
     },
     'root': {
         'level': 'WARNING',
