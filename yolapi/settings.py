@@ -249,4 +249,4 @@ if PYPI_SYNC_BUCKET:
     }
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-NOSE_ARGS = ['--where=%s' % app_dir]
+NOSE_ARGS = ['--with-specplugin', '--where=%s' % app_dir]
