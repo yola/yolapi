@@ -2,6 +2,12 @@ from django.test import TestCase
 
 from yolapi.pypi.models import Package
 
+class TestPackage(TestCase):
+    def test_sets_normalized_name_on_save(self):
+        package = Package(name='AN_aWesome-pack_agE')
+        package.save()
+        self.assertEqual(package.normalized_name, 'an-awesome-pack-age')
+
 
 class TestPackageGet(TestCase):
     """Package.get"""
@@ -15,7 +21,7 @@ class TestPackageGet(TestCase):
         with self.assertRaises(Package.DoesNotExist):
             Package.get('does not exist')
 
-    def test_normalizes_package_name(self):
-        expected_package = Package.objects.create(name='MyPackage')
-        found_package = Package.get('mypackage')
+    def test_finds_package_using_normalized_name(self):
+        expected_package = Package.objects.create(name='My_Package-foo')
+        found_package = Package.get('my-package-foo')
         self.assertEqual(found_package, expected_package)

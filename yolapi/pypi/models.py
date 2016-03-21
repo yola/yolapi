@@ -55,11 +55,18 @@ class PyPIStorage(FileSystemStorage):
 class Package(models.Model):
     name = models.CharField(max_length=255, unique=True, primary_key=True,
                             editable=False)
+    normalized_name = models.CharField(max_length=255, unique=True,
+                                       editable=False)
 
     @classmethod
-    def get(self, name):
-        """Return matching package using a case-inensitive match on name."""
-        return self.objects.get(name__iexact=name)
+    def get(cls, name):
+        """Return package, accounting for pypi normalized package names."""
+        return cls.objects.get(normalized_name=cls.normalize_name(name))
+
+    @classmethod
+    def normalize_name(self, name):
+        """Return name as a pypi normalized package name."""
+        return name.lower().replace('_', '-')
 
     @property
     def sorted_releases(self):
@@ -73,6 +80,11 @@ class Package(models.Model):
     def gc(self):
         if not self.releases.exists():
             self.delete()
+
+    def save(self, *args, **kwargs):
+        if not self.normalized_name:
+            self.normalized_name = Package.normalize_name(self.name)
+        super(Package, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.name
