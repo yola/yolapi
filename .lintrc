@@ -1,2 +1,5 @@
 [tools]
 linters = flake8
+
+[files]
+ignore = */migrations/*

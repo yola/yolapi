@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'djcelery',
     'raven.contrib.django',
     'south',
+    'django_nose',
 )
 
 RAVEN_CONFIG = {
@@ -180,6 +181,9 @@ LOGGING = {
             'propagate': False,
         },
         'yolapi': {
+            'level': 'INFO',
+        },
+        'south': {
             'level': 'INFO',
         },
     },
@@ -243,3 +247,6 @@ if PYPI_SYNC_BUCKET:
             'schedule': timedelta(minutes=5),
         },
     }
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = ['--with-specplugin', '--where=%s' % app_dir]
