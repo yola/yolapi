@@ -17,6 +17,7 @@ def update(config):
             'db': {
                 'name': os.path.join(data_path, 'yolapi.sqlite'),
             },
+            'sentry_dsn': ''
         },
     }
     return merge_dicts(config, new)
