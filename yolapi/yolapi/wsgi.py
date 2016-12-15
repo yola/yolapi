@@ -1,28 +1,26 @@
-"""
-WSGI config for envhub project.
-
-This module contains the WSGI application used by Django's development server
-and any production WSGI deployments. It should expose a module-level variable
-named ``application``. Django's ``runserver`` and ``runfcgi`` commands discover
-this application via the ``WSGI_APPLICATION`` setting.
-
-Usually you will have the standard Django WSGI application here, but it also
-might make sense to replace the whole Django WSGI application with a custom one
-that later delegates to the Django one. For example, you could introduce WSGI
-middleware here, or combine a Django application with an application of another
-framework.
-
-"""
 import os
+import sys
 
+
+# mod_wsgi's base python installation is contaminated with package
+# installations. The following code removes the impacted paths of the
+# contaminated python installation so that yolapi (and its virtualenv)
+# can run in isolation. This code will be unnecessary once Apache can be
+# globally configured to point at an empty virtualenv with WSGIPythonHome.
+def bad_path(path):
+    version = "%d.%d" % sys.version_info[0:2]
+    return (path.startswith('/usr/lib/python%s/dist-packages' % version) or
+            path.startswith('/usr/lib/pymodules/python%s' % version))
+
+
+sys.path = [path for path in sys.path if not bad_path(path)]
+
+# The following line must come before django related imports or django will be
+# unable to locate a settings module.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "yolapi.settings")
 
-# This application object is used by any WSGI server configured to use this
-# file. This includes Django's development server, if the WSGI_APPLICATION
-# setting points here.
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
 
-# Apply WSGI middleware here.
-# from helloworld.wsgi import HelloWorldApplication
-# application = HelloWorldApplication(application)
+from django.core.wsgi import get_wsgi_application  # NOQA
+from raven.contrib.django.middleware.wsgi import Sentry  # NOQA
+
+application = Sentry(get_wsgi_application())

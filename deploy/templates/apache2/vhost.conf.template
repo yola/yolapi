@@ -28,7 +28,7 @@
          Require valid-user
     </Location>
 
-    WSGIScriptAlias / {{conf.deploy.root}}/yolapi/live/yolapi.wsgi
+    WSGIScriptAlias / {{conf.deploy.root}}/yolapi/live/yolapi/yolapi/wsgi.py
 
     Alias /static {{conf.deploy.root}}/yolapi/live/static
     Alias /media {{conf.deploy.root}}/yolapi/data/media
