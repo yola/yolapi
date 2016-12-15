@@ -8,8 +8,10 @@ from kombu import Exchange, Queue
 from yoconfigurator.base import read_config
 
 
-app_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-conf = read_config(app_dir)
+app_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..',))
+project_dir = os.path.realpath(os.path.join(app_dir, '..'))
+
+conf = read_config(project_dir)
 aconf = conf.yolapi
 cconf = conf.common
 
@@ -72,7 +74,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(app_dir, 'static')
+STATIC_ROOT = os.path.join(project_dir, 'static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -119,15 +121,14 @@ TEMPLATE_DIRS = (
     # "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(app_dir, 'yolapi', 'templates'),
+    os.path.join(app_dir, 'templates'),
 )
 
 INSTALLED_APPS = (
-    'yolapi.pypi',
-    'yolapi.importer',
-    'yolapi.sync',
-    'yolapi.eggbuilder',
-
+    'pypi',
+    'importer',
+    'sync',
+    'eggbuilder',
     'crispy_forms',
     'django.contrib.staticfiles',
     'djcelery',

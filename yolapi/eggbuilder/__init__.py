@@ -2,8 +2,8 @@ from django.conf import settings
 from django.db import models
 from django.dispatch import receiver
 
-from yolapi.pypi.models import Distribution
-import yolapi.eggbuilder.tasks
+from pypi.models import Distribution
+import eggbuilder.tasks
 
 
 if getattr(settings, 'PYPI_EGG_PYVERSIONS'):
@@ -13,7 +13,7 @@ if getattr(settings, 'PYPI_EGG_PYVERSIONS'):
             distribution = kwargs['instance']
             if distribution.filetype == 'sdist':
                 for pyversion in getattr(settings, 'PYPI_EGG_PYVERSIONS'):
-                    yolapi.eggbuilder.tasks.build_egg.delay(
+                    eggbuilder.tasks.build_egg.delay(
                             distribution.release.package.name,
                             distribution.release.version,
                             pyversion)

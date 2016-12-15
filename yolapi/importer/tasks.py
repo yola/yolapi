@@ -12,8 +12,8 @@ import pkg_resources
 import setuptools.package_index
 import setuptools.archive_util
 
-from yolapi.pypi.models import Package
-from yolapi.pypi.metadata import metadata_fields
+from pypi.models import Package
+from pypi.metadata import metadata_fields
 
 log = logging.getLogger(__name__)
 

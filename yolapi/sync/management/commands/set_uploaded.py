@@ -2,8 +2,8 @@ import urllib
 
 from django.core.management.base import BaseCommand
 
-from yolapi.pypi.models import Distribution
-from yolapi.sync.tasks import _bucket
+from pypi.models import Distribution
+from sync.tasks import _bucket
 
 
 class Command(BaseCommand):

@@ -3,8 +3,8 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
-from yolapi.pypi.models import Package
-import yolapi.eggbuilder.tasks
+from pypi.models import Package
+import eggbuilder.tasks
 
 
 class Command(BaseCommand):
@@ -32,4 +32,4 @@ class Command(BaseCommand):
 
         pyversion = options['pyversion']
 
-        yolapi.eggbuilder.tasks.build_egg(package, version, pyversion)
+        eggbuilder.tasks.build_egg(package, version, pyversion)

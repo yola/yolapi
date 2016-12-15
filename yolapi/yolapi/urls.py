@@ -7,12 +7,12 @@ from django.views.generic.simple import direct_to_template
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', 'yolapi.pypi.views.index', name='index'),
-    url(r'^pypi/', include('yolapi.pypi.urls')),
-    url(r'^simple/', include('yolapi.pypi.simple.urls')),
+    url(r'^$', 'pypi.views.index', name='index'),
+    url(r'^pypi/', include('pypi.urls')),
+    url(r'^simple/', include('pypi.simple.urls')),
 
-    url(r'^importer/', include('yolapi.importer.urls')),
-    url(r'^sync/$', 'yolapi.sync.views.sync'),
+    url(r'^importer/', include('importer.urls')),
+    url(r'^sync/$', 'sync.views.sync'),
 
     url(r'^robots.txt$', direct_to_template,
         {'template': 'robots.txt', 'mimetype': 'text/plain'}),

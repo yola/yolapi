@@ -1,8 +1,8 @@
 from django.http import Http404
 from django.test import RequestFactory, TestCase
 
-from yolapi.pypi.models import Package
-from yolapi.pypi.simple.views import package
+from pypi.models import Package
+from pypi.simple.views import package
 
 
 class TestPackageView(TestCase):

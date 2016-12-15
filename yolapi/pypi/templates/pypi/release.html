@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block nav %}
-<li><a href="{% url 'yolapi.pypi.views.index' %}">Packages</a></li>
-<li><a href="{% url 'yolapi.pypi.views.package' package=release.package %}">{{ release.package.name }}</a></li>
+<li><a href="{% url 'pypi.views.index' %}">Packages</a></li>
+<li><a href="{% url 'pypi.views.package' package=release.package %}">{{ release.package.name }}</a></li>
 <li><a href="#" class="active">{{ release.version }}</a></li>
 {% endblock %}
 
@@ -18,9 +18,9 @@
                 </a>
                 <a class="delete"
                 {% if distribution.pyversion %}
-                   data-url="{% url 'yolapi.pypi.views.delete' package=release.package.name version=release.version filetype=distribution.filetype pyversion=distribution.pyversion %}"
+                   data-url="{% url 'pypi.views.delete' package=release.package.name version=release.version filetype=distribution.filetype pyversion=distribution.pyversion %}"
                 {% else %}
-                   data-url="{% url 'yolapi.pypi.views.delete' package=release.package.name version=release.version filetype=distribution.filetype %}"
+                   data-url="{% url 'pypi.views.delete' package=release.package.name version=release.version filetype=distribution.filetype %}"
                 {% endif %}
                    data-package="{{ release.package.name }}"
                    data-version="{{ release.version }}"

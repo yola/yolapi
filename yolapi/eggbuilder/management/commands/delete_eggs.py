@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from yolapi.pypi.models import Distribution
+from pypi.models import Distribution
 
 
 class Command(BaseCommand):

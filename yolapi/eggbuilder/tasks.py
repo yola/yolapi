@@ -12,7 +12,7 @@ import setuptools.archive_util
 from django.conf import settings
 from django.core.files import File
 
-from yolapi.pypi.models import Distribution
+from pypi.models import Distribution
 
 log = logging.getLogger(__name__)
 

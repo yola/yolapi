@@ -12,9 +12,9 @@ from django.views.decorators.http import (require_http_methods, require_POST,
 from django.utils.safestring import mark_safe
 from docutils.core import publish_parts
 
-import yolapi.pypi.upload
-import yolapi.pypi.metadata
-from yolapi.pypi.models import Package, Release, Distribution
+import pypi.upload
+import pypi.metadata
+from pypi.models import Package, Release, Distribution
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 def index(request):
     if request.method == 'POST':
         return upload(request)
-    return render_to_response('yolapi.pypi/index.html', {
+    return render_to_response('pypi/index.html', {
         'title': 'Package list',
         'packages': Package.objects.order_by('name').iterator(),
     }, context_instance=RequestContext(request))
@@ -41,10 +41,10 @@ def upload(request):
             return HttpResponseForbidden('You are not an authorized uploader',
                                          content_type='text/plain')
     try:
-        yolapi.pypi.upload.process(request)
-    except yolapi.pypi.upload.InvalidUpload, e:
+        pypi.upload.process(request)
+    except pypi.upload.InvalidUpload, e:
         return HttpResponseBadRequest(unicode(e), content_type='text/plain')
-    except yolapi.pypi.upload.ReplacementDenied, e:
+    except pypi.upload.ReplacementDenied, e:
         return HttpResponseForbidden(unicode(e), content_type='text/plain')
     return HttpResponse('Accepted, thank you', content_type='text/plain')
 
@@ -56,7 +56,7 @@ def package(request, package):
         package = Package.objects.get(name=package)
     except Package.DoesNotExist:
         raise Http404
-    return render_to_response('yolapi.pypi/package.html', {
+    return render_to_response('pypi/package.html', {
         'title': unicode(package),
         'package': package,
     }, context_instance=RequestContext(request))
@@ -70,7 +70,7 @@ def release(request, package, version):
     except Release.DoesNotExist:
         raise Http404
 
-    metadata = yolapi.pypi.metadata.display_sort(release.metadata_dict)
+    metadata = pypi.metadata.display_sort(release.metadata_dict)
 
     # Flatten lists
     for i, (key, values) in enumerate(metadata):
@@ -84,7 +84,7 @@ def release(request, package, version):
                 settings_overrides={'syntax_highlight': 'short'})['html_body']
             metadata[i] = (key, mark_safe(values))
 
-    return render_to_response('yolapi.pypi/release.html', {
+    return render_to_response('pypi/release.html', {
         'title': unicode(release),
         'release': release,
         'metadata': metadata,
