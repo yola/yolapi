@@ -6,15 +6,15 @@ from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
                          HttpResponseForbidden)
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import (require_http_methods, require_POST,
                                           require_safe)
-from django.utils.safestring import mark_safe
 from docutils.core import publish_parts
 
-import pypi.upload
 import pypi.metadata
-from pypi.models import Package, Release, Distribution
+import pypi.upload
+from pypi.models import Distribution, Package, Release
 
 log = logging.getLogger(__name__)
 
