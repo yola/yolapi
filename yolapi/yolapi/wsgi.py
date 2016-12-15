@@ -8,7 +8,7 @@ import sys
 # can run in isolation. This code will be unnecessary once Apache can be
 # globally configured to point at an empty virtualenv with WSGIPythonHome.
 def bad_path(path):
-    version = "%d.%d" % sys.version_info[0:2]
+    version = '{}.{}'.format(*sys.version_info)
     return (path.startswith('/usr/lib/python%s/dist-packages' % version) or
             path.startswith('/usr/lib/pymodules/python%s' % version))
 
@@ -17,7 +17,7 @@ sys.path = [path for path in sys.path if not bad_path(path)]
 
 # The following line must come before django related imports or django will be
 # unable to locate a settings module.
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "yolapi.settings")
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'yolapi.settings')
 
 
 from django.core.wsgi import get_wsgi_application  # NOQA
