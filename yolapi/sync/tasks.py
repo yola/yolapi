@@ -80,7 +80,9 @@ def push(id):
     key.set_metadata('filetype', distribution.filetype)
     uploaded = urllib.quote(distribution.created.isoformat())
     key.set_metadata('uploaded', uploaded)
-    if distribution.pyversion:
+    if distribution.tag:
+        key.set_metadata('tag', distribution.tag)
+    elif distribution.pyversion:
         key.set_metadata('pyversion', distribution.pyversion)
 
     key.set_contents_from_filename(filename=distribution.content.path,
@@ -109,14 +111,19 @@ def pull(filename):
     package = key.get_metadata('package')
     version = key.get_metadata('version')
     filetype = key.get_metadata('filetype')
-    pyversion = key.get_metadata('pyversion') or u''
+    tag = key.get_metadata('tag')
+    pyversion = key.get_metadata('pyversion')
     md5_digest = key.get_metadata('md5_digest')
     uploaded = dateutil.parser.parse(key.get_metadata('uploaded'))
 
     package, created = Package.objects.get_or_create(name=package)
     release, created = package.releases.get_or_create(version=version)
-    distribution = release.distributions.filter(filetype=filetype,
-                                                pyversion=pyversion)
+    terms = {}
+    if tag:
+        terms['tag'] = tag
+    elif pyversion:
+        terms['pyversion'] = pyversion
+    distribution = release.distributions.filter(filetype=filetype, **terms)
     if distribution.exists():
         distribution = distribution[0]
         if not allow_replacement:
@@ -132,6 +139,7 @@ def pull(filename):
 
     distribution = release.distributions.create(filetype=filetype,
                                                 pyversion=pyversion,
+                                                tag=tag,
                                                 md5_digest=md5_digest,
                                                 content=File(key),
                                                 created=uploaded,

@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'importer',
     'sync',
     'eggbuilder',
+    'wheelbuilder',
     'crispy_forms',
     'django.contrib.staticfiles',
     'djcelery',
@@ -207,7 +208,7 @@ PYPI_ALLOW_REPLACEMENT = True
 # Allow deleting packages
 PYPI_ALLOW_DELETION = True
 
-PYPI_ALLOWED_UPLOAD_TYPES = ('sdist',)
+PYPI_ALLOWED_UPLOAD_TYPES = ('sdist', 'bdist_wheel')
 
 # An available formatting that can be used for displaying date fields on
 # templates.
@@ -222,6 +223,7 @@ AWS_SECRET_KEY = aconf.aws.secret_key
 
 # Build eggs for
 PYPI_EGG_PYVERSIONS = aconf.build_eggs_for
+PYPI_WHEEL_TAGS = []
 
 djcelery.setup_loader()
 BROKER_URL = 'sqs://%s:%s@' % (
