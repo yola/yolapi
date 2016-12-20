@@ -241,7 +241,7 @@ CELERY_QUEUES = (
 if PYPI_SYNC_BUCKET:
     CELERYBEAT_SCHEDULE = {
         'sync': {
-            'task': 'yolapi.sync.tasks.sync',
+            'task': 'sync.tasks.sync',
             'schedule': timedelta(minutes=5),
         },
     }
