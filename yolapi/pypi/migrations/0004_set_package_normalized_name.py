@@ -2,7 +2,7 @@
 from south.db import db
 from south.v2 import DataMigration
 
-from yolapi.pypi.models import Package
+from pypi.models import Package
 
 
 class Migration(DataMigration):

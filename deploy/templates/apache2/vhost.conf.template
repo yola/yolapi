@@ -28,7 +28,17 @@
          Require valid-user
     </Location>
 
-    WSGIScriptAlias / {{conf.deploy.root}}/yolapi/live/yolapi.wsgi
+    WSGIScriptAlias / {{conf.deploy.root}}/yolapi/live/yolapi/yolapi/wsgi.py
+
+    WSGIDaemonProcess yolapi display-name=wsgi-yolapi \
+        processes={{cconf.wsgi.processes}} \
+        threads={{cconf.wsgi.threads}} \
+        maximum-requests={{cconf.wsgi.max_requests}} \
+        inactivity-timeout={{cconf.wsgi.inactivity_timeout}} \
+        deadlock-timeout={{cconf.wsgi.deadlock_timeout}} \
+        shutdown-timeout={{cconf.wsgi.shutdown_timeout}} \
+        python-path={{conf.deploy.root}}/yolapi/live/yolapi:{{conf.deploy.root}}/yolapi/live/virtualenv/lib/python{{cconf.python.version}}/site-packages
+    WSGIProcessGroup yolapi
 
     Alias /static {{conf.deploy.root}}/yolapi/live/static
     Alias /media {{conf.deploy.root}}/yolapi/data/media

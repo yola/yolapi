@@ -5,8 +5,8 @@ import logging
 from django.conf import settings
 from django.http.multipartparser import MultiPartParser
 
-from yolapi.pypi.models import Package
-import yolapi.pypi.metadata
+from pypi.models import Package
+import pypi.metadata
 
 
 log = logging.getLogger(__name__)
@@ -137,7 +137,7 @@ def parse_metadata(post_data):
     metadata_version = str(post_data['metadata_version'])
 
     try:
-        fields = yolapi.pypi.metadata.metadata_fields(metadata_version)
+        fields = pypi.metadata.metadata_fields(metadata_version)
     except ValueError, e:
         raise InvalidUpload(e)
 

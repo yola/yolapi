@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from yolapi.pypi.models import Package
+from pypi.models import Package
 
 class TestPackage(TestCase):
     def test_sets_normalized_name_on_save(self):

@@ -1,25 +1,26 @@
 from django.conf import settings
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import include, patterns, url
 from django.contrib import admin
 from django.views.generic.simple import direct_to_template
 
-
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    url(r'^$', 'yolapi.pypi.views.index', name='index'),
-    url(r'^pypi/', include('yolapi.pypi.urls')),
-    url(r'^simple/', include('yolapi.pypi.simple.urls')),
+urlpatterns = patterns(
+    '',
+    url(r'^$', 'pypi.views.index', name='index'),
+    url(r'^pypi/', include('pypi.urls')),
+    url(r'^simple/', include('pypi.simple.urls')),
 
-    url(r'^importer/', include('yolapi.importer.urls')),
-    url(r'^sync/$', 'yolapi.sync.views.sync'),
+    url(r'^importer/', include('importer.urls')),
+    url(r'^sync/$', 'sync.views.sync'),
 
     url(r'^robots.txt$', direct_to_template,
         {'template': 'robots.txt', 'mimetype': 'text/plain'}),
 )
 
 if settings.DEBUG:
-    urlpatterns += patterns('',
+    urlpatterns += patterns(
+        '',
         url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT}),
     )
