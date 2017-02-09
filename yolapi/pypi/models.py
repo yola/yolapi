@@ -2,6 +2,7 @@ import errno
 import json
 import logging
 import os
+import re
 
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -9,6 +10,7 @@ from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils import timezone
+from django.utils.encoding import force_text
 from pkg_resources import parse_version
 
 log = logging.getLogger(__name__)
@@ -28,6 +30,11 @@ class PyPIStorage(FileSystemStorage):
         if self.exists(name):
             self._archive(name)
         super(PyPIStorage, self).delete(name)
+
+    def get_valid_name(self, name):
+        # Like django.utils.get_valid_name, but allowing + too
+        name = force_text(name).strip().replace(' ', '_')
+        return re.sub(r'(?u)[^-\w.+]', '', name)
 
     def get_available_name(self, name):
         return name
