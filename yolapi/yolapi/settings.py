@@ -234,6 +234,8 @@ CELERY_DEFAULT_QUEUE = 'yolapi-%s' % cconf.domain.hostname
 CELERY_QUEUES = (
     Queue(CELERY_DEFAULT_QUEUE, Exchange('yolapi'), routing_key='yolapi.#'),
 )
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
 
 if PYPI_SYNC_BUCKET:
     CELERYBEAT_SCHEDULE = {
