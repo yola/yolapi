@@ -21,6 +21,11 @@ def update(config):
                 'log': '/var/log/yolapi.log',
                 'celery_log': '/var/log/yolapi-worker.log',
             },
+            'redis': {
+                'db': 16,
+                'host': 'localhost',
+                'port': 6379,
+            },
             'ssl': config.common.wild_ssl_certs.services,
             'domain': 'yolapi.%s' % config.common.domain.services,
             'db': {
