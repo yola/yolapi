@@ -224,19 +224,18 @@ AWS_SECRET_KEY = aconf.aws.secret_key
 PYPI_EGG_PYVERSIONS = aconf.build_eggs_for
 
 djcelery.setup_loader()
-BROKER_URL = 'sqs://%s:%s@' % (
-    urllib.quote(aconf.aws.access_key, ''),
-    urllib.quote(aconf.aws.secret_key, ''),
+BROKER_URL = 'redis://%s:%s/%s' % (
+    aconf.redis.host,
+    aconf.redis.port,
+    aconf.redis.db,
 )
-BROKER_TRANSPORT_OPTIONS = {
-    'polling_interval': 5.0,
-    'queue_name_prefix': cconf.async_queue_prefix,
-}
 # We don't communicate with anybody else
 CELERY_DEFAULT_QUEUE = 'yolapi-%s' % cconf.domain.hostname
 CELERY_QUEUES = (
     Queue(CELERY_DEFAULT_QUEUE, Exchange('yolapi'), routing_key='yolapi.#'),
 )
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
 
 if PYPI_SYNC_BUCKET:
     CELERYBEAT_SCHEDULE = {
