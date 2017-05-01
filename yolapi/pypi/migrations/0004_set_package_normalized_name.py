@@ -1,21 +1,13 @@
 # -*- coding: utf-8 -*-
-from south.db import db
 from south.v2 import DataMigration
-from packaging.utils import canonicalize_name
 
 
 class Migration(DataMigration):
-
     def forwards(self, orm):
-        "Write your forwards methods here."
-        # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
-        for package in orm.Package.objects.all():
-            if not package.normalized_name:
-                package.normalized_name = canonicalize_name(package.name)
-                package.save()
+        # Replaced by 0006_re_canonicalize_names
+        pass
 
     def backwards(self, orm):
-        "Write your backwards methods here."
         pass
 
     models = {
