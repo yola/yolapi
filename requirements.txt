@@ -8,6 +8,7 @@ django-crispy-forms==1.1.4
 django-nose==1.4.3
 docutils==0.12
 kombu==3.0.36
+packaging==16.8
 python-dateutil==2.1
 raven==2.0.3
 redis==2.10.5

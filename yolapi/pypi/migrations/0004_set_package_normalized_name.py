@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from south.db import db
 from south.v2 import DataMigration
-
-from pypi.models import Package
+from packaging.utils import canonicalize_name
 
 
 class Migration(DataMigration):
@@ -12,7 +11,7 @@ class Migration(DataMigration):
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
         for package in orm.Package.objects.all():
             if not package.normalized_name:
-                package.normalized_name = Package.normalize_name(package.name)
+                package.normalized_name = canonicalize_name(package.name)
                 package.save()
 
     def backwards(self, orm):
