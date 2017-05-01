@@ -11,6 +11,7 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.encoding import force_text
+from packaging.utils import canonicalize_name
 from pkg_resources import parse_version
 
 log = logging.getLogger(__name__)
@@ -68,12 +69,7 @@ class Package(models.Model):
     @classmethod
     def get(cls, name):
         """Return package, accounting for pypi normalized package names."""
-        return cls.objects.get(normalized_name=cls.normalize_name(name))
-
-    @classmethod
-    def normalize_name(self, name):
-        """Return name as a pypi normalized package name."""
-        return name.lower().replace('_', '-')
+        return cls.objects.get(normalized_name=canonicalize_name(name))
 
     @property
     def sorted_releases(self):
@@ -90,7 +86,7 @@ class Package(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.normalized_name:
-            self.normalized_name = Package.normalize_name(self.name)
+            self.normalized_name = canonicalize_name(self.name)
         super(Package, self).save(*args, **kwargs)
 
     def __unicode__(self):
