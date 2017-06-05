@@ -1,5 +1,4 @@
 import os
-import urllib
 from datetime import timedelta
 
 import djcelery
@@ -125,7 +124,6 @@ INSTALLED_APPS = (
     'pypi',
     'importer',
     'sync',
-    'eggbuilder',
     'crispy_forms',
     'django.contrib.staticfiles',
     'djcelery',
@@ -219,9 +217,6 @@ add_to_builtins('django.templatetags.future')
 PYPI_SYNC_BUCKET = aconf.aws.archive_bucket
 AWS_ACCESS_KEY = aconf.aws.access_key
 AWS_SECRET_KEY = aconf.aws.secret_key
-
-# Build eggs for
-PYPI_EGG_PYVERSIONS = aconf.build_eggs_for
 
 djcelery.setup_loader()
 BROKER_URL = 'redis://%s:%s/%s' % (

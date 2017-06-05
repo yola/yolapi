@@ -8,7 +8,6 @@ def update(config):
     new = {
         'yolapi': {
             'allowed_uploaders': [],
-            'build_eggs_for': [],
             'aws': {
                 'access_key': MissingValue(),
                 'secret_key': MissingValue(),
