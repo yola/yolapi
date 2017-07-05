@@ -113,10 +113,7 @@ def pull(filename):
     md5_digest = key.get_metadata('md5_digest')
     uploaded = dateutil.parser.parse(key.get_metadata('uploaded'))
 
-    try:
-        package = Package.get(package)
-    except Package.DoesNotExist:
-        package = Package.objects.create(name=package)
+    package, _ = Package.get_or_create(name=package)
     release, created = package.releases.get_or_create(version=version)
     distribution = release.distributions.filter(filetype=filetype,
                                                 pyversion=pyversion)
@@ -130,10 +127,7 @@ def pull(filename):
             return
         distribution.delete()
         # The deletion could have garbage collected the Package and Release
-        try:
-            package = Package.get(package)
-        except Package.DoesNotExist:
-            package = Package.objects.create(name=package)
+        package, _ = Package.get_or_create(name=package)
         release, created = package.releases.get_or_create(version=version)
 
     distribution = release.distributions.create(filetype=filetype,

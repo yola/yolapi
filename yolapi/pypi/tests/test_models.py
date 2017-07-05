@@ -21,3 +21,18 @@ class TestPackageGet(TestCase):
     def test_raises_DoesNotExist_if_not_found(self):
         with self.assertRaises(Package.DoesNotExist):
             Package.get('does not exist')
+
+
+class TestPackageGetOrCreate(TestCase):
+    """Package.get_or_create"""
+
+    def test_creates_package_if_existing_package_not_found(self):
+        package, created = Package.get_or_create('My_Package')
+        self.assertTrue(created)
+        self.assertEqual(package.name, 'my-package')
+
+    def test_returns_existing_package_if_found(self):
+        existing_package = Package.objects.create(name='find-me')
+        package, created = Package.get_or_create('Find_Me')
+        self.assertEqual(package, existing_package)
+        self.assertFalse(created)

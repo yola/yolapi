@@ -69,6 +69,13 @@ class Package(models.Model):
         """Return package, accounting for pypi normalized package names."""
         return cls.objects.get(name=canonicalize_name(name))
 
+    @classmethod
+    def get_or_create(cls, name):
+        try:
+            return cls.get(name=name), False
+        except cls.DoesNotExist:
+            return cls.objects.create(name=name), True
+
     @property
     def sorted_releases(self):
         return sorted(self.releases.iterator(),

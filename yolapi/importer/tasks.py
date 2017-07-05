@@ -103,11 +103,7 @@ def _import_source(location, tmpdir, recurse):
                 continue
         metadata[field] = value
 
-    try:
-        package = Package.get(metadata['Name'])
-    except Package.DoesNotExist:
-        package = Package.objects.create(name=metadata['Name'])
-
+    package, _ = Package.get_or_create(name=metadata['Name'])
     release, created = package.releases.get_or_create(
             version=metadata['Version'])
 
