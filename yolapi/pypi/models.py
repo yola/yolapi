@@ -63,8 +63,6 @@ class PyPIStorage(FileSystemStorage):
 class Package(models.Model):
     name = models.CharField(max_length=255, unique=True, primary_key=True,
                             editable=False)
-    normalized_name = models.CharField(max_length=255, unique=True,
-                                       editable=False)
 
     @classmethod
     def get(cls, name):
