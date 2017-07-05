@@ -108,12 +108,15 @@ class Release(models.Model):
     @property
     def distribution(self):
         """Return the source upload if possible, otherwise the first upload"""
-        sdist = self.distributions.filter(filetype='sdist')
-        if sdist.exists():
-            return sdist[0]
-        dists = self.distributions
-        if dists.exists():
-            return dists[0]
+        try:
+            return self.distributions.filter(filetype='sdist')[0]
+        except IndexError:
+            pass
+
+        try:
+            return self.distributions.all()[0]
+        except IndexError:
+            return None
 
     @property
     def metadata_dict(self):
