@@ -53,7 +53,7 @@ def upload(request):
 @ensure_csrf_cookie
 def package(request, package):
     try:
-        package = Package.objects.get(name=package)
+        package = Package.get(package)
     except Package.DoesNotExist:
         raise Http404
     return render_to_response('pypi/package.html', {
@@ -66,8 +66,9 @@ def package(request, package):
 @ensure_csrf_cookie
 def release(request, package, version):
     try:
-        release = Release.objects.get(package__name=package, version=version)
-    except Release.DoesNotExist:
+        package = Package.get(package)
+        release = Release.objects.get(package=package, version=version)
+    except (Package.DoesNotExist, Release.DoesNotExist):
         raise Http404
 
     metadata = pypi.metadata.display_sort(release.metadata_dict)
@@ -97,11 +98,12 @@ def delete(request, package, version, filetype, pyversion=''):
         return HttpResponseForbidden('Deletion is not allowed')
 
     try:
-        distribution = Distribution.objects.get(release__package__name=package,
+        package = Package.get(package)
+        distribution = Distribution.objects.get(release__package=package,
                                                 release__version=version,
                                                 filetype=filetype,
                                                 pyversion=pyversion)
-    except Distribution.DoesNotExist:
+    except (Distribution.DoesNotExist, Package.DoesNotExist):
         raise Http404
 
     distribution.delete()

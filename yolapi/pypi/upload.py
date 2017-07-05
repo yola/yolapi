@@ -105,7 +105,10 @@ def process(request):
     name = post['name']
     version = post['version']
 
-    package, created = Package.objects.get_or_create(name=name)
+    try:
+        package = Package.get(name)
+    except Package.DoesNotExist:
+        package = Package.objects.create(name=name)
     release, created = package.releases.get_or_create(version=version)
 
     # Update metadata
@@ -122,7 +125,10 @@ def process(request):
         distribution = distribution[0]
         distribution.delete()
         # The deletion could have garbage collected the Package and Release
-        package, created = Package.objects.get_or_create(name=name)
+        try:
+            package = Package.get(name)
+        except Package.DoesNotExist:
+            package = Package.objects.create(name=name)
         release, created = package.releases.get_or_create(version=version)
 
     distribution = release.distributions.create(filetype=post['filetype'],

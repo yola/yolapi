@@ -29,8 +29,9 @@ def package(request, package):
 @require_safe
 def release(request, package, version):
     try:
-        release = Release.objects.get(package__name=package, version=version)
-    except Release.DoesNotExist:
+        package = Package.get(package)
+        release = Release.objects.get(package=package, version=version)
+    except (Package.DoesNotExist, Release.DoesNotExist):
         raise Http404
     return render_to_response('pypi.simple/release.html', {
         'title': unicode(release),
