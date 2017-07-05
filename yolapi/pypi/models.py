@@ -69,7 +69,7 @@ class Package(models.Model):
     @classmethod
     def get(cls, name):
         """Return package, accounting for pypi normalized package names."""
-        return cls.objects.get(normalized_name=canonicalize_name(name))
+        return cls.objects.get(name=canonicalize_name(name))
 
     @property
     def sorted_releases(self):
@@ -85,8 +85,7 @@ class Package(models.Model):
             self.delete()
 
     def save(self, *args, **kwargs):
-        if not self.normalized_name:
-            self.normalized_name = canonicalize_name(self.name)
+        self.name = canonicalize_name(self.name)
         super(Package, self).save(*args, **kwargs)
 
     def __unicode__(self):
