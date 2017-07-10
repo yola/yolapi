@@ -14,6 +14,8 @@ from django.utils.encoding import force_text
 from packaging.utils import canonicalize_name
 from pkg_resources import parse_version
 
+from pypi.fields import CanonicalizedPackageNameField
+
 log = logging.getLogger(__name__)
 
 
@@ -61,8 +63,8 @@ class PyPIStorage(FileSystemStorage):
 
 
 class Package(models.Model):
-    name = models.CharField(max_length=255, unique=True, primary_key=True,
-                            editable=False)
+    name = CanonicalizedPackageNameField(max_length=255, unique=True,
+                                         primary_key=True, editable=False)
 
     @classmethod
     def get(cls, name):
@@ -88,10 +90,6 @@ class Package(models.Model):
     def gc(self):
         if not self.releases.exists():
             self.delete()
-
-    def save(self, *args, **kwargs):
-        self.name = canonicalize_name(self.name)
-        super(Package, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.name
