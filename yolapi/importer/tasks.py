@@ -60,7 +60,7 @@ def import_requirement(requirement, recurse=True):
 def _meet_requirement(requirement):
     """Do we have the specified requirement?"""
     try:
-        package = Package.get(name=requirement.project_name)
+        package = Package.objects.get(name=requirement.project_name)
     except Package.DoesNotExist:
         return False
 
@@ -103,7 +103,7 @@ def _import_source(location, tmpdir, recurse):
                 continue
         metadata[field] = value
 
-    package, _ = Package.get_or_create(name=metadata['Name'])
+    package, _ = Package.objects.get_or_create(name=metadata['Name'])
     release, created = package.releases.get_or_create(
             version=metadata['Version'])
 

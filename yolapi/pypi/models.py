@@ -11,7 +11,6 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.encoding import force_text
-from packaging.utils import canonicalize_name
 from pkg_resources import parse_version
 
 from pypi.fields import CanonicalizedPackageNameField
@@ -65,18 +64,6 @@ class PyPIStorage(FileSystemStorage):
 class Package(models.Model):
     name = CanonicalizedPackageNameField(max_length=255, unique=True,
                                          primary_key=True, editable=False)
-
-    @classmethod
-    def get(cls, name):
-        """Return package, accounting for pypi normalized package names."""
-        return cls.objects.get(name=canonicalize_name(name))
-
-    @classmethod
-    def get_or_create(cls, name):
-        try:
-            return cls.get(name=name), False
-        except cls.DoesNotExist:
-            return cls.objects.create(name=name), True
 
     @property
     def sorted_releases(self):
