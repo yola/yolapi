@@ -20,4 +20,4 @@ class CanonicalizedPackageNameField(models.CharField):
         return super(CanonicalizedPackageNameField, self).get_prep_value(value)
 
 
-add_introspection_rules([], ["^pypi\.fields\.CanonicalizedPackageNameField"])
+add_introspection_rules([], ['^pypi\.fields\.CanonicalizedPackageNameField'])
