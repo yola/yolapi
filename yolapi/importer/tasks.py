@@ -12,8 +12,8 @@ import pkg_resources
 import setuptools.package_index
 import setuptools.archive_util
 
-from pypi.models import Package
 from pypi.metadata import metadata_fields
+from pypi.models import Package
 
 log = logging.getLogger(__name__)
 
@@ -59,14 +59,14 @@ def import_requirement(requirement, recurse=True):
 
 def _meet_requirement(requirement):
     """Do we have the specified requirement?"""
-    package = Package.objects.filter(name=requirement.project_name)
-    if not package.exists():
+    try:
+        package = Package.objects.get(name=requirement.project_name)
+    except Package.DoesNotExist:
         return False
 
-    package = package[0]
     for release in package.releases.iterator():
-        dist = pkg_resources.Distribution(project_name=package.name,
-                                          version=release.version)
+        dist = pkg_resources.Distribution(
+            project_name=requirement.project_name, version=release.version)
         if dist in requirement:
             return True
 
@@ -103,7 +103,7 @@ def _import_source(location, tmpdir, recurse):
                 continue
         metadata[field] = value
 
-    package, created = Package.objects.get_or_create(name=metadata['Name'])
+    package, _ = Package.objects.get_or_create(name=metadata['Name'])
     release, created = package.releases.get_or_create(
             version=metadata['Version'])
 

@@ -6,25 +6,27 @@
 
 {% block content %}
 <table id="packages" class="table table-striped sortable">
-	<thead>
-		<tr>
-			<th>Package</th>
-			<th>Latest Version</th>
-			<th>Uploaded</th>
-			<th>Description</th>
-		</tr>
-	</thead>
+    <thead>
+        <tr>
+            <th>Package</th>
+            <th>Latest Version</th>
+            <th>Uploaded</th>
+            <th>Description</th>
+        </tr>
+    </thead>
 {% for package in packages %}
-	<tr>
-		<td><a href="{% url 'pypi.views.package' package=package.name %}">
-			{{ package.name }}
-		</a></td>
-		<td><a href="{% url 'pypi.views.release' package=package.name version=package.latest.version %}">
-			{{ package.latest.version }}
-		</a></td>
-		<td>{{ package.latest.distribution.created|date:"SHORT_DATE_FORMAT" }}</td>
-		<td>{{ package.latest.summary }}</td>
-	</tr>
+    {% with latest_release=package.latest %}
+        <tr>
+            <td><a href="{% url 'pypi.views.package' package=package.name %}">
+                {{ package.name }}
+            </a></td>
+            <td><a href="{% url 'pypi.views.release' package=package.name version=latest_release.version %}">
+                {{ latest_release.version }}
+            </a></td>
+            <td>{{ latest_release.distribution.created|date:"SHORT_DATE_FORMAT" }}</td>
+            <td>{{ latest_release.summary }}</td>
+        </tr>
+    {% endwith %}
 {% endfor %}
 </table>
 <script src="{{ STATIC_URL }}js/sorttable.js"></script>

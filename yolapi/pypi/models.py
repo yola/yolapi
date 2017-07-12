@@ -11,8 +11,9 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.encoding import force_text
-from packaging.utils import canonicalize_name
 from pkg_resources import parse_version
+
+from pypi.fields import CanonicalizedPackageNameField
 
 log = logging.getLogger(__name__)
 
@@ -61,15 +62,8 @@ class PyPIStorage(FileSystemStorage):
 
 
 class Package(models.Model):
-    name = models.CharField(max_length=255, unique=True, primary_key=True,
-                            editable=False)
-    normalized_name = models.CharField(max_length=255, unique=True,
-                                       editable=False)
-
-    @classmethod
-    def get(cls, name):
-        """Return package, accounting for pypi normalized package names."""
-        return cls.objects.get(normalized_name=canonicalize_name(name))
+    name = CanonicalizedPackageNameField(max_length=255, unique=True,
+                                         primary_key=True, editable=False)
 
     @property
     def sorted_releases(self):
@@ -83,11 +77,6 @@ class Package(models.Model):
     def gc(self):
         if not self.releases.exists():
             self.delete()
-
-    def save(self, *args, **kwargs):
-        if not self.normalized_name:
-            self.normalized_name = canonicalize_name(self.name)
-        super(Package, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.name
@@ -104,12 +93,15 @@ class Release(models.Model):
     @property
     def distribution(self):
         """Return the source upload if possible, otherwise the first upload"""
-        sdist = self.distributions.filter(filetype='sdist')
-        if sdist.exists():
-            return sdist[0]
-        dists = self.distributions
-        if dists.exists():
-            return dists[0]
+        try:
+            return self.distributions.filter(filetype='sdist')[0]
+        except IndexError:
+            pass
+
+        try:
+            return self.distributions.all()[0]
+        except IndexError:
+            return None
 
     @property
     def metadata_dict(self):

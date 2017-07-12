@@ -17,7 +17,7 @@ def index(request):
 @require_safe
 def package(request, package):
     try:
-        package = Package.get(package)
+        package = Package.objects.get(name=package)
     except Package.DoesNotExist:
         raise Http404
     return render_to_response('pypi.simple/package.html', {
