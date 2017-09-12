@@ -23,10 +23,10 @@ class PyPIStorage(FileSystemStorage):
     new files to always have their expected filenames.
     Almost certainly a little racy"""
 
-    def save(self, name, content):
+    def save(self, name, content, max_length=None):
         if self.exists(name):
             self._archive(name, unexpected=True)
-        return super(PyPIStorage, self).save(name, content)
+        return super(PyPIStorage, self).save(name, content, max_length)
 
     def delete(self, name):
         if self.exists(name):
@@ -38,7 +38,7 @@ class PyPIStorage(FileSystemStorage):
         name = force_text(name).strip().replace(' ', '_')
         return re.sub(r'(?u)[^-\w.+]', '', name)
 
-    def get_available_name(self, name):
+    def get_available_name(self, name, max_length=None):
         return name
 
     def _archive(self, name, unexpected=False):

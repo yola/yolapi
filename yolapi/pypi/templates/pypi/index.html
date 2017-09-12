@@ -1,7 +1,8 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block nav %}
-<li><a href="{% url 'pypi.views.index' %}" class="active">Packages</a></li>
+<li><a href="{% url 'pypi:index' %}" class="active">Packages</a></li>
 {% endblock %}
 
 {% block content %}
@@ -17,10 +18,10 @@
 {% for package in packages %}
     {% with latest_release=package.latest %}
         <tr>
-            <td><a href="{% url 'pypi.views.package' package=package.name %}">
+            <td><a href="{% url 'pypi:package' package=package.name %}">
                 {{ package.name }}
             </a></td>
-            <td><a href="{% url 'pypi.views.release' package=package.name version=latest_release.version %}">
+            <td><a href="{% url 'pypi:release' package=package.name version=latest_release.version %}">
                 {{ latest_release.version }}
             </a></td>
             <td>{{ latest_release.distribution.created|date:"SHORT_DATE_FORMAT" }}</td>
@@ -29,5 +30,5 @@
     {% endwith %}
 {% endfor %}
 </table>
-<script src="{{ STATIC_URL }}js/sorttable.js"></script>
+<script src="{% static 'js/sorttable.js' %}"></script>
 {% endblock %}

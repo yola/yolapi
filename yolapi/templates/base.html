@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE html>{% load static %}
 <html>
     <head>
         <title>
             {% block title %}{{ title }}{% endblock %}
         </title>
-        <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
-        <link href="{{ STATIC_URL }}css/syntax-highlights.css" rel="stylesheet">
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/syntax-highlights.css' %}" rel="stylesheet">
         {% block extra_head %}{% endblock %}
     </head>
     <body>
@@ -17,16 +17,16 @@
                     {% endblock %}
                 </ul>
                 <ul class="nav pull-right">
-                    <li><a class="post" data-url="{% url 'sync.views.sync' %}"
+                    <li><a class="post" data-url="{% url 'sync' %}"
                            data-started="Requesting Sync..." href="#">Sync</a></li>
-                    <li><a href="{% url 'importer.views.index' %}">Import</a></li>
+                    <li><a href="{% url 'importer:index' %}">Import</a></li>
                 </ul>
             </div>
         </div>
         {% block content %}
         {% endblock %}
-        <script src="{{ STATIC_URL }}js/jquery.min.js"></script>
-        <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-        <script src="{{ STATIC_URL }}js/yolapi.js"></script>
+        <script src="{% static 'js/jquery.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/yolapi.js' %}"></script>
     </body>
 </html>

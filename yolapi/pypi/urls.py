@@ -1,11 +1,15 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns('pypi.views',
-    url(r'^$', 'index'),
-    url(r'^(?P<package>[\w\d_\.\-]+)/$', 'package'),
-    url(r'^(?P<package>[\w\d_\.\-]+)/(?P<version>[\w\d_\.\-+]+)/$', 'release'),
+from pypi import views as pypi_views
+
+urlpatterns = [
+    url(r'^$', pypi_views.index, name='index'),
+    url(r'^(?P<package>[\w\d_\.\-]+)/$', pypi_views.package, name='package'),
+    url(r'^(?P<package>[\w\d_\.\-]+)/(?P<version>[\w\d_\.\-+]+)/$',
+        pypi_views.release, name='release'),
     url(r'^(?P<package>[\w\d_\.\-]+)/(?P<version>[\w\d_\.\-+]+)'
-        r'/(?P<filetype>[\w_]+)/$', 'delete'),
+        r'/(?P<filetype>[\w_]+)/$', pypi_views.delete, name='delete'),
     url(r'^(?P<package>[\w\d_\.\-]+)/(?P<version>[\w\d_\.\-+]+)'
-        r'/(?P<filetype>[\w_]+)/(?P<pyversion>[\d.]+|any)/$', 'delete'),
-)
+        r'/(?P<filetype>[\w_]+)/(?P<pyversion>[\d.]+|any)/$',
+        pypi_views.delete, name='delete'),
+]

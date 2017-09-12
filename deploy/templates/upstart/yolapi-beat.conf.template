@@ -7,13 +7,14 @@ env PYTHONPATH={{conf.deploy.root}}/yolapi/live/yolapi
 
 # http://superuser.com/a/234541
 exec su -s /bin/sh -c 'exec "$0" "$@"' www-data -- \
-    {{conf.deploy.root}}/yolapi/live/virtualenv/bin/celery worker \
+    {{conf.deploy.root}}/yolapi/live/virtualenv/bin/celery beat \
         -A yolapi.celery_setup.app \
+            --schedule {{aconf.path.celerybeat_file}} \
             --quiet \
             --time-limit=1800 \
             --logfile {{aconf.path.celery_log}} \
             --loglevel INFO \
-            --concurrency 1
+            --pidfile={{conf.deploy.root}}/yolapi/data/yolapi-celerybeat.pid
 
 respawn
 respawn limit 10 5
