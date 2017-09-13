@@ -6,26 +6,27 @@ import os
 import shutil
 import tempfile
 
-import celery
-from django.core.files import File
 import pkg_resources
-import setuptools.package_index
 import setuptools.archive_util
+import setuptools.package_index
+from django.core.files import File
 
 from pypi.metadata import metadata_fields
 from pypi.models import Package
+from yolapi import local_celery_app
 
 log = logging.getLogger(__name__)
 
 
-@celery.task(ignore_result=True)
+@local_celery_app.task
 def ensure_requirements(requirements, recurse=True):
     """Spawn jobs to import all the specified requirements.
     """
     # We don't care about any requirement sections
     cleaned_reqs = []
     for line in requirements.splitlines():
-        if line.strip().startswith('['):
+        line = line.strip()
+        if line.startswith('[') or not line:
             break
         cleaned_reqs.append(line)
     requirements = '\n'.join(cleaned_reqs)
@@ -35,7 +36,7 @@ def ensure_requirements(requirements, recurse=True):
             import_requirement.delay(str(requirement), recurse)
 
 
-@celery.task(ignore_result=True)
+@local_celery_app.task
 def import_requirement(requirement, recurse=True):
     """Import a single requirement."""
     log.info("Importing %s", requirement)
@@ -125,10 +126,11 @@ def _import_source(location, tmpdir, recurse):
         f.seek(0)
         md5sum = md5sum.hexdigest()
 
-        distribution = release.distributions.create(filetype='sdist',
-                                                    pyversion='',
-                                                    md5_digest=md5sum,
-                                                    content=File(f))
+        distribution = release.distributions.create(
+            filetype='sdist',
+            pyversion='',
+            md5_digest=md5sum,
+            content=File(f, name=os.path.basename(f.name)))
         distribution.save()
 
     requires = os.path.join(

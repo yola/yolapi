@@ -4,8 +4,7 @@ import re
 from django.conf import settings
 from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
                          HttpResponseForbidden)
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import (require_http_methods, require_POST,
@@ -25,10 +24,10 @@ log = logging.getLogger(__name__)
 def index(request):
     if request.method == 'POST':
         return upload(request)
-    return render_to_response('pypi/index.html', {
+    return render(request, 'pypi/index.html', {
         'title': 'Package list',
         'packages': Package.objects.order_by('name').iterator(),
-    }, context_instance=RequestContext(request))
+    })
 
 
 @require_POST
@@ -56,10 +55,10 @@ def package(request, package):
         package = Package.objects.get(name=package)
     except Package.DoesNotExist:
         raise Http404
-    return render_to_response('pypi/package.html', {
+    return render(request, 'pypi/package.html', {
         'title': unicode(package),
         'package': package,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @require_safe
@@ -84,11 +83,11 @@ def release(request, package, version):
                 settings_overrides={'syntax_highlight': 'short'})['html_body']
             metadata[i] = (key, mark_safe(values))
 
-    return render_to_response('pypi/release.html', {
+    return render(request, 'pypi/release.html', {
         'title': unicode(release),
         'release': release,
         'metadata': metadata,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @require_http_methods(['DELETE'])

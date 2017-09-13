@@ -1,9 +1,6 @@
 import os
 from datetime import timedelta
 
-import djcelery
-from django.template.loader import add_to_builtins
-from kombu import Exchange, Queue
 from yoconfigurator.base import read_config
 
 
@@ -15,7 +12,7 @@ aconf = conf.yolapi
 cconf = conf.common
 
 DEBUG = aconf.debug
-TEMPLATE_DEBUG = aconf.template_debug
+ALLOWED_HOSTS = [aconf.domain]
 
 ADMINS = (
     ('Yola Ops', 'ops@yola.com'),
@@ -97,44 +94,39 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '_pree(#lmyg74##*o#a@u2)@&su)f3j+8@cbe=+8ga2lj)d-@t'
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
-)
-
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'raven.contrib.django.middleware.SentryResponseErrorIdMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-)
+]
 
 ROOT_URLCONF = 'yolapi.urls'
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or
-    # "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    os.path.join(app_dir, 'templates'),
-)
+WSGI_APPLICATION = 'yolapi.wsgi.application'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(app_dir, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'debug': aconf.template_debug,
+        },
+    },
+]
 
 INSTALLED_APPS = (
     'pypi',
     'importer',
-    'sync',
+    'sync.config.SyncConfig',
     'crispy_forms',
     'django.contrib.staticfiles',
-    'djcelery',
     'raven.contrib.django',
-    'south',
     'django_nose',
 )
 
 RAVEN_CONFIG = {
     'dsn': aconf.sentry_dsn,
-    'register_signals': True,
 }
 
 # A sample logging configuration. The only tangible logging
@@ -211,34 +203,12 @@ PYPI_ALLOWED_UPLOAD_TYPES = ('sdist',)
 # templates.
 SHORT_DATE_FORMAT = 'Y-m-d'
 
-# Always load future template tags
-add_to_builtins('django.templatetags.future')
-
 PYPI_SYNC_BUCKET = aconf.aws.archive_bucket
 AWS_ACCESS_KEY = aconf.aws.access_key
 AWS_SECRET_KEY = aconf.aws.secret_key
 
-djcelery.setup_loader()
-BROKER_URL = 'redis://%s:%s/%s' % (
-    aconf.redis.host,
-    aconf.redis.port,
-    aconf.redis.db,
-)
-# We don't communicate with anybody else
-CELERY_DEFAULT_QUEUE = 'yolapi-%s' % cconf.domain.hostname
-CELERY_QUEUES = (
-    Queue(CELERY_DEFAULT_QUEUE, Exchange('yolapi'), routing_key='yolapi.#'),
-)
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-
-if PYPI_SYNC_BUCKET:
-    CELERYBEAT_SCHEDULE = {
-        'sync': {
-            'task': 'sync.tasks.sync',
-            'schedule': timedelta(minutes=5),
-        },
-    }
+REDIS = aconf.redis
+CELERY_TASK_DEFAULT_QUEUE = 'yolapi-%s' % cconf.domain.hostname
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = ['--with-specplugin', '--where=%s' % app_dir]

@@ -19,6 +19,8 @@ def update(config):
                 'data': data_path,
                 'log': '/var/log/yolapi.log',
                 'celery_log': '/var/log/yolapi-worker.log',
+                'celerybeat_file': os.path.join(data_path,
+                                                'celerybeat-schedule'),
             },
             'redis': {
                 'db': 16,

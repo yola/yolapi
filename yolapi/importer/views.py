@@ -1,8 +1,7 @@
 import pkg_resources
 from django import forms
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 
 import importer.tasks
@@ -40,7 +39,7 @@ def index(request):
     else:
         form = RequiresForm()
 
-    return render_to_response('importer/index.html', {
+    return render(request, 'importer/index.html', {
         'title': 'Import packages from PyPI',
         'form': form,
-    }, context_instance=RequestContext(request))
+    })

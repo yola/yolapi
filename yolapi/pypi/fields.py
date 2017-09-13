@@ -1,6 +1,5 @@
 from django.db import models
 from packaging.utils import canonicalize_name
-from south.modelsinspector import add_introspection_rules
 
 
 class CanonicalizedPackageNameField(models.CharField):
@@ -18,6 +17,3 @@ class CanonicalizedPackageNameField(models.CharField):
     def get_prep_value(self, value):
         value = self._canonicalize_name(value)
         return super(CanonicalizedPackageNameField, self).get_prep_value(value)
-
-
-add_introspection_rules([], ['^pypi\.fields\.CanonicalizedPackageNameField'])

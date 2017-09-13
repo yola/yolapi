@@ -1,5 +1,6 @@
 import logging
 
+from yodeploy.hooks.data import DataDirApp
 from yodeploy.hooks.django import DjangoApp
 from yodeploy.hooks.htpasswd import AuthenticatedApp
 from yodeploy.hooks.upstart import UpstartApp
@@ -8,10 +9,8 @@ from yodeploy.util import touch
 log = logging.getLogger(__name__)
 
 
-class Hooks(DjangoApp, AuthenticatedApp, UpstartApp):
-    migrate_on_deploy = True
-    uses_south = True
-    has_media = True
+class Hooks(DjangoApp, AuthenticatedApp, UpstartApp, DataDirApp):
+    migrate_on_deploy = False
     has_static = True
 
     def prepare(self):

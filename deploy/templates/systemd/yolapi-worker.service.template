@@ -1,0 +1,18 @@
+[Unit]
+Description=YolaPI Celery Worker
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+Environment=PYTHONPATH={{conf.deploy.root}}/yolapi/live/yolapi
+ExecStart={{conf.deploy.root}}/yolapi/live/virtualenv/bin/celery \
+    -A yolapi.celery_setup.app \
+        --quiet \
+        --time-limit=1800 \
+        --logfile {{aconf.path.celery_log}} \
+        --loglevel INFO \
+        --concurrency 1
+
+[Install]
+WantedBy=multi-user.target

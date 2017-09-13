@@ -1,20 +1,20 @@
 import base64
-import dateutil.parser
 import logging
 import urllib
 
 import boto.s3.connection
-from celery import task
+import dateutil.parser
 from django.conf import settings
 from django.core.files import File
 
 from pypi.models import Distribution, Package
+from yolapi import local_celery_app
 
 log = logging.getLogger(__name__)
 allow_replacement = getattr(settings, 'PYPI_ALLOW_REPLACEMENT', True)
 
 
-@task(ignore_result=True)
+@local_celery_app.task
 def sync():
     """Spawn jobs to perform a 2-way sync with S3.
     Relies on timestamps, if there are conflicts, probably pretty racey...
@@ -55,7 +55,7 @@ def sync():
             pull.delay(filename)
 
 
-@task(ignore_result=True)
+@local_celery_app.task
 def push(id):
     """Push a Distribution to S3, and update its metadata"""
     distribution = Distribution.objects.get(id=id)
@@ -95,7 +95,7 @@ def push(id):
     key.set_contents_from_string(release.metadata, replace=True)
 
 
-@task(ignore_result=True)
+@local_celery_app.task
 def pull(filename):
     """Pull a Distribution from S3"""
     log.info(u"Pulling %s", filename)
@@ -174,17 +174,25 @@ def _bucket():
     """Return our S3 bucket"""
     global _cached_bucket
     if _cached_bucket is None:
-        credentials = (getattr(settings, 'AWS_ACCESS_KEY'),
-                       getattr(settings, 'AWS_SECRET_KEY'))
         bucket_name = getattr(settings, 'PYPI_SYNC_BUCKET')
         if not bucket_name:
             raise Exception("Syncing is disabled")
 
-        conn = boto.s3.connection.S3Connection(*credentials)
+        conn_data = {
+            'aws_access_key_id': getattr(settings, 'AWS_ACCESS_KEY'),
+            'aws_secret_access_key': getattr(settings, 'AWS_SECRET_KEY'),
+        }
+
+        if '.' in bucket_name:
+            conn_data['calling_format'] = (boto.s3.connection.
+                                           OrdinaryCallingFormat())
+
+        conn = boto.s3.connection.S3Connection(**conn_data)
         try:
             _cached_bucket = conn.get_bucket(bucket_name)
         except boto.exception.S3ResponseError:
             _cached_bucket = conn.create_bucket(bucket_name)
     return _cached_bucket
+
 
 _cached_bucket = None
