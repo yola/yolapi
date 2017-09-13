@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 
 class Hooks(DjangoApp, AuthenticatedApp, UpstartApp, DataDirApp):
-    migrate_on_deploy = False
+    migrate_on_deploy = True
     has_static = True
 
     def prepare(self):
