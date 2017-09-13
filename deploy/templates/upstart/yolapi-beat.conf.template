@@ -11,7 +11,6 @@ exec su -s /bin/sh -c 'exec "$0" "$@"' www-data -- \
         -A yolapi.celery_setup.app \
             --schedule {{aconf.path.celerybeat_file}} \
             --quiet \
-            --time-limit=1800 \
             --logfile {{aconf.path.celery_log}} \
             --loglevel INFO \
             --pidfile={{conf.deploy.root}}/yolapi/data/yolapi-celerybeat.pid
