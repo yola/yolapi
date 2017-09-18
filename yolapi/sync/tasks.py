@@ -130,12 +130,13 @@ def pull(filename):
         package, _ = Package.objects.get_or_create(name=package)
         release, created = package.releases.get_or_create(version=version)
 
-    distribution = release.distributions.create(filetype=filetype,
-                                                pyversion=pyversion,
-                                                md5_digest=md5_digest,
-                                                content=File(key),
-                                                created=uploaded,
-                                                sync_imported=True)
+    distribution = release.distributions.create(
+        filetype=filetype,
+        pyversion=pyversion,
+        md5_digest=md5_digest,
+        content=File(key, name=filename),
+        created=uploaded,
+        sync_imported=True)
     distribution.save()
 
     key = bucket.get_key(u'releases/%s/%s' %
