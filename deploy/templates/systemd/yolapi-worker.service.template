@@ -13,6 +13,8 @@ ExecStart={{conf.deploy.root}}/yolapi/live/virtualenv/bin/celery \
         --logfile {{aconf.path.celery_log}} \
         --loglevel INFO \
         --concurrency 1
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
