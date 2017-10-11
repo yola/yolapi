@@ -7,7 +7,8 @@ env PYTHONPATH={{conf.deploy.root}}/yolapi/live/yolapi
 
 # http://superuser.com/a/234541
 exec su -s /bin/sh -c 'exec "$0" "$@"' www-data -- \
-    {{conf.deploy.root}}/yolapi/live/virtualenv/bin/celery beat \
+    {{conf.deploy.root}}/yolapi/live/virtualenv/bin/python \
+        -m celery beat \
         -A yolapi.celery_setup.app \
             --schedule {{aconf.path.celerybeat_file}} \
             --quiet \
