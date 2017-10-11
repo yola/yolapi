@@ -6,7 +6,8 @@ After=network.target
 User=www-data
 Group=www-data
 Environment=PYTHONPATH={{conf.deploy.root}}/yolapi/live/yolapi
-ExecStart={{conf.deploy.root}}/yolapi/live/virtualenv/bin/celery beat \
+ExecStart={{conf.deploy.root}}/yolapi/live/virtualenv/bin/python \
+    -m celery beat \
     -A yolapi.celery_setup.app \
         --schedule {{aconf.path.celerybeat_file}} \
         --quiet \
