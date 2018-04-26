@@ -1,7 +1,7 @@
 def metadata_fields(metadata_version):
     """Return meta-data about the meta-data :)"""
 
-    if metadata_version not in ('1.0', '1.1', '1.2'):
+    if metadata_version not in ('1.0', '1.1', '1.2', '2.1'):
         raise ValueError("Unknown Metadata-Version: %s" % metadata_version)
 
     required = set((
@@ -33,7 +33,7 @@ def metadata_fields(metadata_version):
             'Author-email',
             'License',
         ))
-    if metadata_version in ('1.1', '1.2'):
+    if metadata_version in ('1.1', '1.2', '2.1'):
         required.update((
             'Download-URL',
         ))
@@ -43,7 +43,7 @@ def metadata_fields(metadata_version):
             'Provides',
             'Obsoletes',
         ))
-    if metadata_version in ('1.2',):
+    if metadata_version in ('1.2', '2.1'):
         required.update((
             'Requires-Python',
         ))
