@@ -63,6 +63,13 @@ def metadata_fields(metadata_version):
             'Requires-Dist',
             'Requires-External',
         ))
+    if metadata_version in ('2.1',):
+        fields.update((
+            'Description-Content-Type',
+        ))
+        multivalued.update((
+            'Provides-Extra',
+        ))
     fields.update(required, deprecated, multivalued)
 
     return {
