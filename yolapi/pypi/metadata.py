@@ -63,6 +63,13 @@ def metadata_fields(metadata_version):
             'Requires-Dist',
             'Requires-External',
         ))
+    if metadata_version in ('2.1',):
+        fields.update((
+            'Description-Content-Type',
+        ))
+        multivalued.update((
+            'Provides-Extra',
+        ))
     fields.update(required, deprecated, multivalued)
 
     return {
@@ -85,6 +92,7 @@ def display_sort(metadata):
         'Project-URL',
         'Download-URL',
         'Description',
+        'Description-Content-Type',
         'Author',
         'Author-email',
         'Maintainer',
@@ -97,6 +105,7 @@ def display_sort(metadata):
         'Requires',
         'Provides-Dist',
         'Provides',
+        'Provides-Extra',
         'Obsoletes-Dist',
         'Obsoletes',
         'Platform',
