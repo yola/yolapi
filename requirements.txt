@@ -1,7 +1,7 @@
 Django==1.11.5
 Pygments==2.2.0
 boto==2.48.0
-celery==4.1.0
+celery==4.1.1
 django-crispy-forms==1.6.1
 django-nose==1.4.5
 docutils==0.14
