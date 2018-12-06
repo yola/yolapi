@@ -84,7 +84,10 @@ def process(request):
                              request.upload_handlers, request.encoding)
     post, files = parser.parse()
 
-    if post.get('protcol_version', None) != '1':
+    # Historically, the protocol field was mis-named, but twine corrected this
+    protocol_version = post.get(
+        'protocol_version', post.get('protcol_version', None))
+    if protocol_version != '1':
         raise InvalidUpload("Missing/Invalid protcol_version")
 
     if post[':action'] != 'file_upload':
