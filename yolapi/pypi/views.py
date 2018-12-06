@@ -1,17 +1,14 @@
 import logging
-import re
 
 from django.conf import settings
 from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
                          HttpResponseForbidden)
 from django.shortcuts import render
-from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import (require_http_methods, require_POST,
                                           require_safe)
-from docutils.core import publish_parts
 
-import pypi.metadata
+from pypi.metadata import display_sort, render_description
 import pypi.upload
 from pypi.models import Distribution, Package, Release
 
@@ -76,18 +73,13 @@ def release(request, package, version):
         if isinstance(values, list):
             metadata[key] = '\n'.join(values)
 
-        if key == 'Description':
-            if re.match(r'^.+(\n {8}.*)+\n?$', values):
-                values = re.sub(r'^ {8}', '', values, flags=re.MULTILINE)
-            values = publish_parts(
-                values, writer_name='html',
-                settings_overrides={'syntax_highlight': 'short'})['html_body']
-            metadata[key] = mark_safe(values)
+    if 'Description' in metadata:
+        metadata['Description'] = render_description(metadata['Description'])
 
     return render(request, 'pypi/release.html', {
         'title': unicode(release),
         'release': release,
-        'metadata': pypi.metadata.display_sort(metadata),
+        'metadata': display_sort(metadata),
     })
 
 

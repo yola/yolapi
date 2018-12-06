@@ -1,3 +1,10 @@
+import re
+
+from django.utils.safestring import mark_safe
+
+from docutils.core import publish_parts
+
+
 def metadata_fields(metadata_version):
     """Return meta-data about the meta-data :)"""
 
@@ -118,3 +125,13 @@ def display_sort(metadata):
         metadata = metadata.items()
 
     return sorted(metadata, key=lambda row: (indices.get(row[0], 100), row))
+
+
+def render_description(text):
+    """Render Description field to HTML"""
+    if re.match(r'^.+(\n {8}.*)+\n?$', text):
+        text = re.sub(r'^ {8}', '', text, flags=re.MULTILINE)
+    html = publish_parts(
+        text, writer_name='html',
+        settings_overrides={'syntax_highlight': 'short'})['html_body']
+    return mark_safe(html)
