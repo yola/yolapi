@@ -69,24 +69,25 @@ def release(request, package, version):
     except Release.DoesNotExist:
         raise Http404
 
-    metadata = pypi.metadata.display_sort(release.metadata_dict)
+    metadata = release.metadata_dict
 
     # Flatten lists
-    for i, (key, values) in enumerate(metadata):
+    for key, values in metadata.items():
         if isinstance(values, list):
-            metadata[i] = (key, '\n'.join(values))
+            metadata[key] = '\n'.join(values)
+
         if key == 'Description':
             if re.match(r'^.+(\n {8}.*)+\n?$', values):
                 values = re.sub(r'^ {8}', '', values, flags=re.MULTILINE)
             values = publish_parts(
                 values, writer_name='html',
                 settings_overrides={'syntax_highlight': 'short'})['html_body']
-            metadata[i] = (key, mark_safe(values))
+            metadata[key] = mark_safe(values)
 
     return render(request, 'pypi/release.html', {
         'title': unicode(release),
         'release': release,
-        'metadata': metadata,
+        'metadata': pypi.metadata.display_sort(metadata),
     })
 
 
