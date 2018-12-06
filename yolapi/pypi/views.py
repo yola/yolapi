@@ -38,9 +38,9 @@ def upload(request):
                                          content_type='text/plain')
     try:
         pypi.upload.process(request)
-    except pypi.upload.InvalidUpload, e:
+    except pypi.upload.InvalidUpload as e:
         return HttpResponseBadRequest(unicode(e), content_type='text/plain')
-    except pypi.upload.ReplacementDenied, e:
+    except pypi.upload.ReplacementDenied as e:
         return HttpResponseForbidden(unicode(e), content_type='text/plain')
     return HttpResponse('Accepted, thank you', content_type='text/plain')
 

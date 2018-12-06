@@ -52,7 +52,7 @@ def import_requirement(requirement, recurse=True):
                                        develop_ok=False)
         if dist is not None:
             _import_source(dist.location, tmpdir, recurse)
-    except Exception, e:
+    except Exception as e:
         log.exception(e)
     finally:
         shutil.rmtree(tmpdir)

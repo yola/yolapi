@@ -21,7 +21,7 @@ class RequiresForm(forms.Form):
 
         try:
             list(pkg_resources.parse_requirements(requirements))
-        except ValueError, e:
+        except ValueError as e:
             raise forms.ValidationError(u' '.join(e))
 
         return requirements

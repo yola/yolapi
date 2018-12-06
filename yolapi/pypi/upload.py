@@ -141,7 +141,7 @@ def parse_metadata(post_data):
 
     try:
         fields = pypi.metadata.metadata_fields(metadata_version)
-    except ValueError, e:
+    except ValueError as e:
         raise InvalidUpload(e)
 
     metadata = {}
