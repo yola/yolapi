@@ -74,7 +74,10 @@ def release(request, package, version):
             metadata[key] = '\n'.join(values)
 
     if 'Description' in metadata:
-        metadata['Description'] = render_description(metadata['Description'])
+        content_type = metadata.get('Description-Content-Type', 'text/x-rst')
+        content_type = content_type.split(';', 1)[0]
+        metadata['Description'] = render_description(
+            metadata['Description'], content_type)
 
     return render(request, 'pypi/release.html', {
         'title': unicode(release),

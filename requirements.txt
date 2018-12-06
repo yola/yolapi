@@ -7,6 +7,7 @@ django-nose==1.4.5
 docutils==0.14
 packaging==16.8
 python-dateutil==2.6.1
+py-gfm==0.1.4
 raven==6.1.0
 redis==2.10.6
 spec==1.4.1
