@@ -3,8 +3,8 @@ import re
 from django.utils.safestring import mark_safe
 
 from docutils.core import publish_parts
+from markdown import markdown
 from mdx_gfm import GithubFlavoredMarkdownExtension
-import markdown
 
 
 def metadata_fields(metadata_version):
@@ -139,7 +139,6 @@ def render_description(text, content_type):
             text, writer_name='html',
             settings_overrides={'syntax_highlight': 'short'})['html_body']
     elif content_type == 'text/markdown':
-        html = markdown.markdown(
-            text, extensions=[GithubFlavoredMarkdownExtension()])
+        html = markdown(text, extensions=[GithubFlavoredMarkdownExtension()])
 
     return mark_safe(html)
