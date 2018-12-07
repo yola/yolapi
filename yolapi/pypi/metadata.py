@@ -2,7 +2,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 import bleach
-from bleach_whitelist import print_tags, print_attrs, all_styles
+from bleach_whitelist import all_styles, print_attrs, print_tags
 from docutils.core import publish_parts
 from markdown import markdown
 from mdx_gfm import GithubFlavoredMarkdownExtension
