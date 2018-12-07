@@ -88,7 +88,7 @@ def process(request):
     protocol_version = post.get(
         'protocol_version', post.get('protcol_version', None))
     if protocol_version != '1':
-        raise InvalidUpload("Missing/Invalid protcol_version")
+        raise InvalidUpload("Missing/Invalid protocol_version")
 
     if post[':action'] != 'file_upload':
         raise InvalidUpload("The only supported actions are uploads")
