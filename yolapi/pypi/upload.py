@@ -84,18 +84,21 @@ def process(request):
                              request.upload_handlers, request.encoding)
     post, files = parser.parse()
 
-    if post.get('protcol_version', None) != '1':
-        raise InvalidUpload("Missing/Invalid protcol_version")
+    # Historically, the protocol field was mis-named, but twine corrected this
+    protocol_version = post.get(
+        'protocol_version', post.get('protcol_version', None))
+    if protocol_version != '1':
+        raise InvalidUpload('Missing/Invalid protocol_version')
 
     if post[':action'] != 'file_upload':
-        raise InvalidUpload("The only supported actions are uploads")
+        raise InvalidUpload('The only supported actions are uploads')
 
     if '/' in files['content'].name:
-        raise InvalidUpload("Invalid filename")
+        raise InvalidUpload('Invalid filename')
 
     if post['filetype'] not in getattr(settings, 'PYPI_ALLOWED_UPLOAD_TYPES',
                                        ('sdist',)):
-        raise InvalidUpload("File type disallowed by policy")
+        raise InvalidUpload('File type disallowed by policy')
 
     metadata = parse_metadata(post)
 
@@ -117,8 +120,8 @@ def process(request):
     if distribution.exists():
         if not getattr(settings, 'PYPI_ALLOW_REPLACEMENT', True):
             raise ReplacementDenied(
-                    "A distribution with the same name and version is already "
-                    "present in the repository")
+                'A distribution with the same name and version is already '
+                'present in the repository')
         distribution = distribution[0]
         distribution.delete()
         # The deletion could have garbage collected the Package and Release
@@ -138,14 +141,14 @@ def parse_metadata(post_data):
 
     try:
         fields = pypi.metadata.metadata_fields(metadata_version)
-    except ValueError, e:
+    except ValueError as e:
         raise InvalidUpload(e)
 
     metadata = {}
     for key in sorted(fields['fields']):
         post_key = key.lower().replace('-', '_')
         if key in fields['required'] and post_key not in post_data:
-            raise InvalidUpload("Missing %s, required for Metadata-Version %s"
+            raise InvalidUpload('Missing %s, required for Metadata-Version %s'
                                 % (key, metadata_version))
 
         if post_data.getlist(post_key, []) in ([u'UNKNOWN'], []):

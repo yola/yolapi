@@ -3,6 +3,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import shutil
 import tempfile
 
@@ -52,7 +53,7 @@ def import_requirement(requirement, recurse=True):
                                        develop_ok=False)
         if dist is not None:
             _import_source(dist.location, tmpdir, recurse)
-    except Exception, e:
+    except Exception as e:
         log.exception(e)
     finally:
         shutil.rmtree(tmpdir)
@@ -102,6 +103,8 @@ def _import_source(location, tmpdir, recurse):
             value = parsed.get(field)
             if value == 'UNKNOWN':
                 continue
+            if re.match(r'^.+(\n {8}.*)+\n?$', value):
+                value = re.sub(r'^ {8}', '', value, flags=re.MULTILINE)
         metadata[field] = value
 
     package, _ = Package.objects.get_or_create(name=metadata['Name'])

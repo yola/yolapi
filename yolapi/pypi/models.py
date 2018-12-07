@@ -49,7 +49,7 @@ class PyPIStorage(FileSystemStorage):
         if archive_replaced:
             try:
                 os.mkdir(self.path(archive_replaced))
-            except OSError, e:
+            except OSError as e:
                 if e.errno != errno.EEXIST:
                     raise
 

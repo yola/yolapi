@@ -1,17 +1,14 @@
 import logging
-import re
 
 from django.conf import settings
 from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
                          HttpResponseForbidden)
 from django.shortcuts import render
-from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import (require_http_methods, require_POST,
                                           require_safe)
-from docutils.core import publish_parts
 
-import pypi.metadata
+from pypi.metadata import display_sort, render_description
 import pypi.upload
 from pypi.models import Distribution, Package, Release
 
@@ -32,7 +29,6 @@ def index(request):
 
 @require_POST
 @csrf_exempt
-@ensure_csrf_cookie
 def upload(request):
     if not settings.DEBUG or 'REMOTE_USER' in request.META:
         allowed_uploaders = getattr(settings, 'PYPI_ALLOWED_UPLOADERS', [])
@@ -41,9 +37,9 @@ def upload(request):
                                          content_type='text/plain')
     try:
         pypi.upload.process(request)
-    except pypi.upload.InvalidUpload, e:
+    except pypi.upload.InvalidUpload as e:
         return HttpResponseBadRequest(unicode(e), content_type='text/plain')
-    except pypi.upload.ReplacementDenied, e:
+    except pypi.upload.ReplacementDenied as e:
         return HttpResponseForbidden(unicode(e), content_type='text/plain')
     return HttpResponse('Accepted, thank you', content_type='text/plain')
 
@@ -69,24 +65,23 @@ def release(request, package, version):
     except Release.DoesNotExist:
         raise Http404
 
-    metadata = pypi.metadata.display_sort(release.metadata_dict)
+    metadata = release.metadata_dict
 
     # Flatten lists
-    for i, (key, values) in enumerate(metadata):
+    for key, values in metadata.items():
         if isinstance(values, list):
-            metadata[i] = (key, '\n'.join(values))
-        if key == 'Description':
-            if re.match(r'^.+(\n {8}.*)+\n?$', values):
-                values = re.sub(r'^ {8}', '', values, flags=re.MULTILINE)
-            values = publish_parts(
-                values, writer_name='html',
-                settings_overrides={'syntax_highlight': 'short'})['html_body']
-            metadata[i] = (key, mark_safe(values))
+            metadata[key] = '\n'.join(values)
+
+    if 'Description' in metadata:
+        content_type = metadata.get('Description-Content-Type', 'text/x-rst')
+        content_type = content_type.split(';', 1)[0]
+        metadata['Description'] = render_description(
+            metadata['Description'], content_type)
 
     return render(request, 'pypi/release.html', {
         'title': unicode(release),
         'release': release,
-        'metadata': metadata,
+        'metadata': display_sort(metadata),
     })
 
 

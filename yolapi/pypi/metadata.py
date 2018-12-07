@@ -1,8 +1,18 @@
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
+
+import bleach
+from bleach_whitelist import all_styles, print_attrs, print_tags
+from docutils.core import publish_parts
+from markdown import markdown
+from mdx_gfm import GithubFlavoredMarkdownExtension
+
+
 def metadata_fields(metadata_version):
     """Return meta-data about the meta-data :)"""
 
     if metadata_version not in ('1.0', '1.1', '1.2', '2.1'):
-        raise ValueError("Unknown Metadata-Version: %s" % metadata_version)
+        raise ValueError('Unknown Metadata-Version: %s' % metadata_version)
 
     required = set((
         'Metadata-Version',
@@ -118,3 +128,20 @@ def display_sort(metadata):
         metadata = metadata.items()
 
     return sorted(metadata, key=lambda row: (indices.get(row[0], 100), row))
+
+
+def render_description(text, content_type):
+    """Render Description field to HTML"""
+    if content_type == 'text/x-rst':
+        html = publish_parts(
+            text, writer_name='html',
+            settings_overrides={'syntax_highlight': 'short'})['html_body']
+    elif content_type == 'text/markdown':
+        html = markdown(text, extensions=[GithubFlavoredMarkdownExtension()])
+    else:
+        html = format_html('<pre>{}</pre>', text)
+
+    html = bleach.clean(
+        html, print_tags + ['a', 'cite', 'pre'], print_attrs, all_styles)
+
+    return mark_safe(html)
