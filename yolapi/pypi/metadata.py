@@ -1,5 +1,6 @@
 import re
 
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from docutils.core import publish_parts
@@ -140,5 +141,7 @@ def render_description(text, content_type):
             settings_overrides={'syntax_highlight': 'short'})['html_body']
     elif content_type == 'text/markdown':
         html = markdown(text, extensions=[GithubFlavoredMarkdownExtension()])
+    else:
+        html = format_html('<pre>{}</pre>', text)
 
     return mark_safe(html)
