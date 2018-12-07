@@ -12,7 +12,7 @@ def metadata_fields(metadata_version):
     """Return meta-data about the meta-data :)"""
 
     if metadata_version not in ('1.0', '1.1', '1.2', '2.1'):
-        raise ValueError("Unknown Metadata-Version: %s" % metadata_version)
+        raise ValueError('Unknown Metadata-Version: %s' % metadata_version)
 
     required = set((
         'Metadata-Version',
