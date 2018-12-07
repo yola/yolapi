@@ -29,7 +29,6 @@ def index(request):
 
 @require_POST
 @csrf_exempt
-@ensure_csrf_cookie
 def upload(request):
     if not settings.DEBUG or 'REMOTE_USER' in request.META:
         allowed_uploaders = getattr(settings, 'PYPI_ALLOWED_UPLOADERS', [])
