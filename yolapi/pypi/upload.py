@@ -120,8 +120,8 @@ def process(request):
     if distribution.exists():
         if not getattr(settings, 'PYPI_ALLOW_REPLACEMENT', True):
             raise ReplacementDenied(
-                    'A distribution with the same name and version is already '
-                    'present in the repository')
+                'A distribution with the same name and version is already '
+                'present in the repository')
         distribution = distribution[0]
         distribution.delete()
         # The deletion could have garbage collected the Package and Release
