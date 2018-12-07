@@ -1,5 +1,3 @@
-import re
-
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
@@ -134,9 +132,6 @@ def display_sort(metadata):
 
 def render_description(text, content_type):
     """Render Description field to HTML"""
-    if re.match(r'^.+(\n {8}.*)+\n?$', text):
-        text = re.sub(r'^ {8}', '', text, flags=re.MULTILINE)
-
     if content_type == 'text/x-rst':
         html = publish_parts(
             text, writer_name='html',
