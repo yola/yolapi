@@ -3,6 +3,8 @@ import re
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
+import bleach
+from bleach_whitelist import print_tags, print_attrs, all_styles
 from docutils.core import publish_parts
 from markdown import markdown
 from mdx_gfm import GithubFlavoredMarkdownExtension
@@ -143,5 +145,8 @@ def render_description(text, content_type):
         html = markdown(text, extensions=[GithubFlavoredMarkdownExtension()])
     else:
         html = format_html('<pre>{}</pre>', text)
+
+    html = bleach.clean(
+        html, print_tags + ['a', 'cite', 'pre'], print_attrs, all_styles)
 
     return mark_safe(html)
