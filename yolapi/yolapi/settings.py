@@ -1,6 +1,10 @@
 import os
 from datetime import timedelta
 
+import sentry_sdk
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 from yoconfigurator.base import read_config
 
 
@@ -95,7 +99,6 @@ STATICFILES_FINDERS = (
 SECRET_KEY = '_pree(#lmyg74##*o#a@u2)@&su)f3j+8@cbe=+8ga2lj)d-@t'
 
 MIDDLEWARE = [
-    'raven.contrib.django.middleware.SentryResponseErrorIdMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
 ]
@@ -121,13 +124,8 @@ INSTALLED_APPS = (
     'sync.config.SyncConfig',
     'crispy_forms',
     'django.contrib.staticfiles',
-    'raven.contrib.django',
     'django_nose',
 )
-
-RAVEN_CONFIG = {
-    'dsn': aconf.sentry_dsn,
-}
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -149,35 +147,18 @@ LOGGING = {
             'filename': aconf.path.log,
             'formatter': 'std',
         },
-        'sentry': {
-            'level': 'ERROR',
-            'class': 'raven.contrib.django.handlers.SentryHandler',
-        },
     },
     'loggers': {
         'django.request': {
             'level': 'ERROR',
         },
-        'raven': {
-            'handlers': ['logfile'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'sentry.errors': {
-            'handlers': ['logfile'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
         'yolapi': {
-            'level': 'INFO',
-        },
-        'south': {
             'level': 'INFO',
         },
     },
     'root': {
         'level': 'WARNING',
-        'handlers': ['sentry', 'logfile'],
+        'handlers': ['logfile'],
     }
 }
 
@@ -212,3 +193,8 @@ CELERY_TASK_DEFAULT_QUEUE = 'yolapi-%s' % cconf.domain.hostname
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = ['--with-specplugin', '--where=%s' % app_dir]
+
+sentry_sdk.init(
+    dsn=aconf.sentry_dsn,
+    integrations=[CeleryIntegration(), DjangoIntegration(), RedisIntegration()]
+)
