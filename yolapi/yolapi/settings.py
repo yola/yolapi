@@ -4,7 +4,6 @@ from datetime import timedelta
 import sentry_sdk
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.redis import RedisIntegration
 from yoconfigurator.base import read_config
 
 
@@ -196,5 +195,5 @@ NOSE_ARGS = ['--with-specplugin', '--where=%s' % app_dir]
 
 sentry_sdk.init(
     dsn=aconf.sentry_dsn,
-    integrations=[CeleryIntegration(), DjangoIntegration(), RedisIntegration()]
+    integrations=[CeleryIntegration(), DjangoIntegration()]
 )
