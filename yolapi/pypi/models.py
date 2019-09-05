@@ -11,6 +11,7 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.encoding import force_text
+from django.utils.functional import cached_property
 from pkg_resources import parse_version
 
 from pypi.fields import CanonicalizedPackageNameField
@@ -103,7 +104,7 @@ class Release(models.Model):
         except IndexError:
             return None
 
-    @property
+    @cached_property
     def metadata_dict(self):
         try:
             return json.loads(self.metadata)
@@ -113,6 +114,10 @@ class Release(models.Model):
     @property
     def metadata_version(self):
         return self.metadata_dict.get('Metadata-Version')
+
+    @property
+    def requires_python(self):
+        return self.metadata_dict.get('Requires-Python')
 
     @property
     def summary(self):
