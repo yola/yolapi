@@ -21,6 +21,5 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'yolapi.settings')
 
 
 from django.core.wsgi import get_wsgi_application  # NOQA
-from raven.contrib.django.middleware.wsgi import Sentry  # NOQA
 
-application = Sentry(get_wsgi_application())
+application = get_wsgi_application()
