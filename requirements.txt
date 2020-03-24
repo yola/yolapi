@@ -2,7 +2,7 @@ Django == 1.11.28
 Markdown == 2.6.11
 Pygments == 2.4.2
 boto == 2.49.0
-bleach == 3.1.1
+bleach == 3.1.2
 bleach-whitelist == 0.0.10
 celery == 4.3.0
 django-crispy-forms == 1.7.2
