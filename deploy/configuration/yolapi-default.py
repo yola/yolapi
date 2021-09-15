@@ -11,6 +11,7 @@ def update(config):
             'aws': {
                 'access_key': MissingValue(),
                 'secret_key': MissingValue(),
+                'region_name': MissingValue(),
                 'archive_bucket': 'yolapi.%s' % config.common.domain.services,
             },
             'debug': False,

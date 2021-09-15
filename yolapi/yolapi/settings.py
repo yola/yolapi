@@ -186,6 +186,7 @@ SHORT_DATE_FORMAT = 'Y-m-d'
 PYPI_SYNC_BUCKET = aconf.aws.archive_bucket
 AWS_ACCESS_KEY = aconf.aws.access_key
 AWS_SECRET_KEY = aconf.aws.secret_key
+AWS_REGION_NAME = aconf.aws.region_name
 
 REDIS = aconf.redis
 CELERY_TASK_DEFAULT_QUEUE = 'yolapi-%s' % cconf.domain.hostname
