@@ -63,7 +63,7 @@ def push(id):
     log.info(u"Pushing %s", distribution.filename)
 
     bucket = _bucket()
-    s3_obj = bucket.Object(u'dists/%s' % distribution.filename)
+    s3_obj = bucket.Object(u'dists/{}'.format(distribution.filename))
     try:
         s3_obj.load()
     except ClientError as e:
@@ -110,7 +110,7 @@ def pull(filename):
     log.info(u"Pulling %s", filename)
 
     bucket = _bucket()
-    s3_obj = bucket.Object(u'dists/%s' % filename)
+    s3_obj = bucket.Object(u'dists/{}'.format(filename))
     try:
         s3_obj.load()
     except ClientError as e:
@@ -153,9 +153,8 @@ def pull(filename):
         sync_imported=True)
     distribution.save()
 
-    s3_obj = bucket.Object(u'releases/%s/%s' %
-                           (release.package.name,
-                            release.version))
+    s3_obj = bucket.Object(u'releases/{}/{}'.format(
+        release.package.name, release.version))
     release.metadata = s3_obj.get()['Body'].read().decode('utf-8')
     release.save()
 
