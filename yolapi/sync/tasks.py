@@ -22,9 +22,9 @@ def sync():
     bucket = _bucket()
 
     s3_distributions = {}
-    for s3_obj_info in bucket.objects.filter(Delimiter='/', Prefix='dists/'):
-        s3_obj = s3_obj_info.Object()
-        s3_distributions[s3_obj.key.split(u'/', 1)[1]] = s3_obj
+    for s3_obj_summary in bucket.objects.filter(
+            Delimiter='/', Prefix='dists/'):
+        s3_distributions[s3_obj_summary.key.split(u'/', 1)[1]] = s3_obj_summary
 
     # Our Distribution table doesn't store the bare filename, but we're about
     # to do a full table scan, so no loss...
@@ -38,19 +38,21 @@ def sync():
             push.delay(distribution.id)
             continue
 
-        s3_obj = s3_distributions[distribution.filename]
-        if allow_replacement and _compare_db_with_s3(distribution, s3_obj) > 0:
+        s3_obj_summary = s3_distributions[distribution.filename]
+        if allow_replacement and _compare_db_with_s3_obj_summary(
+                distribution, s3_obj_summary) > 0:
             log.info(u"Queueing push: %s [mismatch]", distribution.filename)
             push.delay(distribution.id)
 
-    for filename, s3_obj in s3_distributions.iteritems():
+    for filename, s3_obj_summary in s3_distributions.iteritems():
         if filename not in by_filename:
             log.info(u"Queueing pull: %s [missing]", filename)
             pull.delay(filename)
             continue
 
         distribution = Distribution.objects.get(id=by_filename[filename])
-        if allow_replacement and _compare_db_with_s3(distribution, s3_obj) < 0:
+        if allow_replacement and _compare_db_with_s3_obj_summary(
+                distribution, s3_obj_summary) < 0:
             log.info(u"Queueing pull %s [mismatch]", filename)
             pull.delay(filename)
 
@@ -73,7 +75,7 @@ def push(id):
         if not allow_replacement:
             log.warn("Aborting replacement")
             return
-        if _compare_db_with_s3(distribution, s3_obj) <= 0:
+        if _compare_db_with_s3_obj(distribution, s3_obj) <= 0:
             log.warn("Aborting push on top of a newer object")
             return
 
@@ -136,7 +138,7 @@ def pull(filename):
         if not allow_replacement:
             log.warn("Aborting replacement")
             return
-        if _compare_db_with_s3(distribution, s3_obj) >= 0:
+        if _compare_db_with_s3_obj(distribution, s3_obj) >= 0:
             log.warn("Aborting pull on top of a newer object")
             return
         distribution.delete()
@@ -164,7 +166,15 @@ def _boto3_md5sum(digest):
     return digest.decode('hex').encode('base64').strip()
 
 
-def _compare_db_with_s3(distribution, s3_obj):
+def _compare_db_with_s3_obj_summary(distribution, s3_obj_summary):
+    s3_md5 = s3_obj_summary.e_tag.strip('"')
+    if s3_md5 == distribution.md5_digest:
+        return 0
+
+    return _compare_db_with_s3_obj(distribution, s3_obj_summary.Object())
+
+
+def _compare_db_with_s3_obj(distribution, s3_obj):
     """Compare a Distribution with an S3 obj
     Returns:
         < 0: S3 Newer
