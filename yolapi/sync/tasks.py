@@ -1,3 +1,4 @@
+import codecs
 import logging
 import urllib
 
@@ -163,7 +164,9 @@ def pull(filename):
 
 def _boto3_md5sum(digest):
     """Return the b64 that boto3 expects"""
-    return digest.decode('hex').encode('base64').strip()
+    return codecs.encode(
+        codecs.decode(digest, 'hex'), 'base64'
+    ).strip().decode()
 
 
 def _compare_db_with_s3_obj_summary(distribution, s3_obj_summary):
