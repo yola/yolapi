@@ -1,4 +1,4 @@
-Django == 1.11.29
+Django == 2.2.24
 Markdown == 2.6.11
 Pygments == 2.5.2
 boto3 == 1.17.112
