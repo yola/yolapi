@@ -120,10 +120,10 @@ def _import_source(location, tmpdir, recurse):
         raise Exception("Attempting to replace an existing sdist.")
 
     md5sum = hashlib.md5()
-    with open(location) as f:
+    with open(location, 'rb') as f:
         while True:
             data = f.read(4096)
-            if data == '':
+            if data == b'':
                 break
             md5sum.update(data)
         f.seek(0)

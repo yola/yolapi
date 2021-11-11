@@ -27,7 +27,7 @@ class CRLFParts(object):
     def read(self, size=-1):
         """Read like a file"""
         if not self._buf:
-            self._buf.append(next(self._iter, ''))
+            self._buf.append(next(self._iter, b''))
         if len(self._buf[0]) < size or size < 0:
             return self._buf.pop(0)
         block = self._buf.pop(0)
@@ -39,31 +39,31 @@ class CRLFParts(object):
         than blocksize.
         Not terribly efficient or inefficient...
         """
-        buf = ''
+        buf = b''
         while True:
             if len(buf) < self.blocksize:
                 buf += stream.read(self.blocksize - len(buf))
                 if not buf:
                     break
-            i = buf.find('\n')
+            i = buf.find(b'\n')
             if i < 0:
                 yield buf
-                buf = ''
+                buf = b''
             else:
                 yield buf[:i + 1]
                 buf = buf[i + 1:]
 
     def _header_transformer(self, lines):
         """Transform LF in MIME headers to CRLF"""
-        needle = '--%s\n' % self.boundary
+        needle = b'--%s\n' % self.boundary
         in_header = False
         for line in lines:
             if line == needle:
                 in_header = True
             if in_header:
-                assert line[-1] == '\n'
-                line = line[:-1] + '\r\n'
-            if line == '\r\n':
+                assert line[-1] == b'\n'
+                line = line[:-1] + b'\r\n'
+            if line == b'\r\n':
                 in_header = False
             yield line
 
@@ -79,7 +79,7 @@ class ReplacementDenied(Exception):
 def process(request):
     # Django doesn't like the LF line endings on the MIME headers that
     # distutils will give us.
-    boundary = request.META['CONTENT_TYPE'].split('boundary=', 1)[1]
+    boundary = request.META['CONTENT_TYPE'].split('boundary=', 1)[1].encode()
     parser = MultiPartParser(request.META, CRLFParts(request, boundary),
                              request.upload_handlers, request.encoding)
     post, files = parser.parse()

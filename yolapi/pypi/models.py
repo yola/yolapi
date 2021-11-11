@@ -79,7 +79,7 @@ class Package(models.Model):
         if not self.releases.exists():
             self.delete()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -127,8 +127,8 @@ class Release(models.Model):
         if not self.distributions.exists():
             self.delete()
 
-    def __unicode__(self):
-        return u'%s %s' % (self.package.name, self.version)
+    def __str__(self):
+        return f'{self.package.name} {self.version}'
 
 
 class Distribution(models.Model):
@@ -155,7 +155,7 @@ class Distribution(models.Model):
     def filename(self):
         return os.path.basename(self.path)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.filename
 
     def delete(self, *args, **kwargs):

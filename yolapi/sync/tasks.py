@@ -15,6 +15,10 @@ log = logging.getLogger(__name__)
 allow_replacement = getattr(settings, 'PYPI_ALLOW_REPLACEMENT', True)
 
 
+def _cmp(a, b):
+    return (a > b) - (a < b)
+
+
 @local_celery_app.task
 def sync():
     """Spawn jobs to perform a 2-way sync with S3.
@@ -45,7 +49,7 @@ def sync():
             log.info(u"Queueing push: %s [mismatch]", distribution.filename)
             push.delay(distribution.id)
 
-    for filename, s3_obj_summary in s3_distributions.iteritems():
+    for filename, s3_obj_summary in s3_distributions.items():
         if filename not in by_filename:
             log.info(u"Queueing pull: %s [missing]", filename)
             pull.delay(filename)
@@ -74,10 +78,10 @@ def push(id):
             raise
     else:
         if not allow_replacement:
-            log.warn("Aborting replacement")
+            log.warning("Aborting replacement")
             return
         if _compare_db_with_s3_obj(distribution, s3_obj) <= 0:
-            log.warn("Aborting push on top of a newer object")
+            log.warning("Aborting push on top of a newer object")
             return
 
     metadata = {
@@ -85,7 +89,7 @@ def push(id):
         'package': release.package.name,
         'version': release.version,
         'filetype': distribution.filetype,
-        'uploaded': urllib.quote(distribution.created.isoformat())
+        'uploaded': urllib.parse.quote(distribution.created.isoformat())
     }
     if distribution.pyversion:
         metadata['pyversion'] = distribution.pyversion
@@ -118,7 +122,7 @@ def pull(filename):
         s3_obj.load()
     except ClientError as e:
         if e.response['Error']['Code'] == '404':
-            log.warn('Aborting pull of non-existent file')
+            log.warning('Aborting pull of non-existent file')
             return
         raise
 
@@ -128,7 +132,7 @@ def pull(filename):
     pyversion = s3_obj.metadata.get('pyversion', u'')
     md5_digest = s3_obj.metadata['md5_digest']
     uploaded = dateutil.parser.parse(
-        urllib.unquote(s3_obj.metadata['uploaded']))
+        urllib.parse.unquote(s3_obj.metadata['uploaded']))
 
     package, _ = Package.objects.get_or_create(name=package)
     release, created = package.releases.get_or_create(version=version)
@@ -137,10 +141,10 @@ def pull(filename):
     if distribution.exists():
         distribution = distribution[0]
         if not allow_replacement:
-            log.warn("Aborting replacement")
+            log.warning("Aborting replacement")
             return
         if _compare_db_with_s3_obj(distribution, s3_obj) >= 0:
-            log.warn("Aborting pull on top of a newer object")
+            log.warning("Aborting pull on top of a newer object")
             return
         distribution.delete()
         # The deletion could have garbage collected the Package and Release
@@ -189,8 +193,8 @@ def _compare_db_with_s3_obj(distribution, s3_obj):
         return 0
 
     created = dateutil.parser.parse(
-        urllib.unquote(s3_obj.metadata['uploaded']))
-    return cmp(distribution.created, created)
+        urllib.parse.unquote(s3_obj.metadata['uploaded']))
+    return _cmp(distribution.created, created)
 
 
 def _bucket():

@@ -29,6 +29,6 @@ class Command(BaseCommand):
         orphans = on_disk.difference(owned)
 
         for filename in sorted(orphans):
-            print filename
+            print(filename)
             if options['delete']:
                 os.unlink(os.path.join(directory, filename))
