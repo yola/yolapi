@@ -11,7 +11,7 @@ class TestPackageView(TestCase):
         request = RequestFactory().get('/simple/the-name-of-my-package')
         response = package(request, 'the-name-of-my-package')
         self.assertEqual(response.status_code, 200)
-        self.assertIn('the-name-of-my-package', response.content)
+        self.assertIn(b'the-name-of-my-package', response.content)
 
     def test_404s_if_package_name_not_found(self):
         request = RequestFactory().get('/simple/does-not-exist')

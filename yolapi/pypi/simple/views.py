@@ -20,7 +20,7 @@ def package(request, package):
     except Package.DoesNotExist:
         raise Http404
     return render(request, 'pypi.simple/package.html', {
-        'title': unicode(package),
+        'title': str(package),
         'package': package,
     })
 
@@ -32,6 +32,6 @@ def release(request, package, version):
     except Release.DoesNotExist:
         raise Http404
     return render(request, 'pypi.simple/release.html', {
-        'title': unicode(release),
+        'title': str(release),
         'release': release,
     })

@@ -38,9 +38,9 @@ def upload(request):
     try:
         pypi.upload.process(request)
     except pypi.upload.InvalidUpload as e:
-        return HttpResponseBadRequest(unicode(e), content_type='text/plain')
+        return HttpResponseBadRequest(str(e), content_type='text/plain')
     except pypi.upload.ReplacementDenied as e:
-        return HttpResponseForbidden(unicode(e), content_type='text/plain')
+        return HttpResponseForbidden(str(e), content_type='text/plain')
     return HttpResponse('Accepted, thank you', content_type='text/plain')
 
 
@@ -52,7 +52,7 @@ def package(request, package):
     except Package.DoesNotExist:
         raise Http404
     return render(request, 'pypi/package.html', {
-        'title': unicode(package),
+        'title': str(package),
         'package': package,
     })
 
@@ -79,7 +79,7 @@ def release(request, package, version):
             metadata['Description'], content_type)
 
     return render(request, 'pypi/release.html', {
-        'title': unicode(release),
+        'title': str(release),
         'release': release,
         'metadata': display_sort(metadata),
     })
