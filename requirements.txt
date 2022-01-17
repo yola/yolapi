@@ -4,7 +4,7 @@ Pygments == 2.5.2
 boto3 == 1.17.112
 bleach == 3.3.1
 bleach-whitelist == 0.0.11
-celery == 4.4.7
+celery == 5.2.2
 django-crispy-forms == 1.8.1
 docutils == 0.17.1
 packaging == 20.9
