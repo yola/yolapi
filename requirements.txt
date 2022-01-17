@@ -1,6 +1,6 @@
 Django == 1.11.29
 Markdown == 2.6.11
-Pygments == 2.5.2
+Pygments == 2.7.4
 boto3 == 1.17.112
 bleach == 3.3.1
 bleach-whitelist == 0.0.11
