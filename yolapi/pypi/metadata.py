@@ -43,7 +43,7 @@ def metadata_fields(metadata_version):
             'Author-email',
             'License',
         ))
-    if metadata_version in ('1.1', '1.2', '2.1'):
+    if metadata_version in ('1.1', '1.2', '2.1', '2.2', '2.3'):
         required.update((
             'Download-URL',
         ))
@@ -53,7 +53,7 @@ def metadata_fields(metadata_version):
             'Provides',
             'Obsoletes',
         ))
-    if metadata_version in ('1.2', '2.1'):
+    if metadata_version in ('1.2', '2.1', '2.2', '2.3'):
         required.update((
             'Requires-Python',
         ))
@@ -73,12 +73,16 @@ def metadata_fields(metadata_version):
             'Requires-Dist',
             'Requires-External',
         ))
-    if metadata_version in ('2.1',):
+    if metadata_version in ('2.1', '2.2', '2.3'):
         fields.update((
             'Description-Content-Type',
         ))
         multivalued.update((
             'Provides-Extra',
+        ))
+    if metadata_version in ('2.2', '2.3'):
+        multivalued.update((
+            'Dynamic',
         ))
     fields.update(required, deprecated, multivalued)
 
@@ -120,6 +124,7 @@ def display_sort(metadata):
         'Obsoletes',
         'Platform',
         'Supported-Platform',
+        'Dynamic',
         'Metadata-Version',
     )
     indices = dict((key, i) for i, key in enumerate(key_order))
