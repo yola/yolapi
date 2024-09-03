@@ -109,7 +109,7 @@ def _import_source(location, tmpdir, recurse):
 
     if 'Description' not in metadata and (
             metadata_version in ('2.1', '2.2', '2.3')):
-        metadata['Description'] = parsed.get_payload(decode=True)
+        metadata['Description'] = parsed.get_payload()
 
     package, _ = Package.objects.get_or_create(name=metadata['Name'])
     release, created = package.releases.get_or_create(
