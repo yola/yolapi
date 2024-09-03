@@ -1,15 +1,15 @@
 <VirtualHost *:443>
-    ServerName {{aconf.domain}}
-    {{if 'aliases_domains' in aconf}}
-    ServerAlias {{for a in aconf.alias_domains}} {{a}} {{endfor}}
-    {{endif}}
+    ServerName {{ aconf.domain }}
+    {% if 'aliases_domains' in aconf %}
+    ServerAlias {% for a in aconf.alias_domains %} {{ a }} {% endfor %}
+    {% endif %}
 
     SSLEngine on
     SSLCertificateFile {{ aconf.ssl.cert }}
     SSLCertificateKeyFile {{ aconf.ssl.key }}
-    {{if 'chain' in aconf.ssl}}
+    {% if 'chain' in aconf.ssl %}
     SSLCertificateChainFile {{ aconf.ssl.chain }}
-    {{endif}}
+    {% endif %}
 
     Header always set Strict-Transport-Security "max-age=63072000; preload"
 
@@ -32,8 +32,8 @@
     ProxyPass /media !
     ProxyPass / unix:{{ aconf.path.uwsgi_socket }}|uwsgi://yolapi/
 
-    Alias /static {{conf.deploy.root}}/yolapi/live/static
-    Alias /media {{conf.deploy.root}}/yolapi/data/media
+    Alias /static {{ conf.deploy.root }}/yolapi/live/static
+    Alias /media {{ conf.deploy.root }}/yolapi/data/media
 
     CustomLog /var/log/apache2/yolapi-access.log combined
     ErrorLog /var/log/apache2/yolapi-error.log
@@ -41,9 +41,9 @@
 </VirtualHost>
 <VirtualHost *:80>
     ServerName {{ aconf.domain }}
-    {{if 'alias_domains' in aconf}}
-    ServerAlias {{for a in aconf.alias_domains}} {{a}} {{endfor}}
-    {{endif}}
+    {% if 'alias_domains' in aconf %}
+    ServerAlias {% for a in aconf.alias_domains %} {{ a }} {% endfor %}
+    {% endif %}
 
     RewriteEngine on
     RewriteRule (.*) https://{{ aconf.domain }}%{REQUEST_URI}

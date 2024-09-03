@@ -1,1 +1,1 @@
-yodeploy == 0.10.7
+yodeploy == 1.0.0

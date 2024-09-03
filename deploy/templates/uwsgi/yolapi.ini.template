@@ -1,7 +1,7 @@
 [uwsgi]
 plugin = python3
 project = yolapi
-base = {{conf.deploy.root}}/%(project)/live
+base = {{ conf.deploy.root }}/%(project)/live
 
 chdir = %(base)/%(project)
 virtualenv = %(base)/virtualenv
@@ -11,10 +11,10 @@ auto-procname = true
 master = true
 processes = 5
 
-socket = {{aconf.path.uwsgi_socket}}
+socket = {{ aconf.path.uwsgi_socket }}
 chmod-socket = 700
 vacuum = true
 
-logto = {{aconf.path.uwsgi_log}}
+logto = {{ aconf.path.uwsgi_log }}
 
 buffer-size = 8192
