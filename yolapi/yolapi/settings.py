@@ -34,6 +34,8 @@ DATABASES = {
     }
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -49,13 +51,11 @@ LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
 
+FORMAT_MODULE_PATH = ['yolapi.formats']
+
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = False
-
-# If you set this to False, Django will not format dates, numbers and
-# calendars according to the current locale
-USE_L10N = False
 
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
@@ -122,9 +122,13 @@ INSTALLED_APPS = (
     'importer',
     'sync.config.SyncConfig',
     'crispy_forms',
+    'crispy_forms_bootstrap2',
     'django.contrib.staticfiles',
-    'django_nose',
 )
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -179,10 +183,6 @@ PYPI_ALLOW_DELETION = True
 
 PYPI_ALLOWED_UPLOAD_TYPES = ('sdist',)
 
-# An available formatting that can be used for displaying date fields on
-# templates.
-SHORT_DATE_FORMAT = 'Y-m-d'
-
 PYPI_SYNC_BUCKET = aconf.aws.archive_bucket
 AWS_ACCESS_KEY = aconf.aws.access_key
 AWS_SECRET_KEY = aconf.aws.secret_key
@@ -190,9 +190,6 @@ AWS_REGION_NAME = aconf.aws.region_name
 
 REDIS = aconf.redis
 CELERY_TASK_DEFAULT_QUEUE = 'yolapi-%s' % cconf.domain.hostname
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-NOSE_ARGS = ['--with-specplugin', '--where=%s' % app_dir]
 
 sentry_sdk.init(
     dsn=aconf.sentry_dsn,

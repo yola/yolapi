@@ -10,9 +10,8 @@ from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils import timezone
-from django.utils.encoding import force_text
 from django.utils.functional import cached_property
-from pkg_resources import parse_version
+from packaging.version import parse as parse_version
 
 from pypi.fields import CanonicalizedPackageNameField
 
@@ -36,7 +35,7 @@ class PyPIStorage(FileSystemStorage):
 
     def get_valid_name(self, name):
         # Like django.utils.get_valid_name, but allowing + too
-        name = force_text(name).strip().replace(' ', '_')
+        name = str(name).strip().replace(' ', '_')
         return re.sub(r'(?u)[^-\w.+]', '', name)
 
     def get_available_name(self, name, max_length=None):
@@ -54,7 +53,7 @@ class PyPIStorage(FileSystemStorage):
                 if e.errno != errno.EEXIST:
                     raise
 
-            created = self.created_time(name)
+            created = self.get_created_time(name)
             new_name = '%s/%s-%s' % (archive_replaced,
                                      created.strftime('%Y%m%dT%H%M%SZ'),
                                      os.path.basename(name))
@@ -84,7 +83,8 @@ class Package(models.Model):
 
 
 class Release(models.Model):
-    package = models.ForeignKey(Package, related_name='releases')
+    package = models.ForeignKey(
+        Package, related_name='releases', on_delete=models.CASCADE)
     version = models.CharField(max_length=128, db_index=True, editable=False)
     metadata = models.TextField()
 
@@ -132,7 +132,8 @@ class Release(models.Model):
 
 
 class Distribution(models.Model):
-    release = models.ForeignKey(Release, related_name='distributions')
+    release = models.ForeignKey(
+        Release, related_name='distributions', on_delete=models.CASCADE)
     content = models.FileField(storage=PyPIStorage(),
             upload_to=getattr(settings, 'PYPI_DISTS', 'dists'), blank=False)
     md5_digest = models.CharField(max_length=32, blank=False, editable=False)
