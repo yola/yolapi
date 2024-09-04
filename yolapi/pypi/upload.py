@@ -5,9 +5,8 @@ import logging
 from django.conf import settings
 from django.http.multipartparser import MultiPartParser
 
-from pypi.models import Package
 import pypi.metadata
-
+from pypi.models import Package
 
 log = logging.getLogger(__name__)
 
