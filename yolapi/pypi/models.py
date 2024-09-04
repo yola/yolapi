@@ -11,7 +11,7 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.functional import cached_property
-from packaging.version import parse as parse_version
+from packaging_legacy.version import parse as parse_version
 
 from pypi.fields import CanonicalizedPackageNameField
 
