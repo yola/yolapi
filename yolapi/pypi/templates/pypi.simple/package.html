@@ -1,6 +1,6 @@
 {% extends "pypi.simple/base.html" %}
 {% block content %}
-{% for release in package.sorted_releases %}
+{% for release in package.sorted_releases_desc %}
 {% for distribution in release.distributions.iterator %}
 <a href="{{ distribution.content.url }}#md5={{ distribution.md5_digest }}"
   {% if release.requires_python %}data-requires-python="{{ release.requires_python }}"{% endif %}>
