@@ -3,7 +3,8 @@ boto3 == 1.35.11
 celery == 5.4.0
 crispy-forms-bootstrap2 == 2024.1
 django-crispy-forms == 2.3
-packaging == 20.9
+packaging == 24.1
+packaging-legacy == 23.0.post0
 python-dateutil == 2.9.0.post0
 readme-renderer[md] == 43.0
 redis[hiredis] == 5.0.8
