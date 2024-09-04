@@ -107,9 +107,12 @@ def _import_source(location, tmpdir, recurse):
                 value = re.sub(r'^ {8}', '', value, flags=re.MULTILINE)
         metadata[field] = value
 
-    if 'Description' not in metadata and (
-            metadata_version in ('2.1', '2.2', '2.3')):
-        metadata['Description'] = parsed.get_payload()
+    if (
+        ('Description' not in metadata)
+        and (metadata_version in ('2.1', '2.2', '2.3'))
+        and (description := parsed.get_payload())
+    ):
+        metadata['Description'] = description
 
     package, _ = Package.objects.get_or_create(name=metadata['Name'])
     release, created = package.releases.get_or_create(
