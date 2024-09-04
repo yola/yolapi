@@ -13,7 +13,7 @@
 			<th>Uploaded</th>
 		</tr>
 	</thead>
-{% for release in package.sorted_releases %}
+{% for release in package.sorted_releases_desc %}
 	<tr>
 		<td>
 			<a href="{% url 'pypi:release' package=package.name version=release.version %}">

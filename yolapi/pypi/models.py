@@ -66,13 +66,16 @@ class Package(models.Model):
                                          primary_key=True, editable=False)
 
     @property
-    def sorted_releases(self):
-        return sorted(self.releases.iterator(),
-                      key=lambda r: parse_version(r.version))
+    def sorted_releases_desc(self):
+        return sorted(
+            self.releases.iterator(),
+            key=lambda r: parse_version(r.version),
+            reverse=True
+        )
 
     @property
     def latest(self):
-        return self.sorted_releases[-1]
+        return self.sorted_releases_desc[0]
 
     def gc(self):
         if not self.releases.exists():
