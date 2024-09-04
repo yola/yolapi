@@ -10,15 +10,9 @@ scripts/build.sh test_build
 cp configuration.json test_build/
 
 . virtualenv/bin/activate
-cd test_build/
+cd test_build/yolapi
 
-mkdir -p reports
+# Ensure the configuration is valid
+./manage.py check
 
-# configure nose to generate an xunit report
-cat <<eof > setup.cfg
-[nosetests]
-with-xunit=1
-xunit-file=reports/xunit.xml
-eof
-
-yolapi/manage.py test
+python -m pytest

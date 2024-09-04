@@ -1,7 +1,7 @@
-from django.conf.urls import url
+from django.urls import path
 
 from importer import views as importer_views
 
 urlpatterns = [
-    url(r'^$', importer_views.index, name='index'),
+    path('', importer_views.index, name='index'),
 ]

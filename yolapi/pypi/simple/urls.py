@@ -1,10 +1,11 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 
 from pypi.simple import views as simple_views
 
 urlpatterns = [
-    url(r'^$', simple_views.index, name='index'),
-    url(r'^(?P<package>[\w\d_\.\-]+)/$', simple_views.package, name='package'),
-    url(r'^(?P<package>[\w\d_\.\-]+)/(?P<version>[\w\d_\.\-]+)/$',
+    path('', simple_views.index, name='index'),
+    re_path(
+        r'^(?P<package>[\w_.\-]+)/$', simple_views.package, name='package'),
+    re_path(r'^(?P<package>[\w_.\-]+)/(?P<version>[\w_.\-]+)/$',
         simple_views.release, name='release'),
 ]

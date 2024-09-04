@@ -6,10 +6,10 @@ After=network.target
 User=www-data
 Group=www-data
 Environment=PYTHONPATH={{ conf.deploy.root }}/yolapi/live/yolapi
-ExecStart={{ conf.deploy.root }}/yolapi/live/virtualenv/bin/python \
-    -m celery worker \
+ExecStart={{ conf.deploy.root }}/yolapi/live/virtualenv/bin/python -m celery \
     -A yolapi.celery_setup.app \
-        --quiet \
+    --quiet \
+    worker \
         --time-limit=1800 \
         --logfile {{ aconf.path.celery_log }} \
         --loglevel INFO \
