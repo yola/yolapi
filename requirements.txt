@@ -1,16 +1,11 @@
 Django == 4.2.16
-Markdown == 2.6.11
-Pygments == 2.5.2
 boto3 == 1.35.11
-bleach == 3.3.1
-bleach-whitelist == 0.0.11
 celery == 5.4.0
 crispy-forms-bootstrap2 == 2024.1
 django-crispy-forms == 2.3
-docutils == 0.17.1
 packaging == 20.9
-py-gfm == 0.1.4
 python-dateutil == 2.9.0.post0
+readme-renderer[md] == 43.0
 redis[hiredis] == 5.0.8
 sentry-sdk == 2.13.0
 yoconfigurator == 0.5.2
