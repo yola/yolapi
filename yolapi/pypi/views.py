@@ -1,15 +1,22 @@
 import logging
 
 from django.conf import settings
-from django.http import (Http404, HttpResponse, HttpResponseBadRequest,
-                         HttpResponseForbidden)
+from django.http import (
+    Http404,
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+)
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
-from django.views.decorators.http import (require_http_methods, require_POST,
-                                          require_safe)
+from django.views.decorators.http import (
+    require_POST,
+    require_http_methods,
+    require_safe,
+)
 
-from pypi.metadata import display_sort, render_description
 import pypi.upload
+from pypi.metadata import display_sort, render_description
 from pypi.models import Distribution, Package, Release
 
 log = logging.getLogger(__name__)

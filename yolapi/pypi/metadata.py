@@ -1,5 +1,4 @@
 from django.utils.safestring import mark_safe
-
 from readme_renderer.markdown import render as render_markdown
 from readme_renderer.rst import render as render_rst
 from readme_renderer.txt import render as render_txt

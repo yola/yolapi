@@ -6,7 +6,6 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from yoconfigurator.base import read_config
 
-
 app_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..',))
 project_dir = os.path.realpath(os.path.join(app_dir, '..'))
 
