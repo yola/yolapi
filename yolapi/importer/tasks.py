@@ -14,7 +14,7 @@ from django.core.files import File
 
 from pypi.metadata import metadata_fields
 from pypi.models import Package
-from yolapi import local_celery_app
+from main import local_celery_app
 
 log = logging.getLogger(__name__)
 

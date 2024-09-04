@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.files import File
 
 from pypi.models import Distribution, Package
-from yolapi import local_celery_app
+from main import local_celery_app
 
 log = logging.getLogger(__name__)
 allow_replacement = getattr(settings, 'PYPI_ALLOW_REPLACEMENT', True)
