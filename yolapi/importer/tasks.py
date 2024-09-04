@@ -12,9 +12,9 @@ import setuptools.archive_util
 import setuptools.package_index
 from django.core.files import File
 
+from main import local_celery_app
 from pypi.metadata import metadata_fields
 from pypi.models import Package
-from yolapi import local_celery_app
 
 log = logging.getLogger(__name__)
 

@@ -50,7 +50,7 @@ LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
 
-FORMAT_MODULE_PATH = ['yolapi.formats']
+FORMAT_MODULE_PATH = ['main.formats']
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -101,9 +101,9 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
 ]
 
-ROOT_URLCONF = 'yolapi.urls'
+ROOT_URLCONF = 'main.urls'
 
-WSGI_APPLICATION = 'yolapi.wsgi.application'
+WSGI_APPLICATION = 'main.wsgi.application'
 
 TEMPLATES = [
     {

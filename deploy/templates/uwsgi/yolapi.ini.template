@@ -5,7 +5,7 @@ base = {{ conf.deploy.root }}/%(project)/live
 
 chdir = %(base)/%(project)
 virtualenv = %(base)/virtualenv
-module = yolapi.wsgi:application
+module = main.wsgi:application
 
 auto-procname = true
 master = true
