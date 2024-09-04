@@ -1,11 +1,8 @@
-from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-import bleach
-from bleach_whitelist import all_styles, print_attrs, print_tags
-from docutils.core import publish_parts
-from markdown import markdown
-from mdx_gfm import GithubFlavoredMarkdownExtension
+from readme_renderer.markdown import render as render_markdown
+from readme_renderer.rst import render as render_rst
+from readme_renderer.txt import render as render_txt
 
 
 def metadata_fields(metadata_version):
@@ -138,15 +135,9 @@ def display_sort(metadata):
 def render_description(text, content_type):
     """Render Description field to HTML"""
     if content_type == 'text/x-rst':
-        html = publish_parts(
-            text, writer_name='html',
-            settings_overrides={'syntax_highlight': 'short'})['html_body']
+        html = render_rst(text)
     elif content_type == 'text/markdown':
-        html = markdown(text, extensions=[GithubFlavoredMarkdownExtension()])
+        html = render_markdown(text)
     else:
-        html = format_html('<pre>{}</pre>', text)
-
-    html = bleach.clean(
-        html, print_tags + ['a', 'cite', 'pre'], print_attrs, all_styles)
-
+        html = render_txt(text)
     return mark_safe(html)
