@@ -1,4 +1,4 @@
-Django == 4.2.16
+Django == 4.2.18
 boto3 == 1.35.11
 celery == 5.4.0
 crispy-forms-bootstrap2 == 2024.1
