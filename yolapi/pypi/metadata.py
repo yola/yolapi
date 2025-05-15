@@ -7,7 +7,7 @@ from readme_renderer.txt import render as render_txt
 def metadata_fields(metadata_version):
     """Return meta-data about the meta-data :)"""
 
-    if metadata_version not in ('1.0', '1.1', '1.2', '2.1', '2.2', '2.3'):
+    if metadata_version not in ('1.0', '1.1', '1.2', '2.1', '2.2', '2.3', '2.4'):
         raise ValueError('Unknown Metadata-Version: %s' % metadata_version)
 
     required = set((
