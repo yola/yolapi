@@ -200,7 +200,7 @@ def _fetch_wheel(release, name, version):
 def _pip_download(spec, tmpdir, *extra_args):
     result = subprocess.run(
         [
-            sys.executable, '-m', 'pip', 'download', '--no-deps',
+            sys.executable, '-m', 'pip', 'download', '--no-deps', '--no-cache-dir',
             '--index-url', 'https://pypi.org/simple/',
             '--dest', tmpdir, spec, *extra_args
         ],
