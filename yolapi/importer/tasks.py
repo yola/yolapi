@@ -116,7 +116,7 @@ def _import_source(location, tmpdir, recurse):
 
     if (
         ('Description' not in metadata)
-        and (metadata_version in ('2.1', '2.2', '2.3'))
+        and (metadata_version in ('2.1', '2.2', '2.3', '2.4', '2.5'))
         and (description := parsed.get_payload())
     ):
         metadata['Description'] = description
