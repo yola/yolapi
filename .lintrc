@@ -1,8 +1,12 @@
+[files]
+ignore = */migrations/*
+
 [tools]
 linters = flake8
 
 [tool_flake8]
 python = 3
-
-[files]
-ignore = */migrations/*
+ignore = D10, D200, D203, D204, D205, D301, D400, I100, I201, W503
+snippet = datetime.now, date.today
+max-line-length = 100
+quotes = single

@@ -9,7 +9,9 @@ urlpatterns = [
         pypi_views.release, name='release'),
     re_path(r'^(?P<package>[\w_.\-]+)/(?P<version>[\w_.\-+]+)'
         r'/(?P<filetype>[\w_]+)/$', pypi_views.delete, name='delete'),
-    re_path(r'^(?P<package>[\w_.\-]+)/(?P<version>[\w_.\-+]+)'
+    re_path(
+        r'^(?P<package>[\w_.\-]+)/(?P<version>[\w_.\-+]+)'
         r'/(?P<filetype>[\w_]+)/(?P<pyversion>[\w.]+)/$',
-        pypi_views.delete, name='delete'),
+        pypi_views.delete, name='delete'
+    ),
 ]
