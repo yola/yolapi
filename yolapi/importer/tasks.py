@@ -154,8 +154,11 @@ def _import_source(location, tmpdir, recurse):
     except Exception as e:
         log.warning('No wheel for %s %s: %s', metadata['Name'], metadata['Version'], e)
 
-    if recurse and 'Requires-Dist' in metadata:
-        reqs = [r for r in metadata['Requires-Dist'] if 'extra ==' not in r]
+    if recurse:
+        reqs = []
+        for line in parsed.get_all('Requires-Dist') or []:
+            if 'extra ==' not in str(Requirement(line).marker or ''):
+                reqs.append(line)
         if reqs:
             ensure_requirements.delay('\n'.join(reqs), recurse)
 
