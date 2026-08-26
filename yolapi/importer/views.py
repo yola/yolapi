@@ -1,8 +1,8 @@
-import pkg_resources
 from django import forms
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
+from packaging.requirements import InvalidRequirement, Requirement
 
 import importer.tasks
 
@@ -16,13 +16,15 @@ class RequiresForm(forms.Form):
     def clean_requirements(self):
         requirements = self.cleaned_data['requirements']
         for line in requirements.splitlines():
-            if line.strip().startswith('['):
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            if line.startswith('['):
                 raise forms.ValidationError("Sections aren't supported")
-
-        try:
-            list(pkg_resources.parse_requirements(requirements))
-        except ValueError as e:
-            raise forms.ValidationError(u' '.join(e))
+            try:
+                Requirement(line)
+            except InvalidRequirement as e:
+                raise forms.ValidationError(str(e))
 
         return requirements
 

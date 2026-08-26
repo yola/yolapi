@@ -10,9 +10,9 @@ import subprocess
 import sys
 import tempfile
 
-import pkg_resources
 import setuptools.archive_util
 from django.core.files import File
+from packaging.requirements import Requirement
 
 from main import local_celery_app
 from pypi.metadata import metadata_fields
@@ -37,7 +37,10 @@ def ensure_requirements(requirements, recurse=True):
         cleaned_reqs.append(line)
     requirements = '\n'.join(cleaned_reqs)
 
-    for requirement in pkg_resources.parse_requirements(requirements):
+    for line in requirements.splitlines():
+        if line.startswith('#'):
+            continue
+        requirement = Requirement(line)
         if not _meet_requirement(requirement):
             import_requirement.delay(str(requirement), recurse)
 
@@ -46,7 +49,7 @@ def ensure_requirements(requirements, recurse=True):
 def import_requirement(requirement, recurse=True):
     """Import a single requirement."""
     log.info("Importing %s", requirement)
-    requirement = pkg_resources.Requirement.parse(requirement)
+    requirement = Requirement(requirement)
     if _meet_requirement(requirement):
         return
 
@@ -68,14 +71,12 @@ def import_requirement(requirement, recurse=True):
 def _meet_requirement(requirement):
     """Do we have the specified requirement?"""
     try:
-        package = Package.objects.get(name=requirement.project_name)
+        package = Package.objects.get(name=requirement.name)
     except Package.DoesNotExist:
         return False
 
     for release in package.releases.iterator():
-        dist = pkg_resources.Distribution(
-            project_name=requirement.project_name, version=release.version)
-        if dist in requirement:
+        if requirement.specifier.contains(release.version, prereleases=True):
             return True
 
     return False
@@ -153,13 +154,10 @@ def _import_source(location, tmpdir, recurse):
     except Exception as e:
         log.warning('No wheel for %s %s: %s', metadata['Name'], metadata['Version'], e)
 
-    requires = os.path.join(
-            root,
-            '%s.egg-info' % pkg_resources.safe_name(metadata['Name']),
-            'requires.txt')
-    if recurse and os.path.exists(requires):
-        with open(requires) as f:
-            ensure_requirements.delay(f.read(), recurse)
+    if recurse and 'Requires-Dist' in metadata:
+        reqs = [r for r in metadata['Requires-Dist'] if 'extra ==' not in r]
+        if reqs:
+            ensure_requirements.delay('\n'.join(reqs), recurse)
 
 
 def _fetch_wheel(release, name, version):
