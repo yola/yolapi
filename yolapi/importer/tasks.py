@@ -1,15 +1,17 @@
 import email.parser
+import glob
 import hashlib
 import json
 import logging
 import os
 import re
 import shutil
+import subprocess
+import sys
 import tempfile
 
 import pkg_resources
 import setuptools.archive_util
-import setuptools.package_index
 from django.core.files import File
 
 from main import local_celery_app
@@ -17,6 +19,9 @@ from pypi.metadata import metadata_fields
 from pypi.models import Package
 
 log = logging.getLogger(__name__)
+
+_WHEEL_PYTHON_VERSION = '3.12'
+_WHEEL_PLATFORM = 'manylinux2014_x86_64'
 
 
 @local_celery_app.task
@@ -45,14 +50,15 @@ def import_requirement(requirement, recurse=True):
     if _meet_requirement(requirement):
         return
 
-    pypi = setuptools.package_index.PackageIndex()
     tmpdir = tempfile.mkdtemp(prefix='yolapi-import')
     try:
-        dist = pypi.fetch_distribution(requirement, tmpdir=tmpdir,
-                                       force_scan=True, source=True,
-                                       develop_ok=False)
-        if dist is not None:
-            _import_source(dist.location, tmpdir, recurse)
+        _pip_download(str(requirement), tmpdir, '--no-binary', ':all:')
+        sdists = [
+            path for path in glob.glob(os.path.join(tmpdir, '*'))
+            if os.path.isfile(path) and not path.endswith('.whl')
+        ]
+        if sdists:
+            _import_source(sdists[0], tmpdir, recurse)
     except Exception as e:
         log.exception(e)
     finally:
@@ -115,8 +121,7 @@ def _import_source(location, tmpdir, recurse):
         metadata['Description'] = description
 
     package, _ = Package.objects.get_or_create(name=metadata['Name'])
-    release, created = package.releases.get_or_create(
-            version=metadata['Version'])
+    release, created = package.releases.get_or_create(version=metadata['Version'])
 
     # Update metadata
     release.metadata = json.dumps(metadata)
@@ -143,6 +148,11 @@ def _import_source(location, tmpdir, recurse):
             content=File(f, name=os.path.basename(f.name)))
         distribution.save()
 
+    try:
+        _fetch_wheel(release, metadata['Name'], metadata['Version'])
+    except Exception as e:
+        log.warning('No wheel for %s %s: %s', metadata['Name'], metadata['Version'], e)
+
     requires = os.path.join(
             root,
             '%s.egg-info' % pkg_resources.safe_name(metadata['Name']),
@@ -150,3 +160,50 @@ def _import_source(location, tmpdir, recurse):
     if recurse and os.path.exists(requires):
         with open(requires) as f:
             ensure_requirements.delay(f.read(), recurse)
+
+
+def _fetch_wheel(release, name, version):
+    tmpdir = tempfile.mkdtemp(prefix='yolapi-wheel')
+    try:
+        _pip_download(
+            f'{name}=={version}',
+            tmpdir,
+            '--only-binary', ':all:',
+            '--python-version', _WHEEL_PYTHON_VERSION,
+            '--platform', _WHEEL_PLATFORM,
+            '--implementation', 'cp'
+        )
+
+        wheels = glob.glob(os.path.join(tmpdir, '*.whl'))
+        if not wheels:
+            return
+        location = wheels[0]
+        filename = os.path.basename(location)
+        log.info("Importing %s", filename)
+
+        md5sum = hashlib.md5()
+        with open(location, 'rb') as f:
+            for block in iter(lambda: f.read(4096), b''):
+                md5sum.update(block)
+            f.seek(0)
+            release.distributions.create(
+                filetype='bdist_wheel',
+                pyversion=filename.split('-')[-3][:16],
+                md5_digest=md5sum.hexdigest(),
+                content=File(f, name=filename)
+            )
+    finally:
+        shutil.rmtree(tmpdir)
+
+
+def _pip_download(spec, tmpdir, *extra_args):
+    result = subprocess.run(
+        [
+            sys.executable, '-m', 'pip', 'download', '--no-deps',
+            '--index-url', 'https://pypi.org/simple/',
+            '--dest', tmpdir, spec, *extra_args
+        ],
+        capture_output=True, text=True, timeout=600
+    )
+    if result.returncode:
+        raise Exception(f'Failed pip download {spec}: {result.stderr.strip()[-2000:]}')
