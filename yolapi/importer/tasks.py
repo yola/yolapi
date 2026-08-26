@@ -9,10 +9,13 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.parse
+import urllib.request
 
 import setuptools.archive_util
 from django.core.files import File
 from packaging.requirements import Requirement
+from packaging.version import InvalidVersion, Version
 
 from main import local_celery_app
 from pypi.metadata import metadata_fields
@@ -32,7 +35,9 @@ def ensure_requirements(requirements, recurse=True):
     cleaned_reqs = []
     for line in requirements.splitlines():
         line = line.strip()
-        if line.startswith('[') or not line:
+        if not line:
+            continue
+        if line.startswith('['):
             break
         cleaned_reqs.append(line)
     requirements = '\n'.join(cleaned_reqs)
@@ -55,13 +60,8 @@ def import_requirement(requirement, recurse=True):
 
     tmpdir = tempfile.mkdtemp(prefix='yolapi-import')
     try:
-        _pip_download(str(requirement), tmpdir, '--no-binary', ':all:')
-        sdists = [
-            path for path in glob.glob(os.path.join(tmpdir, '*'))
-            if os.path.isfile(path) and not path.endswith('.whl')
-        ]
-        if sdists:
-            _import_source(sdists[0], tmpdir, recurse)
+        if sdist_url := _get_sdist_url(requirement):
+            _import_source(_download_into_dir(sdist_url, tmpdir), tmpdir, recurse)
     except Exception as e:
         log.exception(e)
     finally:
@@ -208,3 +208,32 @@ def _pip_download(spec, tmpdir, *extra_args):
     )
     if result.returncode:
         raise Exception(f'Failed pip download {spec}: {result.stderr.strip()[-2000:]}')
+
+
+def _get_sdist_url(requirement):
+    url = f'https://pypi.org/pypi/{requirement.name}/json'
+    with urllib.request.urlopen(url, timeout=60) as response:
+        releases = json.load(response)['releases']
+
+    parsed_versions = []
+    for version in releases:
+        try:
+            parsed_versions.append((Version(version), version))
+        except InvalidVersion:
+            continue
+
+    for _, version in sorted(parsed_versions, reverse=True):
+        if not requirement.specifier.contains(version):
+            continue
+        for dist in releases[version]:
+            if dist['packagetype'] == 'sdist' and not dist['yanked']:
+                return dist['url']
+    return None
+
+
+def _download_into_dir(url, tmpdir):
+    path = os.path.join(tmpdir, os.path.basename(urllib.parse.urlparse(url).path))
+    with urllib.request.urlopen(url, timeout=600) as response:
+        with open(path, 'wb') as f:
+            shutil.copyfileobj(response, f)
+    return path
