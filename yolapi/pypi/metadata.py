@@ -7,8 +7,8 @@ from readme_renderer.txt import render as render_txt
 def metadata_fields(metadata_version):
     """Return meta-data about the meta-data :)"""
 
-    if metadata_version not in ('1.0', '1.1', '1.2', '2.1', '2.2', '2.3', '2.4'):
-        raise ValueError('Unknown Metadata-Version: %s' % metadata_version)
+    if metadata_version not in ('1.0', '1.1', '1.2', '2.1', '2.2', '2.3', '2.4', '2.5'):
+        raise ValueError(f'Unknown Metadata-Version: {metadata_version}')
 
     required = set((
         'Metadata-Version',
@@ -39,7 +39,7 @@ def metadata_fields(metadata_version):
             'Author-email',
             'License',
         ))
-    if metadata_version in ('1.1', '1.2', '2.1', '2.2', '2.3'):
+    if metadata_version in ('1.1', '1.2', '2.1', '2.2', '2.3', '2.4', '2.5'):
         required.update((
             'Download-URL',
         ))
@@ -49,7 +49,7 @@ def metadata_fields(metadata_version):
             'Provides',
             'Obsoletes',
         ))
-    if metadata_version in ('1.2', '2.1', '2.2', '2.3'):
+    if metadata_version in ('1.2', '2.1', '2.2', '2.3', '2.4', '2.5'):
         required.update((
             'Requires-Python',
         ))
@@ -69,16 +69,28 @@ def metadata_fields(metadata_version):
             'Requires-Dist',
             'Requires-External',
         ))
-    if metadata_version in ('2.1', '2.2', '2.3'):
+    if metadata_version in ('2.1', '2.2', '2.3', '2.4', '2.5'):
         fields.update((
             'Description-Content-Type',
         ))
         multivalued.update((
             'Provides-Extra',
         ))
-    if metadata_version in ('2.2', '2.3'):
+    if metadata_version in ('2.2', '2.3', '2.4', '2.5'):
         multivalued.update((
             'Dynamic',
+        ))
+    if metadata_version in ('2.4', '2.5'):
+        fields.update((
+            'License-Expression',
+        ))
+        multivalued.update((
+            'License-File',
+        ))
+    if metadata_version == '2.5':
+        multivalued.update((
+            'Import-Name',
+            'Import-Namespace',
         ))
     fields.update(required, deprecated, multivalued)
 
@@ -98,6 +110,8 @@ def display_sort(metadata):
         'Version',
         'Summary',
         'License',
+        'License-Expression',
+        'License-File',
         'Home-page',
         'Project-URL',
         'Download-URL',
@@ -120,6 +134,8 @@ def display_sort(metadata):
         'Obsoletes',
         'Platform',
         'Supported-Platform',
+        'Import-Name',
+        'Import-Namespace',
         'Dynamic',
         'Metadata-Version',
     )

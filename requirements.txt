@@ -1,4 +1,4 @@
-Django == 4.2.16
+Django == 4.2.30
 boto3 == 1.35.11
 celery == 5.4.0
 crispy-forms-bootstrap2 == 2024.1
@@ -7,7 +7,7 @@ packaging == 24.1
 packaging-legacy == 23.0.post0
 python-dateutil == 2.9.0.post0
 readme-renderer[md] == 43.0
-redis[hiredis] == 5.0.8
+redis[hiredis] == 5.1.1
 sentry-sdk == 2.13.0
 yoconfigurator == 0.5.2
 

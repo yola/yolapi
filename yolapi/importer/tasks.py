@@ -1,22 +1,30 @@
 import email.parser
+import glob
 import hashlib
 import json
 import logging
 import os
 import re
 import shutil
+import subprocess
+import sys
 import tempfile
+import urllib.parse
+import urllib.request
 
-import pkg_resources
 import setuptools.archive_util
-import setuptools.package_index
 from django.core.files import File
+from packaging.requirements import Requirement
+from packaging.version import InvalidVersion, Version
 
 from main import local_celery_app
 from pypi.metadata import metadata_fields
 from pypi.models import Package
 
 log = logging.getLogger(__name__)
+
+_WHEEL_PYTHON_VERSION = '3.12'
+_WHEEL_PLATFORM = 'manylinux2014_x86_64'
 
 
 @local_celery_app.task
@@ -27,12 +35,17 @@ def ensure_requirements(requirements, recurse=True):
     cleaned_reqs = []
     for line in requirements.splitlines():
         line = line.strip()
-        if line.startswith('[') or not line:
+        if not line:
+            continue
+        if line.startswith('['):
             break
         cleaned_reqs.append(line)
     requirements = '\n'.join(cleaned_reqs)
 
-    for requirement in pkg_resources.parse_requirements(requirements):
+    for line in requirements.splitlines():
+        if line.startswith('#'):
+            continue
+        requirement = Requirement(line)
         if not _meet_requirement(requirement):
             import_requirement.delay(str(requirement), recurse)
 
@@ -41,18 +54,14 @@ def ensure_requirements(requirements, recurse=True):
 def import_requirement(requirement, recurse=True):
     """Import a single requirement."""
     log.info("Importing %s", requirement)
-    requirement = pkg_resources.Requirement.parse(requirement)
+    requirement = Requirement(requirement)
     if _meet_requirement(requirement):
         return
 
-    pypi = setuptools.package_index.PackageIndex()
     tmpdir = tempfile.mkdtemp(prefix='yolapi-import')
     try:
-        dist = pypi.fetch_distribution(requirement, tmpdir=tmpdir,
-                                       force_scan=True, source=True,
-                                       develop_ok=False)
-        if dist is not None:
-            _import_source(dist.location, tmpdir, recurse)
+        if sdist_url := _get_sdist_url(requirement):
+            _import_source(_download_into_dir(sdist_url, tmpdir), tmpdir, recurse)
     except Exception as e:
         log.exception(e)
     finally:
@@ -62,14 +71,12 @@ def import_requirement(requirement, recurse=True):
 def _meet_requirement(requirement):
     """Do we have the specified requirement?"""
     try:
-        package = Package.objects.get(name=requirement.project_name)
+        package = Package.objects.get(name=requirement.name)
     except Package.DoesNotExist:
         return False
 
     for release in package.releases.iterator():
-        dist = pkg_resources.Distribution(
-            project_name=requirement.project_name, version=release.version)
-        if dist in requirement:
+        if requirement.specifier.contains(release.version, prereleases=True):
             return True
 
     return False
@@ -109,14 +116,13 @@ def _import_source(location, tmpdir, recurse):
 
     if (
         ('Description' not in metadata)
-        and (metadata_version in ('2.1', '2.2', '2.3'))
+        and (metadata_version in ('2.1', '2.2', '2.3', '2.4', '2.5'))
         and (description := parsed.get_payload())
     ):
         metadata['Description'] = description
 
     package, _ = Package.objects.get_or_create(name=metadata['Name'])
-    release, created = package.releases.get_or_create(
-            version=metadata['Version'])
+    release, created = package.releases.get_or_create(version=metadata['Version'])
 
     # Update metadata
     release.metadata = json.dumps(metadata)
@@ -143,10 +149,91 @@ def _import_source(location, tmpdir, recurse):
             content=File(f, name=os.path.basename(f.name)))
         distribution.save()
 
-    requires = os.path.join(
-            root,
-            '%s.egg-info' % pkg_resources.safe_name(metadata['Name']),
-            'requires.txt')
-    if recurse and os.path.exists(requires):
-        with open(requires) as f:
-            ensure_requirements.delay(f.read(), recurse)
+    try:
+        _fetch_wheel(release, metadata['Name'], metadata['Version'])
+    except Exception as e:
+        log.warning('No wheel for %s %s: %s', metadata['Name'], metadata['Version'], e)
+
+    if recurse:
+        reqs = []
+        for line in parsed.get_all('Requires-Dist') or []:
+            if 'extra ==' not in str(Requirement(line).marker or ''):
+                reqs.append(line)
+        if reqs:
+            ensure_requirements.delay('\n'.join(reqs), recurse)
+
+
+def _fetch_wheel(release, name, version):
+    tmpdir = tempfile.mkdtemp(prefix='yolapi-wheel')
+    try:
+        _pip_download(
+            f'{name}=={version}',
+            tmpdir,
+            '--only-binary', ':all:',
+            '--python-version', _WHEEL_PYTHON_VERSION,
+            '--platform', _WHEEL_PLATFORM,
+            '--implementation', 'cp'
+        )
+
+        wheels = glob.glob(os.path.join(tmpdir, '*.whl'))
+        if not wheels:
+            return
+        location = wheels[0]
+        filename = os.path.basename(location)
+        log.info("Importing %s", filename)
+
+        md5sum = hashlib.md5()
+        with open(location, 'rb') as f:
+            for block in iter(lambda: f.read(4096), b''):
+                md5sum.update(block)
+            f.seek(0)
+            release.distributions.create(
+                filetype='bdist_wheel',
+                pyversion=filename.split('-')[-3][:16],
+                md5_digest=md5sum.hexdigest(),
+                content=File(f, name=filename)
+            )
+    finally:
+        shutil.rmtree(tmpdir)
+
+
+def _pip_download(spec, tmpdir, *extra_args):
+    result = subprocess.run(
+        [
+            sys.executable, '-m', 'pip', 'download', '--no-deps', '--no-cache-dir',
+            '--index-url', 'https://pypi.org/simple/',
+            '--dest', tmpdir, spec, *extra_args
+        ],
+        capture_output=True, text=True, timeout=600
+    )
+    if result.returncode:
+        raise Exception(f'Failed pip download {spec}: {result.stderr.strip()[-2000:]}')
+
+
+def _get_sdist_url(requirement):
+    url = f'https://pypi.org/pypi/{requirement.name}/json'
+    with urllib.request.urlopen(url, timeout=60) as response:
+        releases = json.load(response)['releases']
+
+    parsed_versions = []
+    for version in releases:
+        try:
+            parsed_versions.append((Version(version), version))
+        except InvalidVersion:
+            continue
+
+    for _, version in sorted(parsed_versions, reverse=True):
+        if not requirement.specifier.contains(version):
+            continue
+        for dist in releases[version]:
+            if dist['packagetype'] == 'sdist' and not dist['yanked']:
+                return dist['url']
+    return None
+
+
+def _download_into_dir(url, tmpdir):
+    path = os.path.join(tmpdir, os.path.basename(urllib.parse.urlparse(url).path))
+    with urllib.request.urlopen(url, timeout=600) as response:
+        with open(path, 'wb') as f:
+            shutil.copyfileobj(response, f)
+    return path

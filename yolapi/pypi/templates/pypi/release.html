@@ -12,7 +12,7 @@
         <h2>Files</h2>
         <ul>
         {% for distribution in release.distributions.iterator %}
-            <li>
+            <li style="overflow-wrap: anywhere;">
                 <a href="{{ distribution.content.url }}#md5={{ distribution.md5_digest }}">
                     {{ distribution.filename }}
                 </a>
