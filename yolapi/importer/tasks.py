@@ -24,7 +24,11 @@ from pypi.models import Package
 log = logging.getLogger(__name__)
 
 _WHEEL_PYTHON_VERSION = '3.12'
-_WHEEL_PLATFORM = 'manylinux2014_x86_64'
+_WHEEL_PLATFORMS = (
+    'manylinux_2_28_x86_64',
+    'manylinux_2_17_x86_64',
+    'manylinux2014_x86_64',
+)
 
 
 @local_celery_app.task
@@ -165,14 +169,17 @@ def _import_source(location, tmpdir, recurse):
 
 def _fetch_wheel(release, name, version):
     tmpdir = tempfile.mkdtemp(prefix='yolapi-wheel')
+    platform_args = []
+    for platform in _WHEEL_PLATFORMS:
+        platform_args += ['--platform', platform]
     try:
         _pip_download(
             f'{name}=={version}',
             tmpdir,
             '--only-binary', ':all:',
             '--python-version', _WHEEL_PYTHON_VERSION,
-            '--platform', _WHEEL_PLATFORM,
-            '--implementation', 'cp'
+            '--implementation', 'cp',
+            *platform_args
         )
 
         wheels = glob.glob(os.path.join(tmpdir, '*.whl'))
